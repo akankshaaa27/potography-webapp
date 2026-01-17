@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import path from "path";
 import cors from "cors";
 import { connectDB, getDbStatus } from "./db.js";
 import { handleDemo } from "./routes/demo.js";
@@ -14,17 +13,63 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import filmRoutes from "./routes/filmRoutes.js";
+import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
+
+const defaultAllowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:4173",
+  "http://localhost:8080",
+  "https://potography-webapp.vercel.app",
+  "https://potography-webapp-website.vercel.app",
+];
+
+const buildAllowedOrigins = () => {
+  const envOrigins = process.env.CORS_ALLOWLIST || process.env.CORS_ORIGIN || "";
+  const parsed = envOrigins
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  return Array.from(new Set([...defaultAllowedOrigins, ...parsed]));
+};
+
+const allowedOrigins = buildAllowedOrigins();
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    console.warn(`⚠️  Blocked CORS origin: ${origin}`);
+    return callback(null, false);
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+let dbConnectionPromise;
+const ensureDbConnection = () => {
+  if (!dbConnectionPromise) {
+    dbConnectionPromise = connectDB().catch((error) => {
+      console.error("❌ MongoDB connection failed", error);
+      dbConnectionPromise = undefined;
+      throw error;
+    });
+  }
+  return dbConnectionPromise;
+};
 
 export function createServer() {
   const app = express();
 
   // Middleware
-  app.use(cors());
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+  app.use(cors(corsOptions));
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-  // Connect to MongoDB
-  connectDB();
+  // Ensure MongoDB connection starts as soon as the server boots
+  ensureDbConnection();
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
@@ -45,6 +90,15 @@ export function createServer() {
     res.json({ state, status: map[state] ?? "unknown" });
   });
 
+  app.get("/api/health", (_req, res) => {
+    res.json({
+      status: "ok",
+      dbState: getDbStatus(),
+      timestamp: new Date().toISOString(),
+      allowedOrigins,
+    });
+  });
+
   // Auth routes
   app.use("/api/auth", authRoutes);
 
@@ -59,11 +113,9 @@ export function createServer() {
   app.use("/api/users", userRoutes);
   app.use("/api/films", filmRoutes);
 
-  // Serve SPA fallback only in production builds (Vite handles this in dev)
-  // Production mode: API only (no frontend serving)
-  if (process.env.NODE_ENV === "production") {
-    // No static file serving for decoupled backend
-  }
+  // 404 + error handling
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   return app;
 }
