@@ -9,17 +9,14 @@ const port = process.env.PORT || 3000;
 const __dirname = import.meta.dirname;
 const distPath = path.join(__dirname, "../spa");
 
-// Serve static files
-app.use(express.static(distPath));
-
-// Handle React Router - serve index.html for all non-API routes
-app.get(/^(?!\/api\/|\/health).+/, (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+// API-only mode (Decoupled architecture)
+app.get("/", (req, res) => {
+  res.json({ message: "Photography API is running 🚀", status: "active" });
 });
 
 // Explicit 404 for API routes
-app.all(/\/api\/.*/, (req, res) => {
-  res.status(404).json({ error: "API endpoint not found" });
+app.all("*", (req, res) => {
+  res.status(404).json({ error: "Endpoint not found" });
 });
 
 app.listen(port, () => {
