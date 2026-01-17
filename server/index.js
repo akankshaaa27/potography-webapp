@@ -61,11 +61,12 @@ export function createServer() {
 
   // Serve SPA fallback only in production builds (Vite handles this in dev)
   if (process.env.NODE_ENV === "production") {
-    app.use((req, res, next) => {
+    // Serve index.html for any non-API route (Client-side routing)
+    app.get(/^(?!\/api).+/, (req, res, next) => {
       try {
         if (req.method !== "GET") return next();
         const p = req.path || "/";
-        if (p.startsWith("/api") || p.startsWith("/dist") || p.includes(".")) return next();
+        if (p.startsWith("/dist") || p.includes(".")) return next();
         res.sendFile(path.resolve(process.cwd(), "index.html"));
       } catch (e) {
         next(e);
