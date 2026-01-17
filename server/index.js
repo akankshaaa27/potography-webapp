@@ -60,18 +60,9 @@ export function createServer() {
   app.use("/api/films", filmRoutes);
 
   // Serve SPA fallback only in production builds (Vite handles this in dev)
+  // Production mode: API only (no frontend serving)
   if (process.env.NODE_ENV === "production") {
-    // Serve index.html for any non-API route (Client-side routing)
-    app.get(/^(?!\/api).+/, (req, res, next) => {
-      try {
-        if (req.method !== "GET") return next();
-        const p = req.path || "/";
-        if (p.startsWith("/dist") || p.includes(".")) return next();
-        res.sendFile(path.resolve(process.cwd(), "index.html"));
-      } catch (e) {
-        next(e);
-      }
-    });
+    // No static file serving for decoupled backend
   }
 
   return app;

@@ -15,7 +15,8 @@ app.get("/", (req, res) => {
 });
 
 // Explicit 404 for API routes
-app.all("*", (req, res) => {
+// Explicit 404 for any other route
+app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });
 
