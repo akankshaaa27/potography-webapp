@@ -9,6 +9,8 @@ const orderSchema = new mongoose.Schema(
         photography_type: { type: String },
         location: { type: String },
         event_date: { type: Date },
+        event_end_date: { type: Date },
+        serviceConfig: { type: mongoose.Schema.Types.Mixed },
         start_time: { type: String },
         end_time: { type: String },
         service: { type: String }, // Storing as comma-separated string as per frontend logic
