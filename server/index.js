@@ -41,6 +41,10 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+    // Allow vercel preview apps
+    if (origin.endsWith(".vercel.app")) {
+      return callback(null, true);
+    }
     console.warn(`⚠️  Blocked CORS origin: ${origin}`);
     return callback(null, false);
   },
