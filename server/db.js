@@ -48,7 +48,8 @@ export const connectDB = async () => {
     });
 
     await mongoose.connect(mongoUri, {
-      dbName: process.env.DATABASE_NAME || "photography",
+      // Hardcoded to "photograper" to match the actual MongoDB database name
+      dbName: "photograper",
       retryWrites: true,
       w: "majority",
     });
