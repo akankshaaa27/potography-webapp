@@ -61,7 +61,7 @@ export function createServer() {
 
   // Serve SPA fallback only in production builds (Vite handles this in dev)
   if (process.env.NODE_ENV === "production") {
-    app.get("(.*)", (req, res, next) => {
+    app.use((req, res, next) => {
       try {
         if (req.method !== "GET") return next();
         const p = req.path || "/";
