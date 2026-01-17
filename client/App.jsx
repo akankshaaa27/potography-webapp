@@ -1,4 +1,5 @@
 import "./global.css";
+import "./lib/apiFetch";
 import React, { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
