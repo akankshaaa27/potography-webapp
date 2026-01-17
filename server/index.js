@@ -64,7 +64,7 @@ const ensureDbConnection = () => {
   return dbConnectionPromise;
 };
 
-export function createServer() {
+export function createServer(config = {}) {
   const app = express();
 
   // Middleware
@@ -117,8 +117,18 @@ export function createServer() {
   app.use("/api/users", userRoutes);
   app.use("/api/films", filmRoutes);
 
+  // Root route - Only for production/standalone
+  if (!config.middlewareMode) {
+    app.get("/", (req, res) => {
+      res.json({ message: "Photography API is running 🚀", status: "active" });
+    });
+  }
+
   // 404 + error handling
-  app.use(notFoundHandler);
+  if (!config.middlewareMode) {
+    app.use(notFoundHandler);
+  }
+
   app.use(errorHandler);
 
   return app;

@@ -41,6 +41,11 @@ app.use('/api/quotations', quotationRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Photography API is running 🚀', status: 'active' });
+});
+
 // 404 handler
 app.use(notFoundHandler);
 
