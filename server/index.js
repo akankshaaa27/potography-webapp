@@ -14,6 +14,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import filmRoutes from "./routes/filmRoutes.js";
 import loveStoryRoutes from "./routes/loveStoryRoutes.js";
+import enquiryRoutes from "./routes/enquiryRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 // Root route - Only for production/standalone
@@ -120,7 +121,8 @@ export function createServer(config = {}) {
   app.use("/api/users", userRoutes);
   app.use("/api/films", filmRoutes);
   app.use("/api/love-stories", loveStoryRoutes);
-  console.log("✅ Love Story routes registered at /api/love-stories");
+  app.use("/api/enquiries", enquiryRoutes);
+  console.log("✅ Enquiry routes registered at /api/enquiries");
 
   // Root route - Only for production/standalone
   if (!config.middlewareMode) {
