@@ -25,7 +25,7 @@ export default function Invoices() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="mt-4">
       <div>
         <h1 className="luxury-text-title">Invoices</h1>
         <p className="text-sm text-charcoal-600">Track and manage invoices.</p>

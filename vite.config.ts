@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     fs: {
       allow: [
+        path.resolve(__dirname, "."),
         path.resolve(__dirname, "./client"),
         path.resolve(__dirname, "./shared"),
         path.resolve(__dirname, "./website"),
