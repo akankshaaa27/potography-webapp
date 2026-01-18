@@ -46,7 +46,7 @@ const App = () => (
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+); 
 
 const AppShell = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
