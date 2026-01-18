@@ -9,6 +9,7 @@ const items = [
   { to: "/users", label: "Users" },
   { to: "/slider", label: "Slider" },
   { to: "/love-stories", label: "Love Stories" },
+  { to: "/testimonials", label: "Testimonials" },
   { to: "/clients", label: "Clients" },
   { to: "/enquiries", label: "Enquiries" },
   { to: "/contact-messages", label: "Contact Msgs" },

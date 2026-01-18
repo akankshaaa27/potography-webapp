@@ -28,6 +28,7 @@ const Home = () => {
       .catch(err => console.error("Error fetching slider:", err));
   }, []);
   const [loveStories, setLoveStories] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
   const [instagramPosts, setInstagramPosts] = useState([]);
@@ -57,6 +58,16 @@ const Home = () => {
         }
       })
       .catch(err => console.error("Error fetching love stories:", err));
+
+    // Fetch Testimonials
+    fetch('/api/testimonials?type=active')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTestimonials(data); // Controller already filters active
+        }
+      })
+      .catch(err => console.error("Error fetching testimonials:", err));
 
   }, []);
   useEffect(() => {
@@ -231,73 +242,43 @@ const Home = () => {
 
           <div className="container">
             <div className="testimonial-masonry">
-
-              <div className="testimonial-item" data-aos="fade-up">
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote"></i>
-                  </div>
-                  <p>
-                    "Every picture from our wedding felt like a movie scene. <strong>The Patil Photography</strong> team
-                    captured not just our moments but our emotions. Their attention to detail, lighting, and storytelling is
-                    pure luxury. We'll treasure these memories forever."
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img src="/assets/img/HomePage/profile-icon.png" alt="Client" />
+              {testimonials.map((t, index) => (
+                <div key={t._id} className={`testimonial-item ${index === 1 ? 'highlight' : ''}`} data-aos="fade-up" data-aos-delay={index * 100}>
+                  <div className="testimonial-content">
+                    <div className="quote-pattern">
+                      <i className="bi bi-quote"></i>
                     </div>
-                    <div className="client-details">
-                      <h3>Riya & Kunal</h3>
-                      <span className="position">Mumbai</span>
+                    <p>"{t.shortDescription}"</p>
+
+                    {/* Star Rating */}
+                    <div className="stars" style={{ color: '#ffc107', marginBottom: '10px' }}>
+                      {[...Array(t.rating || 5)].map((_, i) => (
+                        <i key={i} className="bi bi-star-fill"></i>
+                      ))}
+                    </div>
+
+                    <div className="client-info">
+                      <div className="client-image">
+                        <img
+                          src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                          alt={t.coupleName}
+                          style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
+                        />
+                      </div>
+                      <div className="client-details">
+                        <h3>{t.coupleName}</h3>
+                        <span className="position">{t.location}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ))}
 
-              <div className="testimonial-item highlight" data-aos="fade-up" data-aos-delay="100">
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote"></i>
-                  </div>
-                  <p>
-                    "<strong>The Patil Photography and Film's</strong> made our wedding look like a film — every frame
-                    spoke of love, grace, and timelessness. Their professionalism, creativity, and luxury touch made our big
-                    day unforgettable."
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img src="/assets/img/HomePage/profile-icon.png" alt="Client" />
-                    </div>
-                    <div className="client-details">
-                      <h3>Simran & Dev</h3>
-                      <span className="position">Nashik</span>
-                    </div>
-                  </div>
+              {testimonials.length === 0 && (
+                <div className="col-12 text-center p-5">
+                  <p>Currently updating our wall of love. Check back soon!</p>
                 </div>
-              </div>
-
-              <div className="testimonial-item" data-aos="fade-up" data-aos-delay="200">
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote"></i>
-                  </div>
-                  <p>
-                    "From the first meeting to our final album, everything was seamless and classy. The team made us feel
-                    so comfortable, and the final photos were beyond beautiful — elegant, cinematic, and full of heart. It
-                    truly felt like we were part of an exclusive experience."
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img src="/assets/img/HomePage/profile-icon.png" alt="Client" />
-                    </div>
-                    <div className="client-details">
-                      <h3>Aarav & Meera</h3>
-                      <span className="position">Pune</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+              )}
             </div>
           </div>
         </section>
@@ -323,28 +304,45 @@ const Home = () => {
           </div>
 
           <div className="container" data-aos="fade-up" data-aos-delay="100">
-            <div className="row gy-4">
-
-              {/* Project Cards */}
-              {loveStories.length === 0 ? (
-                <div className="col-12 text-center p-5">
-                  <p>No love stories to share yet.</p>
-                </div>
-              ) : (
-                loveStories.map((story) => (
-                  <div key={story._id} className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div className="project-card">
+            {/* Love Stories Slider */}
+            {loveStories.length === 0 ? (
+              <div className="col-12 text-center p-5">
+                <p>No love stories to share yet.</p>
+              </div>
+            ) : (
+              <Swiper
+                modules={[Autoplay]}
+                spaceBetween={30}
+                slidesPerView={1}
+                navigation={false}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                breakpoints={{
+                  640: { slidesPerView: 1 },
+                  768: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                }}
+                className="projects-slider"
+                style={{ paddingBottom: '40px' }}
+              >
+                {loveStories.map((story) => (
+                  <SwiperSlide key={story._id}>
+                    <div className="project-card" style={{ height: '100%' }}>
                       <div className="project-image">
-                        <img src={story.thumbnail} alt={story.title} className="img-fluid" style={{ width: '100%', height: '300px', objectFit: 'cover' }} />
+                        <img
+                          src={story.thumbnail}
+                          alt={story.title}
+                          className="img-fluid"
+                          style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+                        />
                       </div>
                       <div className="project-info">
                         <h4 className="project-title">{story.title}</h4>
                         <p className="project-description">
-                          {story.description.length > 150
-                            ? story.description.substring(0, 150) + "..."
+                          {story.description.length > 100
+                            ? story.description.substring(0, 100) + "..."
                             : story.description}
                         </p>
-                        <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="150">
+                        <div className="cta-section text-md-start">
                           <a
                             href="#"
                             className="cta-link"
@@ -360,42 +358,64 @@ const Home = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
 
-            </div>
-
-            <div className="d-flex justify-content-center">
-              <Link to="/projects" className="submit-btn">
+            <div className="d-flex justify-content-center mt-4">
+              <Link to="/stories" className="submit-btn" style={{ textDecoration: 'none' }}>
                 <span>View All Stories</span>
-                <i className="bi bi-arrow-right"></i>
+                <i className="bi bi-arrow-right ms-2"></i>
               </Link>
             </div>
           </div>
         </section>
 
         {/* Instagram Section */}
-        <section id="about" className="about section">
+        <section id="instagram" className="about section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             <div className="container section-title" data-aos="fade-up">
               <h2>As Seen on Instagram</h2>
+              <p><a href="https://www.instagram.com/thepatilphotography" target="_blank" rel="noreferrer" className="text-secondary">@thepatilphotography</a></p>
             </div>
             <div className="container">
-              <div className="row g-3">
-                {instagramPosts.map(post => (
-                  <div key={post.id} className="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                    <a href={post.permalink} target="_blank" rel="noopener noreferrer">
-                      <img src={post.media_url} alt={post.caption || 'Instagram post'} className="img-fluid rounded shadow-sm" />
+              <div className="row g-2 justify-content-center">
+                {/* Static Grid to simulate Instagram Feed using existing portfolio images */}
+                {/* This avoids 404s from invalid widget IDs and requires no API tokens */}
+                {[
+                  "/assets/img/HomePage/7.webp",
+                  "/assets/img/HomePage/11.webp",
+                  "/assets/img/HomePage/16.webp",
+                  "/assets/img/HomePage/18.webp",
+                  "/assets/img/HomePage/128.webp",
+                  "/assets/img/HomePage/7.webp"
+                ].map((imgSrc, index) => (
+                  <div key={index} className="col-4 col-md-2">
+                    <a href="https://www.instagram.com/thepatilphotography" target="_blank" rel="noreferrer" className="d-block overflow-hidden position-relative group" style={{ paddingBottom: '100%', position: 'relative' }}>
+                      <img
+                        src={imgSrc}
+                        alt="Instagram view"
+                        className="img-fluid position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                        style={{ transition: 'transform 0.3s ease' }}
+                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      />
                     </a>
                   </div>
                 ))}
+              </div>
+
+              <div className="text-center mt-4">
+                <a href="https://www.instagram.com/thepatilphotography?igsh=MWQwMGFkcDVwbmpxYQ==" target="_blank" className="cta-link" rel="noreferrer">
+                  Follow us on Instagram <i className="bi bi-instagram ms-2"></i>
+                </a>
               </div>
             </div>
           </div>
         </section>
 
-      </main>
+      </main >
 
       <StoryModal
         show={showModal}
