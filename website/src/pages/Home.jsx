@@ -304,28 +304,45 @@ const Home = () => {
           </div>
 
           <div className="container" data-aos="fade-up" data-aos-delay="100">
-            <div className="row gy-4">
-
-              {/* Project Cards */}
-              {loveStories.length === 0 ? (
-                <div className="col-12 text-center p-5">
-                  <p>No love stories to share yet.</p>
-                </div>
-              ) : (
-                loveStories.map((story) => (
-                  <div key={story._id} className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div className="project-card">
+            {/* Love Stories Slider */}
+            {loveStories.length === 0 ? (
+              <div className="col-12 text-center p-5">
+                <p>No love stories to share yet.</p>
+              </div>
+            ) : (
+              <Swiper
+                modules={[Autoplay]}
+                spaceBetween={30}
+                slidesPerView={1}
+                navigation={false}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                breakpoints={{
+                  640: { slidesPerView: 1 },
+                  768: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                }}
+                className="projects-slider"
+                style={{ paddingBottom: '40px' }}
+              >
+                {loveStories.map((story) => (
+                  <SwiperSlide key={story._id}>
+                    <div className="project-card" style={{ height: '100%' }}>
                       <div className="project-image">
-                        <img src={story.thumbnail} alt={story.title} className="img-fluid" style={{ width: '100%', height: '300px', objectFit: 'cover' }} />
+                        <img
+                          src={story.thumbnail}
+                          alt={story.title}
+                          className="img-fluid"
+                          style={{ width: '100%', height: '300px', objectFit: 'cover' }}
+                        />
                       </div>
                       <div className="project-info">
                         <h4 className="project-title">{story.title}</h4>
                         <p className="project-description">
-                          {story.description.length > 150
-                            ? story.description.substring(0, 150) + "..."
+                          {story.description.length > 100
+                            ? story.description.substring(0, 100) + "..."
                             : story.description}
                         </p>
-                        <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="150">
+                        <div className="cta-section text-md-start">
                           <a
                             href="#"
                             className="cta-link"
@@ -341,16 +358,15 @@ const Home = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
 
-            </div>
-
-            <div className="d-flex justify-content-center">
-              <Link to="/projects" className="submit-btn">
+            <div className="d-flex justify-content-center mt-4">
+              <Link to="/stories" className="submit-btn" style={{ textDecoration: 'none' }}>
                 <span>View All Stories</span>
-                <i className="bi bi-arrow-right"></i>
+                <i className="bi bi-arrow-right ms-2"></i>
               </Link>
             </div>
           </div>
