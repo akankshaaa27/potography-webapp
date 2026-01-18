@@ -13,7 +13,10 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import filmRoutes from "./routes/filmRoutes.js";
+import loveStoryRoutes from "./routes/loveStoryRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
+
+// Root route - Only for production/standalone
 
 const defaultAllowedOrigins = [
   "http://localhost:5173",
@@ -64,7 +67,7 @@ const ensureDbConnection = () => {
   return dbConnectionPromise;
 };
 
-export function createServer() {
+export function createServer(config = {}) {
   const app = express();
 
   // Middleware
@@ -116,9 +119,20 @@ export function createServer() {
   app.use("/api/orders", orderRoutes);
   app.use("/api/users", userRoutes);
   app.use("/api/films", filmRoutes);
+  app.use("/api/love-stories", loveStoryRoutes);
+
+  // Root route - Only for production/standalone
+  if (!config.middlewareMode) {
+    app.get("/", (req, res) => {
+      res.json({ message: "Photography API is running 🚀", status: "active" });
+    });
+  }
 
   // 404 + error handling
-  app.use(notFoundHandler);
+  if (!config.middlewareMode) {
+    app.use(notFoundHandler);
+  }
+
   app.use(errorHandler);
 
   return app;

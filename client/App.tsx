@@ -24,6 +24,7 @@ import AdminClients from "./pages/AdminClients";
 import AdminInvoices from "./pages/AdminInvoices";
 import AdminQuotations from "./pages/AdminQuotations";
 import AdminFilms from "./pages/AdminFilms";
+import AdminLoveStories from "./pages/AdminLoveStories";
 import AccessoriesManagement from "./pages/AccessoriesManagement";
 import AdminRegister from "./pages/AdminRegister";
 import UserProfile from "./pages/UserProfile";
@@ -92,6 +93,7 @@ const AppShell = () => {
             <Route path="/gallery" element={<AdminGallery />} />
             <Route path="/users" element={<AdminUsers />} />
             <Route path="/slider" element={<AdminSlider />} />
+            <Route path="/love-stories" element={<AdminLoveStories />} />
             <Route path="/admin/clients" element={<AdminClients />} />
             <Route path="/admin/invoices" element={<AdminInvoices />} />
             <Route path="/admin/quotations" element={<AdminQuotations />} />

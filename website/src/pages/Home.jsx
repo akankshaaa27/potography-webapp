@@ -27,34 +27,38 @@ const Home = () => {
       })
       .catch(err => console.error("Error fetching slider:", err));
   }, []);
-  const storyData = {
-    "komal-kunal": {
-      title: "Aanya & Rohit",
-      subtitle: "The Golden Leaf Resort, Dhule",
-      description: `
-        Aanya and Rohit's journey is a beautiful blend of warmth, destiny, and heartfelt moments. What began as a simple connection slowly grew into a bond filled with trust, understanding, and companionship. Their love strengthened through shared dreams, thoughtful conversations, and unwavering support. Together, they continue to create memories that reflect a deep, genuine, and lifelong commitment.
-      `,
-      images: [
-        "/assets/img/HomePage/11.webp",
-        "/assets/img/HomePage/18.webp",
-        "/assets/img/HomePage/11.webp",
-        "/assets/img/HomePage/18.webp",
-        "/assets/img/HomePage/11.webp",
-        "/assets/img/HomePage/18.webp",
-        "/assets/img/HomePage/11.webp",
-        "/assets/img/HomePage/18.webp",
-        "/assets/img/HomePage/11.webp",
-        "/assets/img/HomePage/18.webp",
-        "/assets/img/HomePage/11.webp",
-        "/assets/img/HomePage/18.webp",
-        "/assets/img/HomePage/11.webp",
-        "/assets/img/HomePage/18.webp",
-      ]
-    }
-  };
+  const [loveStories, setLoveStories] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
   const [instagramPosts, setInstagramPosts] = useState([]);
+
+  useEffect(() => {
+    // ... Existing slider fetch ...
+    fetch('/api/slider')
+      .then(res => res.json())
+      .then(data => {
+        const activeSlides = data.filter(s => s.status === 'Active');
+        if (activeSlides.length > 0) {
+          setSlides(activeSlides.map(s => ({
+            image: s.image,
+            title: s.title,
+            subtitle: s.subtitle || 'Capturing moments...'
+          })));
+        }
+      })
+      .catch(err => console.error("Error fetching slider:", err));
+
+    // Fetch Love Stories
+    fetch('/api/love-stories')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setLoveStories(data.filter(s => s.status === 'Active'));
+        }
+      })
+      .catch(err => console.error("Error fetching love stories:", err));
+
+  }, []);
   useEffect(() => {
     let preloaderTimeout;
     let aosTimeout;
@@ -322,128 +326,43 @@ const Home = () => {
             <div className="row gy-4">
 
               {/* Project Cards */}
-              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div className="project-card">
-                  <div className="project-image">
-                    <img src="/assets/img/HomePage/16.webp" alt="Project" className="img-fluid" />
-                  </div>
-                  <div className="project-info">
-                    <h4 className="project-title">Aanya & Rohit</h4>
-                    <p className="project-description">
-                      Aanya and Rohit's journey began in Mumbai, where an unexpected meeting grew into a deep,
-                      effortless connection Their contrasting personalities.....
-                    </p>
-                    <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="150">
-                      <a href="#" className="cta-link" onClick={(e) => { e.preventDefault(); setSelectedStory('komal-kunal'); setShowModal(true); }}>
-                        View Story
-                        <i className="bi bi-arrow-right ms-2"></i>
-                      </a>
+              {loveStories.length === 0 ? (
+                <div className="col-12 text-center p-5">
+                  <p>No love stories to share yet.</p>
+                </div>
+              ) : (
+                loveStories.map((story) => (
+                  <div key={story._id} className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div className="project-card">
+                      <div className="project-image">
+                        <img src={story.thumbnail} alt={story.title} className="img-fluid" style={{ width: '100%', height: '300px', objectFit: 'cover' }} />
+                      </div>
+                      <div className="project-info">
+                        <h4 className="project-title">{story.title}</h4>
+                        <p className="project-description">
+                          {story.description.length > 150
+                            ? story.description.substring(0, 150) + "..."
+                            : story.description}
+                        </p>
+                        <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="150">
+                          <a
+                            href="#"
+                            className="cta-link"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setSelectedStory(story);
+                              setShowModal(true);
+                            }}
+                          >
+                            View Story
+                            <i className="bi bi-arrow-right ms-2"></i>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div className="project-card">
-                  <div className="project-image">
-                    <img src="/assets/img/HomePage/128.webp" alt="Project" className="img-fluid" />
-                  </div>
-                  <div className="project-info">
-                    <h4 className="project-title">Riya & Kunal</h4>
-                    <p className="project-description">
-                      Riya and Kunal's love story began with a simple conversation that felt unexpectedly special.
-                      What started as friendship soon blossomed into a deep....
-                    </p>
-                    <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="150">
-                      <a href="#" className="cta-link" onClick={(e) => { e.preventDefault(); setSelectedStory('komal-kunal'); setShowModal(true); }}>
-                        View Story
-                        <i className="bi bi-arrow-right ms-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div className="project-card">
-                  <div className="project-image">
-                    <img src="/assets/img/HomePage/7.webp" alt="Project" className="img-fluid" />
-                  </div>
-                  <div className="project-info">
-                    <h4 className="project-title">Aarav & Meera</h4>
-                    <p className="project-description">
-                      Aarav and Meera's story began with a connection that felt instantly comforting. Their shared values,
-                      effortless conversations, and genuine care brought....
-                    </p>
-                    <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="150">
-                      <a href="#" className="cta-link" onClick={(e) => { e.preventDefault(); setSelectedStory('komal-kunal'); setShowModal(true); }}>
-                        View Story
-                        <i className="bi bi-arrow-right ms-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div className="project-card">
-                  <div className="project-image">
-                    <img src="/assets/img/HomePage/18.webp" alt="Project" className="img-fluid" />
-                  </div>
-                  <div className="project-info">
-                    <h4 className="project-title">Aanya & Rohit</h4>
-                    <p className="project-description">
-                      Aanya and Rohit's bond began with a warm connection that instantly felt special...
-                    </p>
-                    <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="100">
-                      <a href="#" className="cta-link" onClick={(e) => { e.preventDefault(); setSelectedStory('komal-kunal'); setShowModal(true); }}>
-                        View Story
-                        <i className="bi bi-arrow-right ms-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div className="project-card">
-                  <div className="project-image">
-                    <img src="/assets/img/HomePage/3.webp" alt="Project" className="img-fluid" />
-                  </div>
-                  <div className="project-info">
-                    <h4 className="project-title">Mehr & Kashyap</h4>
-                    <p className="project-description">
-                      A friendship that turned into love, built on trust and understanding...
-                    </p>
-                    <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="100">
-                      <a href="#" className="cta-link" onClick={(e) => { e.preventDefault(); setSelectedStory('komal-kunal'); setShowModal(true); }}>
-                        View Story
-                        <i className="bi bi-arrow-right ms-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div className="project-card">
-                  <div className="project-image">
-                    <img src="/assets/img/HomePage/11.webp" alt="Project" className="img-fluid" />
-                  </div>
-                  <div className="project-info">
-                    <h4 className="project-title">Komal & Kunal</h4>
-                    <p className="project-description">
-                      Meant to be together, their journey is filled with warmth and beautiful memories...
-                    </p>
-                    <div className="cta-section text-md-start" data-aos="fade-up" data-aos-delay="150">
-                      <a href="#" className="cta-link" onClick={(e) => { e.preventDefault(); setSelectedStory('komal-kunal'); setShowModal(true); }}>
-                        View Story
-                        <i className="bi bi-arrow-right ms-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                ))
+              )}
 
             </div>
 
@@ -478,7 +397,15 @@ const Home = () => {
 
       </main>
 
-      <StoryModal show={showModal} onHide={() => setShowModal(false)} story={storyData[selectedStory]} />
+      <StoryModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        story={selectedStory ? {
+          ...selectedStory,
+          subtitle: selectedStory.location,
+          images: selectedStory.gallery || []
+        } : null}
+      />
 
       <Footer />
 
