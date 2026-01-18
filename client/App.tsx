@@ -26,6 +26,7 @@ import AdminQuotations from "./pages/AdminQuotations";
 import AdminFilms from "./pages/AdminFilms";
 import AdminLoveStories from "./pages/AdminLoveStories";
 import AdminEnquiries from "./pages/AdminEnquiries";
+import AdminContacts from "./pages/AdminContacts";
 import AccessoriesManagement from "./pages/AccessoriesManagement";
 import AdminRegister from "./pages/AdminRegister";
 import UserProfile from "./pages/UserProfile";
@@ -85,8 +86,7 @@ const AppShell = () => {
             <Route path="/login" element={<Navigate to="/" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/quotations" element={<Quotations />} />
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/quotations" element={<Quotations />} />
             {/* Admin Modules */}
             <Route path="/films" element={<AdminFilms />} />
             <Route path="/orders" element={<AdminOrders />} />
@@ -95,6 +95,7 @@ const AppShell = () => {
             <Route path="/slider" element={<AdminSlider />} />
             <Route path="/love-stories" element={<AdminLoveStories />} />
             <Route path="/enquiries" element={<AdminEnquiries />} />
+            <Route path="/contact-messages" element={<AdminContacts />} />
             <Route path="/clients" element={<AdminClients />} />
             <Route path="/invoices" element={<AdminInvoices />} />
             <Route path="/quotations" element={<AdminQuotations />} />

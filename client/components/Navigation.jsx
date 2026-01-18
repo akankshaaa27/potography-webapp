@@ -11,6 +11,7 @@ const items = [
   { to: "/love-stories", label: "Love Stories" },
   { to: "/clients", label: "Clients" },
   { to: "/enquiries", label: "Enquiries" },
+  { to: "/contact-messages", label: "Contact Msgs" },
   { to: "/invoices", label: "Invoices" },
   { to: "/quotations", label: "Quotations" },
   { to: "/accessories", label: "Accessories" },
