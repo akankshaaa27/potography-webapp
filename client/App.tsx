@@ -78,7 +78,7 @@ const AppShell = () => {
         <main
           className={
             isLoginRoute
-              ? "flex min-h-screen items-center justify-center px-4 py-10"
+              ? "flex min-h-screen items-center justify-center"
               : "flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-10"
           }
         >

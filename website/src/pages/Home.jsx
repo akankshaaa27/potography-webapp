@@ -234,10 +234,73 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Proud Facts / Counts Section */}
+        <section id="stats" className="stats-section section">
+          <div className="container">
+            <div className="section-title text-center p-0 mb-5" data-aos="fade-up">
+              {/* <p className="section-label">OUR JOURNEY</p> */}
+              <h2>Proud Facts</h2>
+              <p className="section-subtitle">Celebrating our journey and achievements in capturing life's most precious moments</p>
+            </div>
+
+            <div className="stats-grid">
+              {/* Stat 1: Happy Couples */}
+              <div className="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div className="stat-icon-wrapper icon-pink">
+                  <i className="bi bi-heart-fill"></i>
+                </div>
+                <h3 className="stat-number">500<span className="stat-plus">+</span></h3>
+                <p className="stat-label">Happy Couples</p>
+              </div>
+
+              {/* Stat 2: Weddings Captured */}
+              <div className="stat-card" data-aos="fade-up" data-aos-delay="150">
+                <div className="stat-icon-wrapper icon-purple">
+                  <i className="bi bi-star-fill"></i>
+                </div>
+                <h3 className="stat-number">500<span className="stat-plus">+</span></h3>
+                <p className="stat-label">Weddings Captured</p>
+              </div>
+      
+      
+           
+              {/* Stat 3: Photos Delivered */}
+              <div className="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div className="stat-icon-wrapper icon-blue">
+                  <i className="bi bi-camera-fill"></i>
+                </div>
+                <h3 className="stat-number">50K<span className="stat-plus">+</span></h3>
+                <p className="stat-label">Photos Delivered</p>
+              </div>
+
+              {/* Stat 4: Years of Experience */}
+              <div className="stat-card" data-aos="fade-up" data-aos-delay="250">
+                <div className="stat-icon-wrapper icon-yellow">
+                  <i className="bi bi-award-fill"></i>
+                </div>
+                <h3 className="stat-number">10<span className="stat-plus">+</span></h3>
+                <p className="stat-label">Years Experience</p>
+              </div>
+
+         
+   </div>
+            
+
+            {/* Quote Section */}
+            <div className="stats-quote text-center mt-5" data-aos="fade-up" data-aos-delay="400">
+              <p className="quote-text">
+                <i className="bi bi-quote"></i> Every number tells a story, and every story deserves to be captured beautifully <i className="bi bi-quote"></i>
+              </p>
+              <p className="quote-author">- The Patil Photography Team</p>
+            </div>
+          </div>
+        </section>
+
         {/* Testimonials Section */}
         <section id="testimonials" className="testimonials section">
           <div className="container section-title" data-aos="fade-up">
             <h2>From the Hearts of Our Couples</h2>
+            <p className="section-subtitle">Real stories from our beloved couples</p>
           </div>
 
           <div className="container">
