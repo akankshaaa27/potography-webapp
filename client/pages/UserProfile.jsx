@@ -68,7 +68,7 @@ export default function UserProfile() {
   }
 
   return (
-    <section className="page-shell space-y-6">
+    <section className="page-shell mt-4">
       <header className="rounded-4xl border border-[#e6eaf2] bg-gradient-to-br from-white via-[#fdfefe] to-[#f5f7fb] p-6 text-charcoal-900 shadow-[0_25px_80px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-center gap-6">
           <div className="h-20 w-20 rounded-2xl bg-amber-50 p-1">
@@ -107,7 +107,7 @@ export default function UserProfile() {
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[1.8fr,1fr]">
-        <div className="space-y-6">
+        <div className="mt-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>

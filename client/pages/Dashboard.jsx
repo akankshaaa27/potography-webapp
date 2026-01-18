@@ -67,7 +67,7 @@ export default function Dashboard() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-50 text-charcoal-900">
       <div className="pointer-events-none absolute inset-x-0 -top-20 mx-auto h-[420px] w-[720px] rounded-full bg-gradient-to-r from-rose-200/30 via-amber-100/20 to-emerald-200/30 blur-3xl" />
-      <section className="page-shell relative z-10 space-y-6">
+      <section className="page-shell relative z-10 mt-4">
         <header className="rounded-4xl border border-[#e6eaf2] bg-gradient-to-br from-white via-[#fdfefe] to-[#f5f7fb] p-6 text-charcoal-900 shadow-[0_25px_80px_rgba(15,23,42,0.08)]">
           <div className="flex flex-wrap gap-8">
             <div className="max-w-2xl space-y-4">
@@ -109,7 +109,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-[1.7fr,1fr]">
+        <div className="grid gap-6 mt-6 lg:grid-cols-[1.7fr,1fr]">
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -136,7 +136,7 @@ export default function Dashboard() {
           </aside>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 mt-6 lg:grid-cols-2">
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
             <div className="flex items-center justify-between">
               <div>
@@ -168,7 +168,7 @@ export default function Dashboard() {
           </section>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-3">
+        <div className="grid gap-6 mt-6 xl:grid-cols-3">
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
             <h2 className="text-lg font-semibold text-charcoal-900">Crew Capacity</h2>
             <p className="text-xs text-slate-500">Match admin register vibes with soft badges.</p>
@@ -206,7 +206,7 @@ export default function Dashboard() {
           </section>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.2fr,1fr]">
+        <div className="grid gap-6 mt-6 lg:grid-cols-[1.2fr,1fr]">
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
             <div className="flex items-center justify-between">
               <div>

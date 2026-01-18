@@ -266,7 +266,7 @@ export default function AdminInvoices() {
   }
 
   return (
-    <section className="page-shell space-y-6">
+    <section className="page-shell mt-4">
       <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-gold-500">Finance</p>
@@ -285,7 +285,7 @@ export default function AdminInvoices() {
         </button>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-4 mb-4">
         <OverviewCard label="Billed this season" value={formatCurrency(stats.total)} subLabel="Gross" accent="from-amber-50" />
         <OverviewCard label="Collected" value={formatCurrency(stats.collected)} subLabel="Deposited" accent="from-emerald-50" />
         <OverviewCard label="Outstanding" value={formatCurrency(stats.outstanding)} subLabel="Yet to collect" accent="from-rose-50" />
