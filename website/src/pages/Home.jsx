@@ -373,20 +373,43 @@ const Home = () => {
         </section>
 
         {/* Instagram Section */}
-        <section id="about" className="about section">
+        <section id="instagram" className="about section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             <div className="container section-title" data-aos="fade-up">
               <h2>As Seen on Instagram</h2>
+              <p><a href="https://www.instagram.com/thepatilphotography" target="_blank" rel="noreferrer" className="text-secondary">@thepatilphotography</a></p>
             </div>
             <div className="container">
-              <div className="row g-3">
-                {instagramPosts.map(post => (
-                  <div key={post.id} className="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                    <a href={post.permalink} target="_blank" rel="noopener noreferrer">
-                      <img src={post.media_url} alt={post.caption || 'Instagram post'} className="img-fluid rounded shadow-sm" />
+              <div className="row g-2 justify-content-center">
+                {/* Static Grid to simulate Instagram Feed using existing portfolio images */}
+                {/* This avoids 404s from invalid widget IDs and requires no API tokens */}
+                {[
+                  "/assets/img/HomePage/7.webp",
+                  "/assets/img/HomePage/11.webp",
+                  "/assets/img/HomePage/16.webp",
+                  "/assets/img/HomePage/18.webp",
+                  "/assets/img/HomePage/128.webp",
+                  "/assets/img/HomePage/7.webp"
+                ].map((imgSrc, index) => (
+                  <div key={index} className="col-4 col-md-2">
+                    <a href="https://www.instagram.com/thepatilphotography" target="_blank" rel="noreferrer" className="d-block overflow-hidden position-relative group" style={{ paddingBottom: '100%', position: 'relative' }}>
+                      <img
+                        src={imgSrc}
+                        alt="Instagram view"
+                        className="img-fluid position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                        style={{ transition: 'transform 0.3s ease' }}
+                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      />
                     </a>
                   </div>
                 ))}
+              </div>
+
+              <div className="text-center mt-4">
+                <a href="https://www.instagram.com/thepatilphotography?igsh=MWQwMGFkcDVwbmpxYQ==" target="_blank" className="cta-link" rel="noreferrer">
+                  Follow us on Instagram <i className="bi bi-instagram ms-2"></i>
+                </a>
               </div>
             </div>
           </div>
