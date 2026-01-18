@@ -19,7 +19,7 @@ const Quote = () => {
 
   useEffect(() => {
     document.body.className = 'quote-page';
-    
+
     return () => {
       document.body.className = '';
     };
@@ -37,24 +37,50 @@ const Quote = () => {
     const { value, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [field]: checked 
+      [field]: checked
         ? [...prev[field], value]
         : prev[field].filter(item => item !== value)
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Wedding Enquiry submitted:', formData);
-    // Add your form submission logic here
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        alert("Thank you for your enquiry! We will get back to you soon.");
+        setFormData({
+          groomName: '',
+          brideName: '',
+          phoneNumber: '',
+          eventStartDate: '',
+          eventEndDate: '',
+          events: [],
+          budget: '',
+          location: '',
+          services: [],
+          message: ''
+        });
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Error submitting. Please try again later.");
+    }
   };
 
   return (
     <>
       <Header />
-      
+
       {/* Page Title */}
-      <div className="page-title dark-background" style={{backgroundImage: "url('/assets/img/HomePage/3.webp')"}}>
+      <div className="page-title dark-background" style={{ backgroundImage: "url('/assets/img/HomePage/3.webp')" }}>
         <div className="container position-relative">
           <h1>Book Us</h1>
           <p>Let's create unforgettable memories together</p>
@@ -71,12 +97,12 @@ const Quote = () => {
 
         {/* New Introductory Section */}
         <section className="pt-5 pb-0 px-4">
-            <div
+          <div
             className="container section-title portfolioHeader"
             data-aos="fade-up"
           >
             <h2>Let's Create Something <br /> Beautiful Together</h2>
-           
+
             <div className="text-left mx-auto mt-5" >
               <p className="lead text-muted mb-3">Book your special wedding day with The Patil Photography.!</p>
               <p className="lead text-muted mb-3">We turn your most cherished moments into timeless memories. From heartfelt candid emotions to cinematic storytelling, every frame is captured with passion and creativity. Reserve your date today and let us make your big day truly unforgettable.</p>
@@ -94,7 +120,7 @@ const Quote = () => {
               <div className="col-lg-11">
                 <div className="quote-container">
                   <div className="row">
-                    
+
                     <div className="col-lg-5" data-aos="fade-right" data-aos-delay="200">
                       <div className="quote-content">
                         <h2>Capture Your Perfect Moments</h2>
@@ -158,68 +184,68 @@ const Quote = () => {
                               <div className="row">
                                 <div className="col-md-6 mb-3">
                                   <label htmlFor="groomName" className="form-label font-weight-bold">Groom Name</label>
-                                  <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    id="groomName" 
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    id="groomName"
                                     name="groomName"
                                     value={formData.groomName}
                                     onChange={handleInputChange}
-                                    required 
+                                    required
                                   />
                                 </div>
                                 <div className="col-md-6 mb-3">
                                   <label htmlFor="brideName" className="form-label font-weight-bold">Bride Name</label>
-                                  <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    id="brideName" 
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    id="brideName"
                                     name="brideName"
                                     value={formData.brideName}
                                     onChange={handleInputChange}
-                                    required 
+                                    required
                                   />
                                 </div>
                               </div>
                               <div className="mb-3">
                                 <label htmlFor="phoneNumber" className="form-label font-weight-bold">Phone Number</label>
-                                <input 
-                                  type="tel" 
-                                  className="form-control" 
-                                  id="phoneNumber" 
+                                <input
+                                  type="tel"
+                                  className="form-control"
+                                  id="phoneNumber"
                                   name="phoneNumber"
                                   value={formData.phoneNumber}
                                   onChange={handleInputChange}
-                                  required 
+                                  required
                                 />
                               </div>
                               <div className="row">
                                 <div className="col-md-6 mb-3">
                                   <label htmlFor="eventStartDate" className="form-label font-weight-bold">Event Start Date</label>
-                                  <input 
-                                    type="date" 
-                                    className="form-control" 
-                                    id="eventStartDate" 
+                                  <input
+                                    type="date"
+                                    className="form-control"
+                                    id="eventStartDate"
                                     name="eventStartDate"
                                     value={formData.eventStartDate}
                                     onChange={handleInputChange}
                                     min="2026-01-11"
                                     max="2028-01-11"
-                                    required 
+                                    required
                                   />
                                 </div>
                                 <div className="col-md-6 mb-3">
                                   <label htmlFor="eventEndDate" className="form-label font-weight-bold">Event End Date</label>
-                                  <input 
-                                    type="date" 
-                                    className="form-control" 
-                                    id="eventEndDate" 
+                                  <input
+                                    type="date"
+                                    className="form-control"
+                                    id="eventEndDate"
                                     name="eventEndDate"
                                     value={formData.eventEndDate}
                                     onChange={handleInputChange}
                                     min="2026-01-11"
                                     max="2028-01-11"
-                                    required 
+                                    required
                                   />
                                 </div>
                               </div>
@@ -229,10 +255,10 @@ const Quote = () => {
                                   {['Haldi', 'Mehendi', 'Sangeet', 'Wedding', 'Reception', 'Engagement', 'Prewedding', 'Other'].map(event => (
                                     <div key={event} className="col-md-3 mb-2">
                                       <div className="form-check">
-                                        <input 
-                                          className="form-check-input" 
-                                          type="checkbox" 
-                                          id={event} 
+                                        <input
+                                          className="form-check-input"
+                                          type="checkbox"
+                                          id={event}
                                           value={event}
                                           checked={formData.events.includes(event)}
                                           onChange={(e) => handleCheckboxChange(e, 'events')}
@@ -247,10 +273,10 @@ const Quote = () => {
                               </div>
                               <div className="mb-3">
                                 <label htmlFor="budget" className="form-label font-weight-bold">Your Estimate Budget for Event</label>
-                                <input 
-                                  type="number" 
-                                  className="form-control" 
-                                  id="budget" 
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                  id="budget"
                                   name="budget"
                                   placeholder="e.g. 200000"
                                   value={formData.budget}
@@ -259,14 +285,14 @@ const Quote = () => {
                               </div>
                               <div className="mb-3">
                                 <label htmlFor="location" className="form-label font-weight-bold">Location of Event</label>
-                                <input 
-                                  type="text" 
-                                  className="form-control" 
-                                  id="location" 
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  id="location"
                                   name="location"
                                   value={formData.location}
                                   onChange={handleInputChange}
-                                  required 
+                                  required
                                 />
                               </div>
                               <div className="mb-3">
@@ -274,10 +300,10 @@ const Quote = () => {
                                 <div className="d-flex flex-wrap gap-3">
                                   {['Photography', 'Films', 'Both'].map(service => (
                                     <div key={service} className="form-check">
-                                      <input 
-                                        className="form-check-input" 
-                                        type="checkbox" 
-                                        id={service} 
+                                      <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id={service}
                                         value={service}
                                         checked={formData.services.includes(service)}
                                         onChange={(e) => handleCheckboxChange(e, 'services')}
@@ -291,10 +317,10 @@ const Quote = () => {
                               </div>
                               <div className="mb-3">
                                 <label htmlFor="message" className="form-label font-weight-bold">Tell us more about your wedding thoughts</label>
-                                <textarea 
-                                  className="form-control" 
-                                  id="message" 
-                                  rows="4" 
+                                <textarea
+                                  className="form-control"
+                                  id="message"
+                                  rows="4"
                                   name="message"
                                   placeholder="Share your vision, preferences, or any special requests..."
                                   value={formData.message}
