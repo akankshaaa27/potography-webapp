@@ -96,10 +96,7 @@ const AppShell = () => {
             <Route path="/dashboard" element={<Dashboard />} />
 
             <Route path="/quotations" element={<Quotations />} />
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/invoices" element={<Invoices />} />
 
-            <Route path="/orders" element={<AdminOrders />} />
             <Route path="/orders" element={<AdminOrders />} />
             <Route path="/gallery" element={<AdminGallery />} />
             <Route path="/films" element={<AdminFilms />} />

@@ -85,8 +85,7 @@ const AppShell = () => {
             <Route path="/login" element={<Navigate to="/" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/quotations" element={<Quotations />} />
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/quotations" element={<Quotations />} />
             {/* Admin Modules */}
             <Route path="/films" element={<AdminFilms />} />
             <Route path="/orders" element={<AdminOrders />} />
