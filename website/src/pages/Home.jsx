@@ -372,7 +372,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Instagram Section */}
+        {/* Instagram  */}
         <section id="instagram" className="about section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             <div className="container section-title" data-aos="fade-up">
