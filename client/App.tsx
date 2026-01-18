@@ -57,7 +57,7 @@ const AppShell = () => {
   useEffect(() => {
     setMobileNavOpen(false);
   }, [location.pathname]);
-
+   
   return (
     <div className={isLoginRoute ? "min-h-screen bg-slate-50" : "flex min-h-screen bg-slate-50"}>
       {!isLoginRoute && <Navigation isMobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />}

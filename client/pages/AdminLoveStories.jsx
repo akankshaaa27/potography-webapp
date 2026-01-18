@@ -124,7 +124,7 @@ export default function AdminLoveStories() {
 
             {showForm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar">
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                             <h2 className="text-xl font-bold">{editingId ? "Edit Story" : "Add New Story"}</h2>
                             <button
@@ -258,65 +258,120 @@ export default function AdminLoveStories() {
             )}
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase font-medium">
-                        <tr>
-                            <th className="px-6 py-4">Thumbnail</th>
-                            <th className="px-6 py-4">Title</th>
-                            <th className="px-6 py-4">Location</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {stories.map((story) => (
-                            <tr key={story._id} className="hover:bg-gray-50 transition">
-                                <td className="px-6 py-4">
-                                    <img
-                                        src={story.thumbnail}
-                                        alt={story.title}
-                                        className="w-16 h-16 object-cover rounded-lg shadow-sm"
-                                    />
-                                </td>
-                                <td className="px-6 py-4 font-medium text-gray-900">{story.title}</td>
-                                <td className="px-6 py-4 text-gray-500">{story.location}</td>
-                                <td className="px-6 py-4">
-                                    <span
-                                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${story.status === "Active"
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-gray-100 text-gray-700"
-                                            }`}
-                                    >
-                                        {story.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <div className="flex justify-end gap-2">
+                {/* Mobile Card View */}
+                <div className="block md:hidden">
+                    {stories.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500">No love stories found. Add your first one!</div>
+                    ) : (
+                        <div className="divide-y divide-gray-100">
+                            {stories.map((story) => (
+                                <div key={story._id} className="p-4 space-y-3">
+                                    <div className="relative h-40 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shadow-sm group">
+                                        {story.thumbnail ? (
+                                            <img
+                                                src={story.thumbnail}
+                                                alt={story.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                                                <span className="text-gray-400">No Image</span>
+                                            </div>
+                                        )}
+                                        <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-medium shadow-sm ${story.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                                            {story.status}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="font-semibold text-gray-900 text-lg leading-tight">{story.title}</h3>
+                                        <p className="text-sm text-gray-500 mt-0.5">{story.location}</p>
+                                    </div>
+
+                                    <div className="flex justify-end gap-2 pt-1">
                                         <button
                                             onClick={() => handleEdit(story)}
-                                            className="p-2 text-gray-500 hover:text-gold-500 hover:bg-gold-50 rounded-lg transition"
+                                            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-200"
                                         >
                                             <Edit size={18} />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(story._id)}
-                                            className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+                                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-gray-200"
                                         >
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {stories.length === 0 && (
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase font-medium">
                             <tr>
-                                <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
-                                    No love stories found. Add your first one!
-                                </td>
+                                <th className="px-6 py-4">Thumbnail</th>
+                                <th className="px-6 py-4">Title</th>
+                                <th className="px-6 py-4">Location</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {stories.map((story) => (
+                                <tr key={story._id} className="hover:bg-gray-50 transition">
+                                    <td className="px-6 py-4">
+                                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                                            <img
+                                                src={story.thumbnail}
+                                                alt={story.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">{story.title}</td>
+                                    <td className="px-6 py-4 text-gray-500">{story.location}</td>
+                                    <td className="px-6 py-4">
+                                        <span
+                                            className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${story.status === "Active"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-gray-100 text-gray-700"
+                                                }`}
+                                        >
+                                            {story.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => handleEdit(story)}
+                                                className="p-2 text-gray-500 hover:text-gold-500 hover:bg-gold-50 rounded-lg transition"
+                                            >
+                                                <Edit size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(story._id)}
+                                                className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {stories.length === 0 && (
+                                <tr>
+                                    <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
+                                        No love stories found. Add your first one!
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
