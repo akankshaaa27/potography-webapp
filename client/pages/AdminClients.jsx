@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
- import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const seedClients = [
@@ -206,7 +206,67 @@ export default function AdminClients() {
           <h2 className="text-lg font-semibold text-charcoal-900">Client List</h2>
           <p className="text-xs text-slate-500">{stats.archived} archived</p>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Mobile Card View */}
+        <div className="block md:hidden">
+          {isLoading ? (
+            <div className="p-8 text-center text-slate-500">Loading clients...</div>
+          ) : isError ? (
+            <div className="p-8 text-center text-rose-500">Failed to load clients.</div>
+          ) : clients.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">No clients yet.</div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {clients.map((client) => (
+                <div key={client.id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-charcoal-900">{client.name}</h3>
+                      <p className="text-sm text-slate-500">{client.city || "No City"}</p>
+                    </div>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusMap[client.status] || "bg-slate-200 text-slate-600"}`}>
+                      {client.status}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-xs text-slate-400 block">Event</span>
+                      <span className="text-slate-700">{client.event}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-slate-400 block">Budget</span>
+                      <span className="text-slate-700">{client.budget ? `₹${Number(client.budget).toLocaleString()}` : "--"}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-sm text-slate-500 flex flex-col gap-1">
+                    {client.whatsapp && <div><span className="font-medium text-xs uppercase text-slate-400">WhatsApp:</span> {client.whatsapp}</div>}
+                    {client.email && <div><span className="font-medium text-xs uppercase text-slate-400">Email:</span> {client.email}</div>}
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-50 mt-2">
+                    <button
+                      className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                      onClick={() => openModal(client)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="rounded-md border border-rose-100 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                      onClick={() => setDeleteId(client.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50 text-slate-500">
               <tr>
@@ -242,7 +302,7 @@ export default function AdminClients() {
                 </tr>
               ) : (
                 clients.map((client) => (
-                  <tr key={client.id} className="odd:bg-white even:bg-slate-50">
+                  <tr key={client.id} className="odd:bg-white even:bg-slate-50 hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3 font-semibold text-charcoal-900">{client.name}</td>
                     <td className="px-4 py-3 text-slate-600">{client.whatsapp}</td>
                     <td className="px-4 py-3 text-slate-600">{client.email}</td>
@@ -283,7 +343,7 @@ export default function AdminClients() {
 
       {modalOpen && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-gold-500">Client</p>

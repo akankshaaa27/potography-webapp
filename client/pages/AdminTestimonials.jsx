@@ -182,7 +182,65 @@ export default function AdminTestimonials() {
                 </div>
             ) : (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
+                    {/* Mobile Card View */}
+                    <div className="block md:hidden">
+                        <div className="divide-y divide-slate-100">
+                            {filteredTestimonials.map((t) => (
+                                <div key={t._id} className="p-4 space-y-3">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                                            <img
+                                                src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                                                alt={t.coupleName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-start">
+                                                <h3 className="font-semibold text-charcoal-900 truncate pr-2">{t.coupleName}</h3>
+                                                <button
+                                                    onClick={() => handleToggleStatus(t)}
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${t.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-600 border-slate-200'}`}
+                                                >
+                                                    {t.status}
+                                                </button>
+                                            </div>
+                                            <p className="text-xs text-slate-500">{t.location || "No Location"}</p>
+                                            <div className="flex items-center gap-1 mt-1 text-amber-400">
+                                                <span className="text-charcoal-900 font-medium text-xs">{t.rating}</span>
+                                                <Star size={10} fill="currentColor" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-sm text-slate-600 line-clamp-2 bg-slate-50 p-2 rounded-lg italic">
+                                        "{t.shortDescription}"
+                                    </p>
+
+                                    <div className="flex items-center justify-between pt-2">
+                                        <span className="text-xs text-slate-400">Order: {t.displayOrder}</span>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => handleEdit(t)}
+                                                className="p-2 text-slate-500 hover:text-charcoal-900 hover:bg-slate-100 rounded-lg transition border border-slate-200"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(t._id)}
+                                                className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition border border-slate-200"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-sm text-left">
                             <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
                                 <tr>

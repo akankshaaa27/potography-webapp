@@ -77,66 +77,117 @@ export default function AdminSlider() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50 text-gray-600 text-xs font-bold uppercase tracking-wider">
-            <tr>
-              <th className="p-4 border-b">Image</th>
-              <th className="p-4 border-b">Title</th>
-              <th className="p-4 border-b">Order</th>
-              <th className="p-4 border-b">Status</th>
-              <th className="p-4 border-b text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {isLoading ? (
-              <tr><td colSpan={5} className="p-8 text-center text-gray-500">Loading...</td></tr>
-            ) : sliders.length === 0 ? (
-              <tr><td colSpan={5} className="p-8 text-center text-gray-500">No slides found. Create one!</td></tr>
-            ) : (
-              sliders.map((slider) => (
-                <tr key={slider._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="p-4">
-                    <div className="w-32 h-20 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm group">
-                      {slider.image ? (
-                        <img src={slider.image} alt={slider.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                      ) : (
-                        <ImageIcon className="text-gray-400" />
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-4 font-semibold text-gray-900">{slider.title}</td>
-                  <td className="p-4 text-gray-600">{slider.order}</td>
-                  <td className="p-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${slider.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+        {/* Mobile Card View */}
+        <div className="block md:hidden">
+          {isLoading ? (
+            <div className="p-8 text-center text-gray-500">Loading sliders...</div>
+          ) : sliders.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No slides found. Create one!</div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {sliders.map((slider) => (
+                <div key={slider._id} className="p-4 space-y-3">
+                  <div className="relative h-40 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shadow-sm group">
+                    {slider.image ? (
+                      <img src={slider.image} alt={slider.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ImageIcon className="text-gray-400" size={32} />
+                      </div>
+                    )}
+                    <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-medium shadow-sm ${slider.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
                       {slider.status}
                     </span>
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="inline-flex gap-2">
-                      <button
-                        onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: slider.image, status: slider.status, order: slider.order }); setModalOpen(true); }}
-                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      >
-                        <Pencil size={18} />
-                      </button>
-                      <button
-                        onClick={() => setDeleteId(slider._id)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-lg leading-tight">{slider.title}</h3>
+                    <p className="text-sm text-gray-500 mt-0.5">Order: {slider.order}</p>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: slider.image, status: slider.status, order: slider.order }); setModalOpen(true); }}
+                      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-200"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      onClick={() => setDeleteId(slider._id)}
+                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-gray-200"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-gray-50 text-gray-600 text-xs font-bold uppercase tracking-wider">
+              <tr>
+                <th className="p-4 border-b">Image</th>
+                <th className="p-4 border-b">Title</th>
+                <th className="p-4 border-b">Order</th>
+                <th className="p-4 border-b">Status</th>
+                <th className="p-4 border-b text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {isLoading ? (
+                <tr><td colSpan={5} className="p-8 text-center text-gray-500">Loading...</td></tr>
+              ) : sliders.length === 0 ? (
+                <tr><td colSpan={5} className="p-8 text-center text-gray-500">No slides found. Create one!</td></tr>
+              ) : (
+                sliders.map((slider) => (
+                  <tr key={slider._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="p-4">
+                      <div className="w-32 h-20 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm group">
+                        {slider.image ? (
+                          <img src={slider.image} alt={slider.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        ) : (
+                          <ImageIcon className="text-gray-400" />
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4 font-semibold text-gray-900">{slider.title}</td>
+                    <td className="p-4 text-gray-600">{slider.order}</td>
+                    <td className="p-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${slider.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                        {slider.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className="inline-flex gap-2">
+                        <button
+                          onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: slider.image, status: slider.status, order: slider.order }); setModalOpen(true); }}
+                          className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        >
+                          <Pencil size={18} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(slider._id)}
+                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {modalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">{form.id ? "Edit Slide" : "New Slide"}</h2>
               <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">✕</button>

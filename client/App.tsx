@@ -40,7 +40,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter basename="/admin" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AppShell />
         </BrowserRouter>
       </AuthProvider>
@@ -57,7 +57,7 @@ const AppShell = () => {
   useEffect(() => {
     setMobileNavOpen(false);
   }, [location.pathname]);
-
+   
   return (
     <div className={isLoginRoute ? "min-h-screen bg-slate-50" : "flex min-h-screen bg-slate-50"}>
       {!isLoginRoute && <Navigation isMobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />}
