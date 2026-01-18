@@ -469,12 +469,74 @@ export default function AdminOrders() {
         <SummaryCard label="Delivered" value={stats.delivered} accent="from-emerald-100 to-white" />
       </div>
 
+      {/* Responsive View Switcher */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
           <h2 className="text-lg font-semibold text-charcoal-900">Manage Orders</h2>
           <p className="text-xs text-slate-500">Last updated {new Date().toLocaleDateString()}</p>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Mobile Card View */}
+        <div className="block md:hidden">
+          {loading ? (
+            <div className="p-8 text-center text-slate-500">Loading orders...</div>
+          ) : orders.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">No orders found</div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {orders.map((order) => {
+                const total = parseFloat(order.amount) || 0;
+                const paid = parseFloat(order.amount_paid) || parseFloat(order.paidAmount) || 0;
+                const remaining = total - paid;
+                return (
+                  <div key={order._id} className="p-4 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-charcoal-900">{order.name || order.customerName}</h3>
+                        <p className="text-sm text-slate-500">{order.event_name || "-"}</p>
+                      </div>
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusClass(order.order_status || order.status)}`}>
+                        {order.order_status || order.status || "Pending"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <span className="text-xs text-slate-400 block">Date</span>
+                        <span className="text-slate-700">
+                          {order.event_date
+                            ? new Date(order.event_date).toLocaleDateString()
+                            : order.date ? new Date(order.date).toLocaleDateString() : "--"
+                          }
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-slate-400 block">Amount</span>
+                        <span className="text-slate-700">{order.amount?.toLocaleString ? `₹${order.amount.toLocaleString()}` : order.amount}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-slate-400 block">Remaining</span>
+                        <span className={`${remaining > 0 ? "text-rose-600 font-medium" : "text-slate-500"}`}>
+                          {remaining > 0 ? `₹${remaining.toLocaleString()}` : "-"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2">
+                      <button className="p-2 text-slate-500 hover:bg-slate-50 rounded" onClick={() => openView(order)}><Eye size={18} /></button>
+                      <button className="p-2 text-slate-500 hover:bg-slate-50 rounded" onClick={() => downloadReceipt(order)}><Download size={18} /></button>
+                      <button className="p-2 text-slate-500 hover:bg-slate-50 rounded" onClick={() => openEdit(order)}><Edit size={18} /></button>
+                      <button className="p-2 text-rose-500 hover:bg-rose-50 rounded" onClick={() => confirmDelete(order)}><Trash2 size={18} /></button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50 text-slate-500">
               <tr>
@@ -505,9 +567,8 @@ export default function AdminOrders() {
                   const total = parseFloat(order.amount) || 0;
                   const paid = parseFloat(order.amount_paid) || parseFloat(order.paidAmount) || 0;
                   const remaining = total - paid;
-
                   return (
-                    <tr key={order._id} className="odd:bg-white even:bg-slate-50">
+                    <tr key={order._id} className="odd:bg-white even:bg-slate-50 hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3 font-semibold text-charcoal-900">{order.name || order.customerName}</td>
                       <td className="px-4 py-3">{order.event_name || "-"}</td>
                       <td className="px-4 py-3 text-slate-500">
@@ -530,28 +591,28 @@ export default function AdminOrders() {
                       <td className="px-4 py-3 text-right">
                         <div className="inline-flex gap-2 justify-end">
                           <button
-                            className="p-1 rounded-md text-slate-500 hover:bg-slate-100 hover:text-gold-500"
+                            className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-gold-500 transition-colors"
                             onClick={() => openView(order)}
                             title="View Details"
                           >
                             <Eye size={18} />
                           </button>
                           <button
-                            className="p-1 rounded-md text-slate-500 hover:bg-slate-100 hover:text-blue-600"
+                            className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-blue-600 transition-colors"
                             onClick={() => downloadReceipt(order)}
                             title="Download Receipt"
                           >
                             <Download size={18} />
                           </button>
                           <button
-                            className="p-1 rounded-md text-slate-500 hover:bg-slate-100 hover:text-green-600"
+                            className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-green-600 transition-colors"
                             onClick={() => openEdit(order)}
                             title="Edit"
                           >
                             <Edit size={18} />
                           </button>
                           <button
-                            className="p-1 rounded-md text-slate-500 hover:bg-slate-100 hover:text-rose-600"
+                            className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-rose-600 transition-colors"
                             onClick={() => confirmDelete(order)}
                             title="Delete"
                           >
@@ -827,7 +888,7 @@ export default function AdminOrders() {
       {
         showDelete && (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-3xl text-rose-500">
                 !
               </div>
@@ -852,7 +913,7 @@ export default function AdminOrders() {
       {
         showTypeModal && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar">
               <h3 className="text-lg font-semibold text-charcoal-900">Add New Type</h3>
               <p className="mt-1 text-xs text-slate-500">Enter a new photography type to add to the list.</p>
               <div className="mt-4">
@@ -889,7 +950,7 @@ export default function AdminOrders() {
       {
         showServiceModal && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar">
               <h3 className="text-lg font-semibold text-charcoal-900">Add New Service</h3>
               <p className="mt-1 text-xs text-slate-500">Enter a new service name to add to the checklist.</p>
               <div className="mt-4">

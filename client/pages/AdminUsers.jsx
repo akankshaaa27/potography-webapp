@@ -70,7 +70,57 @@ export default function AdminUsers() {
 
       {/* Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Card View */}
+        <div className="block md:hidden">
+          {isLoading ? (
+            <div className="p-8 text-center text-gray-500">Loading users...</div>
+          ) : users.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No users found</div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {users.map((user) => (
+                <div key={user._id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{user.name}</h3>
+                      <div className="text-sm text-gray-500">{user.email}</div>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                      {user.status}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="text-gray-500">
+                      <span className="font-medium text-gray-700">Role:</span> {user.role}
+                    </div>
+                    <div className="text-gray-500">
+                      {user.phone || "No phone"}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      onClick={() => { setForm({ id: user._id, name: user.name, email: user.email, phone: user.phone || "", role: user.role, status: user.status || "Active", password: "" }); setModalOpen(true); }}
+                      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      onClick={() => setDeleteId(user._id)}
+                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[600px]">
             <thead className="bg-gray-50 text-gray-600 text-xs font-bold uppercase tracking-wider">
               <tr>
@@ -126,7 +176,7 @@ export default function AdminUsers() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">{form.id ? "Edit User" : "New User"}</h2>
               <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">✕</button>
