@@ -1,10 +1,36 @@
 import Enquiry from "../models/Enquiry.js";
 
+import { sendEmail } from "../utils/emailService.js";
+
 // Create a new enquiry (Public)
 export const createEnquiry = async (req, res) => {
     try {
         const enquiry = new Enquiry(req.body);
         await enquiry.save();
+
+        // Send Email Notification
+        const adminEmail = "pixelproitsolutions@gmail.com";
+        if (adminEmail) {
+            const htmlContent = `
+                <h2>New "Book Us" Enquiry Received</h2>
+                <p><strong>Couple:</strong> ${enquiry.groomName} & ${enquiry.brideName}</p>
+                <p><strong>Phone:</strong> ${enquiry.phoneNumber}</p>
+                <p><strong>Date:</strong> ${new Date(enquiry.eventStartDate).toDateString()} - ${new Date(enquiry.eventEndDate).toDateString()}</p>
+                <p><strong>Location:</strong> ${enquiry.location}</p>
+                <p><strong>Budget:</strong> ${enquiry.budget}</p>
+                <p><strong>Message:</strong> ${enquiry.message}</p>
+                <br>
+                <a href="${process.env.CLIENT_URL || 'http://localhost:8080'}/enquiries">View in Admin Panel</a>
+            `;
+
+            await sendEmail({
+                to: adminEmail,
+                subject: `New Enquiry: ${enquiry.groomName} & ${enquiry.brideName}`,
+                html: htmlContent,
+                replyTo: "",
+            });
+        }
+
         res.status(201).json(enquiry);
     } catch (error) {
         res.status(400).json({ message: error.message });

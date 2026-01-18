@@ -1,10 +1,35 @@
 import Contact from "../models/Contact.js";
 
+import { sendEmail } from "../utils/emailService.js";
+
 // Create a new contact message (Public)
 export const createContact = async (req, res) => {
     try {
         const contact = new Contact(req.body);
         await contact.save();
+
+        // Send Email Notification
+        const adminEmail = "pixelproitsolutions@gmail.com";
+        if (adminEmail) {
+            const htmlContent = `
+                <h2>New Contact Message Received</h2>
+                <p><strong>Name:</strong> ${contact.name}</p>
+                <p><strong>Email:</strong> ${contact.email}</p>
+                <p><strong>Subject:</strong> ${contact.subject}</p>
+                <p><strong>Message:</strong></p>
+                <p>${contact.message}</p>
+                <br>
+                <a href="${process.env.CLIENT_URL || 'http://localhost:8080'}/contact-messages">View in Admin Panel</a>
+            `;
+
+            await sendEmail({
+                to: adminEmail,
+                subject: `New Message: ${contact.subject}`,
+                html: htmlContent,
+                replyTo: contact.email,
+            });
+        }
+
         res.status(201).json(contact);
     } catch (error) {
         res.status(400).json({ message: error.message });
