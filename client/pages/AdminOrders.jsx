@@ -10,6 +10,7 @@ const emptyOrder = {
   photography_type: "",
   location: "",
   event_date: "",
+  event_end_date: "",
   start_time: "",
   end_time: "",
   service: "",
@@ -122,6 +123,8 @@ export default function AdminOrders() {
 
       event_date: [order.event_date, order.date, stash.event_date].find(d => d)
         ? new Date(order.event_date || order.date || stash.event_date).toISOString().split("T")[0] : "",
+      event_end_date: (order.event_end_date || stash.event_end_date)
+        ? new Date(order.event_end_date || stash.event_end_date).toISOString().split("T")[0] : "",
 
       amount_paid: order.amount_paid ?? order.paidAmount ?? stash.amount_paid ?? "",
       remaining_amount: order.remaining_amount ?? stash.remaining_amount ?? "",
@@ -147,6 +150,16 @@ export default function AdminOrders() {
         const total = parseFloat(updated.amount) || 0;
         const paid = parseFloat(updated.amount_paid) || 0;
         updated.remaining_amount = total - paid;
+      }
+      // Auto-calculate delivery date if "Deliverables" is a number (days)
+      if (name === "deliverables") {
+        const days = parseInt(value, 10);
+        const baseDate = updated.event_end_date || updated.event_date;
+        if (!isNaN(days) && days > 0 && baseDate) {
+          const resultDate = new Date(baseDate);
+          resultDate.setDate(resultDate.getDate() + days);
+          updated.delivery_date = resultDate.toISOString().split("T")[0];
+        }
       }
       return updated;
     });
@@ -219,7 +232,8 @@ export default function AdminOrders() {
         name: form.name,
         whatsapp_no: form.whatsapp_no,
         order_status: form.order_status,
-        event_date: form.event_date
+        event_date: form.event_date,
+        event_end_date: form.event_end_date
       };
 
       if (payload.photography_type) payload.photographyType = payload.photography_type;
@@ -228,7 +242,7 @@ export default function AdminOrders() {
       // New schema uses 'service' string, old used 'services' array
       if (payload.service) payload.services = payload.service.split(',').map(s => s.trim());
 
-      ['amount', 'amount_paid', 'remaining_amount', 'event_date', 'delivery_date', 'date', 'paidAmount'].forEach(field => {
+      ['amount', 'amount_paid', 'remaining_amount', 'event_date', 'event_end_date', 'delivery_date', 'date', 'paidAmount'].forEach(field => {
         if (payload[field] === "") payload[field] = null;
       });
 
@@ -626,14 +640,7 @@ export default function AdminOrders() {
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
                   />
                 </FormField>
-                <FormField label="Event Name">
-                  <input
-                    name="event_name"
-                    value={form.event_name}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
-                  />
-                </FormField>
+
                 <FormField label="Photography Type" required>
                   <div className="flex gap-2">
                     <select
@@ -667,35 +674,27 @@ export default function AdminOrders() {
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
                   />
                 </FormField>
-                <FormField label="Date" required>
-                  <input
-                    type="date"
-                    name="event_date"
-                    value={form.event_date}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
-                  />
-                </FormField>
                 <div className="grid grid-cols-2 gap-3">
-                  <FormField label="Start Time">
+                  <FormField label="Start Date" required>
                     <input
-                      type="time"
-                      name="start_time"
-                      value={form.start_time}
+                      type="date"
+                      name="event_date"
+                      value={form.event_date}
                       onChange={handleChange}
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
                     />
                   </FormField>
-                  <FormField label="End Time">
+                  <FormField label="End Date">
                     <input
-                      type="time"
-                      name="end_time"
-                      value={form.end_time}
+                      type="date"
+                      name="event_end_date"
+                      value={form.event_end_date}
                       onChange={handleChange}
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
                     />
                   </FormField>
                 </div>
+
                 <FormField label="Service" required>
                   <div className="space-y-2 rounded-lg border border-slate-200 p-3">
                     <div className="flex flex-wrap gap-3">
@@ -722,17 +721,14 @@ export default function AdminOrders() {
                   </div>
                 </FormField>
                 <FormField label="Album Pages" required>
-                  <select
+                  <textarea
                     name="album_pages"
                     value={form.album_pages}
                     onChange={handleChange}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none bg-white"
-                  >
-                    <option value="">Choose pages</option>
-                    <option value="50">50</option>
-                    <option value="80">80</option>
-                    <option value="100">100</option>
-                  </select>
+                    rows="1"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
+                    placeholder="Enter pages..."
+                  />
                 </FormField>
                 <FormField label="Amount" required>
                   <input

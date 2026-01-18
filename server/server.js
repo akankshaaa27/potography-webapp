@@ -10,6 +10,7 @@ import serviceRoutes from './routes/serviceRoutes.js';
 import quotationRoutes from './routes/quotationRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import loveStoryRoutes from './routes/loveStoryRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -40,6 +41,12 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/quotations', quotationRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/love-stories', loveStoryRoutes);
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Photography API is running 🚀', status: 'active' });
+});
 
 // 404 handler
 app.use(notFoundHandler);

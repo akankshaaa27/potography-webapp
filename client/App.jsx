@@ -1,4 +1,5 @@
 import "./global.css";
+import "./lib/apiFetch";
 import React, { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
@@ -18,8 +19,10 @@ import Invoices from "./pages/Invoices";
 import Clients from "./pages/Clients";
 import AdminOrders from "./pages/AdminOrders";
 import AdminGallery from "./pages/AdminGallery";
+import AdminFilms from "./pages/AdminFilms";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSlider from "./pages/AdminSlider";
+import AdminLoveStories from "./pages/AdminLoveStories";
 import AdminClients from "./pages/AdminClients";
 import AdminInvoices from "./pages/AdminInvoices";
 import AdminQuotations from "./pages/AdminQuotations";
@@ -97,8 +100,10 @@ const AppShell = () => {
 
             <Route path="/orders" element={<AdminOrders />} />
             <Route path="/gallery" element={<AdminGallery />} />
+            <Route path="/films" element={<AdminFilms />} />
             <Route path="/users" element={<AdminUsers />} />
             <Route path="/slider" element={<AdminSlider />} />
+            <Route path="/admin/love-stories" element={<AdminLoveStories />} />
             <Route path="/admin/clients" element={<AdminClients />} />
             <Route path="/admin/invoices" element={<AdminInvoices />} />
             <Route path="/admin/quotations" element={<AdminQuotations />} />

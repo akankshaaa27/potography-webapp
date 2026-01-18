@@ -8,6 +8,7 @@ const items = [
   { to: "/films", label: "Films" },
   { to: "/users", label: "Users" },
   { to: "/slider", label: "Slider" },
+  { to: "/love-stories", label: "Love Stories" },
   { to: "/admin/clients", label: "Clients" },
   { to: "/admin/invoices", label: "Invoices" },
   { to: "/admin/quotations", label: "Quotations" },
