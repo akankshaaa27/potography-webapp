@@ -28,6 +28,7 @@ const Home = () => {
       .catch(err => console.error("Error fetching slider:", err));
   }, []);
   const [loveStories, setLoveStories] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
   const [instagramPosts, setInstagramPosts] = useState([]);
@@ -57,6 +58,16 @@ const Home = () => {
         }
       })
       .catch(err => console.error("Error fetching love stories:", err));
+
+    // Fetch Testimonials
+    fetch('/api/testimonials?type=active')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTestimonials(data); // Controller already filters active
+        }
+      })
+      .catch(err => console.error("Error fetching testimonials:", err));
 
   }, []);
   useEffect(() => {
@@ -231,73 +242,43 @@ const Home = () => {
 
           <div className="container">
             <div className="testimonial-masonry">
-
-              <div className="testimonial-item" data-aos="fade-up">
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote"></i>
-                  </div>
-                  <p>
-                    "Every picture from our wedding felt like a movie scene. <strong>The Patil Photography</strong> team
-                    captured not just our moments but our emotions. Their attention to detail, lighting, and storytelling is
-                    pure luxury. We'll treasure these memories forever."
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img src="/assets/img/HomePage/profile-icon.png" alt="Client" />
+              {testimonials.map((t, index) => (
+                <div key={t._id} className={`testimonial-item ${index === 1 ? 'highlight' : ''}`} data-aos="fade-up" data-aos-delay={index * 100}>
+                  <div className="testimonial-content">
+                    <div className="quote-pattern">
+                      <i className="bi bi-quote"></i>
                     </div>
-                    <div className="client-details">
-                      <h3>Riya & Kunal</h3>
-                      <span className="position">Mumbai</span>
+                    <p>"{t.shortDescription}"</p>
+
+                    {/* Star Rating */}
+                    <div className="stars" style={{ color: '#ffc107', marginBottom: '10px' }}>
+                      {[...Array(t.rating || 5)].map((_, i) => (
+                        <i key={i} className="bi bi-star-fill"></i>
+                      ))}
+                    </div>
+
+                    <div className="client-info">
+                      <div className="client-image">
+                        <img
+                          src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                          alt={t.coupleName}
+                          style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
+                        />
+                      </div>
+                      <div className="client-details">
+                        <h3>{t.coupleName}</h3>
+                        <span className="position">{t.location}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ))}
 
-              <div className="testimonial-item highlight" data-aos="fade-up" data-aos-delay="100">
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote"></i>
-                  </div>
-                  <p>
-                    "<strong>The Patil Photography and Film's</strong> made our wedding look like a film — every frame
-                    spoke of love, grace, and timelessness. Their professionalism, creativity, and luxury touch made our big
-                    day unforgettable."
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img src="/assets/img/HomePage/profile-icon.png" alt="Client" />
-                    </div>
-                    <div className="client-details">
-                      <h3>Simran & Dev</h3>
-                      <span className="position">Nashik</span>
-                    </div>
-                  </div>
+              {testimonials.length === 0 && (
+                <div className="col-12 text-center p-5">
+                  <p>Currently updating our wall of love. Check back soon!</p>
                 </div>
-              </div>
-
-              <div className="testimonial-item" data-aos="fade-up" data-aos-delay="200">
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote"></i>
-                  </div>
-                  <p>
-                    "From the first meeting to our final album, everything was seamless and classy. The team made us feel
-                    so comfortable, and the final photos were beyond beautiful — elegant, cinematic, and full of heart. It
-                    truly felt like we were part of an exclusive experience."
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img src="/assets/img/HomePage/profile-icon.png" alt="Client" />
-                    </div>
-                    <div className="client-details">
-                      <h3>Aarav & Meera</h3>
-                      <span className="position">Pune</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+              )}
             </div>
           </div>
         </section>
@@ -395,7 +376,7 @@ const Home = () => {
           </div>
         </section>
 
-      </main>
+      </main >
 
       <StoryModal
         show={showModal}
