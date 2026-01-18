@@ -12,7 +12,7 @@ const Contact = () => {
 
   useEffect(() => {
     document.body.className = 'contact-page';
-    
+
     return () => {
       document.body.className = '';
     };
@@ -25,20 +25,35 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add your form submission logic here
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        alert("Thanks for reaching out! We will get back to you shortly.");
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        alert("Could not send message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Contact Form Error:", error);
+      alert("Error sending message. Please try again later.");
+    }
   };
 
   return (
     <>
       <Header />
-      
+
       <main className="main">
         {/* Page Title */}
-      <div className="page-title dark-background" style={{backgroundImage: "url('/assets/img/HomePage/16.webp')"}}>
-        <div className="container position-relative">
+        <div className="page-title dark-background" style={{ backgroundImage: "url('/assets/img/HomePage/16.webp')" }}>
+          <div className="container position-relative">
             <h1>Contact</h1>
             <nav className="breadcrumbs">
               <ol>
@@ -53,7 +68,7 @@ const Contact = () => {
         <section id="contact" className="contact section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             <div className="row gy-4">
-              
+
               <div className="col-lg-4">
                 <div className="contact-info">
                   <div className="contact-card">
@@ -106,45 +121,45 @@ const Contact = () => {
                   <form onSubmit={handleSubmit} className="contact-form">
                     <div className="row">
                       <div className="col-md-6 form-group">
-                        <input 
-                          type="text" 
-                          name="name" 
-                          className="form-control" 
-                          placeholder="Your Name" 
+                        <input
+                          type="text"
+                          name="name"
+                          className="form-control"
+                          placeholder="Your Name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          required 
+                          required
                         />
                       </div>
                       <div className="col-md-6 form-group mt-3 mt-md-0">
-                        <input 
-                          type="email" 
-                          className="form-control" 
-                          name="email" 
-                          placeholder="Your Email" 
+                        <input
+                          type="email"
+                          className="form-control"
+                          name="email"
+                          placeholder="Your Email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          required 
+                          required
                         />
                       </div>
                     </div>
                     <div className="form-group mt-3">
-                      <input 
-                        type="text" 
-                        className="form-control" 
-                        name="subject" 
-                        placeholder="Subject" 
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="subject"
+                        placeholder="Subject"
                         value={formData.subject}
                         onChange={handleInputChange}
-                        required 
+                        required
                       />
                     </div>
                     <div className="form-group mt-3">
-                      <textarea 
-                        className="form-control" 
-                        name="message" 
-                        rows="5" 
-                        placeholder="Message" 
+                      <textarea
+                        className="form-control"
+                        name="message"
+                        rows="5"
+                        placeholder="Message"
                         value={formData.message}
                         onChange={handleInputChange}
                         required

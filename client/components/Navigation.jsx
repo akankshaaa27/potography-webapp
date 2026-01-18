@@ -9,11 +9,13 @@ const items = [
   { to: "/users", label: "Users" },
   { to: "/slider", label: "Slider" },
   { to: "/love-stories", label: "Love Stories" },
-  { to: "/admin/clients", label: "Clients" },
-  { to: "/admin/invoices", label: "Invoices" },
-  { to: "/admin/quotations", label: "Quotations" },
+  { to: "/clients", label: "Clients" },
+  { to: "/enquiries", label: "Enquiries" },
+  { to: "/contact-messages", label: "Contact Msgs" },
+  { to: "/invoices", label: "Invoices" },
+  { to: "/quotations", label: "Quotations" },
   { to: "/accessories", label: "Accessories" },
-  { to: "/admin/register", label: "Admin Register" },
+  { to: "/register", label: "Admin Register" },
   { to: "/profile", label: "Profile" },
 ];
 

@@ -23,6 +23,8 @@ import AdminFilms from "./pages/AdminFilms";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSlider from "./pages/AdminSlider";
 import AdminLoveStories from "./pages/AdminLoveStories";
+import AdminEnquiries from "./pages/AdminEnquiries";
+import AdminContacts from "./pages/AdminContacts";
 import AdminClients from "./pages/AdminClients";
 import AdminInvoices from "./pages/AdminInvoices";
 import AdminQuotations from "./pages/AdminQuotations";
@@ -95,20 +97,20 @@ const AppShell = () => {
             <Route path="/dashboard" element={<Dashboard />} />
 
             <Route path="/quotations" element={<Quotations />} />
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/clients" element={<Clients />} />
 
             <Route path="/orders" element={<AdminOrders />} />
             <Route path="/gallery" element={<AdminGallery />} />
             <Route path="/films" element={<AdminFilms />} />
             <Route path="/users" element={<AdminUsers />} />
             <Route path="/slider" element={<AdminSlider />} />
-            <Route path="/admin/love-stories" element={<AdminLoveStories />} />
-            <Route path="/admin/clients" element={<AdminClients />} />
-            <Route path="/admin/invoices" element={<AdminInvoices />} />
-            <Route path="/admin/quotations" element={<AdminQuotations />} />
+            <Route path="/love-stories" element={<AdminLoveStories />} />
+            <Route path="/enquiries" element={<AdminEnquiries />} />
+            <Route path="/contact-messages" element={<AdminContacts />} />
+            <Route path="/clients" element={<AdminClients />} />
+            <Route path="/invoices" element={<AdminInvoices />} />
+            <Route path="/quotations" element={<AdminQuotations />} />
             <Route path="/accessories" element={<AccessoriesManagement />} />
-            <Route path="/admin/register" element={<AdminRegister />} />
+            <Route path="/register" element={<AdminRegister />} />
             <Route path="/profile" element={<UserProfile />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
