@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -45,13 +46,13 @@ const Portfolio = () => {
       <Header />
 
       {/* Page Title */}
-      <div className="page-title dark-background" style={{backgroundImage: "url('/assets/img/HomePage/11.webp')"}}>
+      <div className="page-title dark-background" style={{ backgroundImage: "url('/assets/img/HomePage/11.webp')" }}>
         <div className="container position-relative">
           <h1>Portfolio</h1>
           <p>Explore our collection of stunning photography and cinematic works</p>
           <nav className="breadcrumbs">
             <ol>
-              <li><a href="/">Home</a></li>
+              <li><Link to="/">Home</Link></li>
               <li className="current">Portfolio</li>
             </ol>
           </nav>

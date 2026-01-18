@@ -17,13 +17,30 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-          <h2>Something went wrong.</h2>
-          <p>Please refresh the page.</p>
-          <button onClick={() => window.location.reload()}>Refresh Page</button>
-          <details style={{ whiteSpace: 'pre-wrap', marginTop: '20px' }}>
-            {this.state.error && this.state.error.toString()}
-          </details>
+        <div style={{ padding: '50px 20px', textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#333' }}>Something went wrong.</h2>
+          <p style={{ fontSize: '1.1rem', marginBottom: '2rem', color: '#666' }}>We encountered an unexpected error. Please try refreshing the page.</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '10px 20px',
+              fontSize: '1rem',
+              backgroundColor: '#b38556',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s'
+            }}
+          >
+            Refresh Page
+          </button>
+          {process.env.NODE_ENV === 'development' && (
+            <details style={{ whiteSpace: 'pre-wrap', marginTop: '30px', textAlign: 'left', maxWidth: '800px', backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px' }}>
+              <summary style={{ cursor: 'pointer', marginBottom: '10px' }}>Error Details</summary>
+              {this.state.error && this.state.error.toString()}
+            </details>
+          )}
         </div>
       );
     }
