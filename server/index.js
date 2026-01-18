@@ -120,6 +120,7 @@ export function createServer(config = {}) {
   app.use("/api/users", userRoutes);
   app.use("/api/films", filmRoutes);
   app.use("/api/love-stories", loveStoryRoutes);
+  console.log("✅ Love Story routes registered at /api/love-stories");
 
   // Root route - Only for production/standalone
   if (!config.middlewareMode) {
