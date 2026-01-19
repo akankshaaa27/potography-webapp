@@ -1,366 +1,278 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const heroStats = [
-  { label: "Total", value: 142, helper: "Couples tracked", accent: "from-[#fff5dc]" },
-  { label: "Active", value: 32, helper: "Shoots on floor", accent: "from-[#e9f9f0]" },
-  { label: "Leads", value: 18, helper: "Warm inquiries", accent: "from-[#e8f0ff]" },
-  { label: "Pipeline", value: "₹4.3L", helper: "Quoted value", accent: "from-[#ffedf0]" },
-];
-
-const upcomingShoots = [
-  { id: "1", event: "Rahul × Sneha Wedding", date: "12 Feb", city: "Pune", scope: "Cinematic + docu", status: "Crew locked" },
-  { id: "2", event: "Aditi & Neel Engagement", date: "09 Mar", city: "Mumbai", scope: "Sunrise + beach", status: "Moodboard shared" },
-  { id: "3", event: "Studio Samarth Lookbook", date: "30 Jan", city: "Mumbai", scope: "Commercial", status: "Lighting dry run" },
-];
-
-const financePulse = [
-  { label: "Collected", value: "₹12.4L", detail: "82% of billed", accent: "from-emerald-50" },
-  { label: "Outstanding", value: "₹2.1L", detail: "3 files overdue", accent: "from-rose-50" },
-  { label: "Pipeline", value: "₹4.3L", detail: "In negotiations", accent: "from-amber-50" },
-];
-
-const actionQueue = [
-  { id: "a1", title: "Share teaser with Ishaan", detail: "Pre-wed selects due tonight", due: "Today", type: "Deliverable" },
-  { id: "a2", title: "Confirm crew for Kolhapur", detail: "Pack 2× FX3 + gimbal", due: "Tomorrow", type: "Logistics" },
-  { id: "a3", title: "Follow up invoice INV-24010", detail: "₹58K balance", due: "Monday", type: "Finance" },
-];
-
-const signalTiles = [
-  { label: "Quotations", value: "12 active", helper: "4 in negotiation" },
-  { label: "Invoices", value: "18 sent", helper: "3 awaiting payout" },
-  { label: "Gallery", value: "5 live", helper: "2 drafts in QC" },
-  { label: "Team", value: "8 admins", helper: "MFA enforced" },
-];
-
-const quickSlices = [
-  { label: "All Workflows", count: 28 },
-  { label: "Weddings", count: 12 },
-  { label: "Commercial", count: 8 },
-  { label: "Editorial", count: 4 },
-];
-
-const dayTimeline = [
-  { time: "08:30", title: "Crew standup", detail: "Lighting matrix review", state: "live" },
-  { time: "10:15", title: "Client handoff", detail: "Aditi & Neel selects", state: "due" },
-  { time: "14:00", title: "Finance sync", detail: "Invoice batching", state: "next" },
-  { time: "18:30", title: "Gallery export", detail: "Studio Samarth", state: "queued" },
-];
+import {
+  CreditCard,
+  Users,
+  Image,
+  Film,
+  MessageSquare,
+  Calendar,
+  ArrowRight,
+  AlertCircle,
+  CheckCircle,
+  Plus,
+  TrendingUp,
+  Clock
+} from "lucide-react";
+import { format } from "date-fns";
 
 export default function Dashboard() {
-  const [exampleFromServer, setExampleFromServer] = useState("");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchDemo();
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/dashboard/stats");
+        if (!res.ok) throw new Error("Failed to load stats");
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
   }, []);
 
-  const fetchDemo = async () => {
-    try {
-      const response = await fetch("/api/demo");
-      const data = await response.json();
-      setExampleFromServer(data.message);
-    } catch (error) {
-      console.error("Error fetching hello:", error);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-charcoal-900" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-8 text-center text-rose-500">
+        <AlertCircle className="mx-auto h-8 w-8 mb-2" />
+        <p>Error loading dashboard: {error}</p>
+      </div>
+    );
+  }
+
+  const {
+    kpi,
+    actionRequired,
+    pipeline,
+    schedule,
+    revenue,
+    activityFeed,
+    ordersByType,
+    contentHealth
+  } = data;
+
+  // Derive specialized stats
+  const totalPipelineValue = "₹" + (revenue.totalOutstanding / 100000).toFixed(1) + "L";
+  const collectedThisMonth = "₹" + (revenue.thisMonthCollected / 100000).toFixed(1) + "L";
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50 text-charcoal-900">
-      <div className="pointer-events-none absolute inset-x-0 -top-20 mx-auto h-[420px] w-[720px] rounded-full bg-gradient-to-r from-rose-200/30 via-amber-100/20 to-emerald-200/30 blur-3xl" />
-      <section className="page-shell relative z-10 mt-4">
-        <header className="rounded-4xl border border-[#e6eaf2] bg-gradient-to-br from-white via-[#fdfefe] to-[#f5f7fb] p-6 text-charcoal-900 shadow-[0_25px_80px_rgba(15,23,42,0.08)]">
-          <div className="flex flex-wrap gap-8">
-            <div className="max-w-2xl space-y-4">
-              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Studio Command</p>
-              <h1 className="text-4xl font-semibold leading-tight text-charcoal-900">Lumina Collective Ops Center</h1>
-              <p className="text-sm text-slate-600">
-                Orchestrate shoots, finance, and post workflows from a single cockpit. Mirrors the tonal system from profile & admin onboarding screens for a unified feel.
-              </p>
-              {exampleFromServer && (
-                <p className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-2 text-xs text-slate-600">
-                  Live server ping: {exampleFromServer}
-                </p>
+    <div className="relative min-h-screen bg-slate-50 text-charcoal-900 pb-20">
+
+      {/* Header & Quick Actions */}
+      <header className="mb-8 space-y-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-charcoal-900">Studio Oversight</h1>
+            <p className="text-slate-500">Welcome back. Here's what's happening today.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <QuickAction to="/orders" label="New Order" icon={Plus} />
+            <QuickAction to="/quotations" label="Create Quote" icon={Plus} />
+            <QuickAction to="/invoices" label="New Invoice" icon={Plus} />
+            <QuickAction to="/enquiries" label="Add Enquiry" icon={Plus} />
+          </div>
+        </div>
+
+        {/* Action Required Section */}
+        {(actionRequired.enquiriesNoReply.length > 0 || actionRequired.overdueInvoices.length > 0) && (
+          <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-4">
+            <div className="mb-3 flex items-center gap-2 text-rose-700">
+              <AlertCircle className="h-5 w-5" />
+              <h3 className="font-semibold">Action Required</h3>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {actionRequired.enquiriesNoReply.map(e => (
+                <Link key={e._id} to="/enquiries" className="flex items-center justify-between rounded-xl bg-white p-3 text-sm shadow-sm ring-1 ring-rose-100 transition hover:ring-rose-200">
+                  <span className="truncate font-medium text-charcoal-900">Reply to {e.groomName}</span>
+                  <span className="text-xs text-rose-500">Overdue</span>
+                </Link>
+              ))}
+              {actionRequired.overdueInvoices.map(i => (
+                <Link key={i._id} to="/invoices" className="flex items-center justify-between rounded-xl bg-white p-3 text-sm shadow-sm ring-1 ring-rose-100 transition hover:ring-rose-200">
+                  <span className="truncate font-medium text-charcoal-900">INV {i.invoiceNumber} Due</span>
+                  <span className="text-xs text-rose-500">₹{i.grandTotal}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* KPI Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+        <KpiCard label="New Enquiries" value={kpi.newEnquiriesWeek} sub={`+${kpi.newEnquiriesToday} today`} icon={MessageSquare} />
+        <KpiCard label="Active Orders" value={kpi.newOrdersCount} sub="This month" icon={Calendar} />
+        <KpiCard label="Pending Quotes" value={kpi.pendingQuotations} sub="Drafts & Sent" icon={Users} />
+        <KpiCard label="Unpaid Invoices" value={kpi.unpaidInvoicesCount} sub={`Total ₹${(kpi.unpaidInvoicesAmount / 1000).toFixed(0)}k`} icon={CreditCard} accent />
+        <KpiCard label="Shoots This Week" value={kpi.upcomingShootsCount} sub="Next 7 days" icon={Film} />
+        <KpiCard label="Unread Messages" value={kpi.unreadMessages} sub="Contact forms" icon={MessageSquare} />
+        <KpiCard label="Testimonials" value={kpi.pendingTestimonials} sub="Pending review" icon={CheckCircle} />
+      </div>
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-[2fr,1fr]">
+
+        {/* Main Content Column */}
+        <div className="space-y-8">
+
+          {/* Upcoming Schedule */}
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-charcoal-900">Upcoming Schedule</h2>
+              <Link to="/orders" className="flex items-center text-sm font-medium text-gold-600 hover:text-gold-700">
+                View Calendar <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {schedule.length === 0 ? (
+                <p className="py-4 text-center text-sm text-slate-500">No upcoming shoots scheduled.</p>
+              ) : (
+                schedule.map((evt) => (
+                  <div key={evt._id} className="flex items-center gap-4 rounded-2xl border border-slate-100 p-4 transition hover:bg-slate-50">
+                    <div className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+                      <span className="text-xs font-bold uppercase">{format(new Date(evt.event_date), 'dd MMM')}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="truncate font-medium text-charcoal-900">{evt.name}</h4>
+                      <div className="flex items-center gap-3 text-xs text-slate-500">
+                        <span>{evt.event_name || 'Event'}</span>
+                        <span>•</span>
+                        <span>{evt.location || 'Location TBD'}</span>
+                      </div>
+                    </div>
+                    <span className="hidden sm:inline-flex rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                      {evt.order_status}
+                    </span>
+                  </div>
+                ))
               )}
-              <div className="flex flex-wrap gap-2">
-                {quickSlices.map((slice) => (
-                  <QuickFilter key={slice.label} {...slice} />
+            </div>
+          </section>
+
+          {/* Pipeline & Revenue Split */}
+          <div className="grid gap-6 sm:grid-cols-2">
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 text-lg font-semibold text-charcoal-900">Pipeline Status</h2>
+              <div className="space-y-4">
+                {pipeline.map((status) => (
+                  <div key={status._id} className="group">
+                    <div className="mb-1 flex justify-between text-sm">
+                      <span className="font-medium text-slate-700">{status._id}</span>
+                      <span className="text-slate-500">{status.count}</span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-full rounded-full bg-charcoal-900 transition-all duration-500" style={{ width: `${(status.count / Math.max(...pipeline.map(p => p.count), 1)) * 100}%` }} />
+                    </div>
+                  </div>
                 ))}
+                {pipeline.length === 0 && <p className="text-sm text-slate-400">No active orders</p>}
               </div>
-            </div>
-            <div className="flex-1 min-w-[260px] space-y-4">
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Next Milestone</p>
-                <p className="mt-2 text-xl font-semibold text-charcoal-900">Rahul × Sneha pheras</p>
-                <p className="text-sm text-slate-600">Crew call 05:00 IST • Pune</p>
-                <button className="mt-4 w-full rounded-xl bg-[#d39a6f] py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#c7885b]">
-                  Compose New Quotation
-                </button>
+            </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 text-lg font-semibold text-charcoal-900">Revenue Month</h2>
+              <div className="space-y-6">
+                <div>
+                  <p className="text-sm text-slate-500">Collected</p>
+                  <p className="text-2xl font-bold text-emerald-600">{collectedThisMonth}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Billed</p>
+                  <p className="text-2xl font-bold text-charcoal-900">{"₹" + (revenue.thisMonthBilled / 100000).toFixed(1) + "L"}</p>
+                </div>
+                <div className="pt-4 border-t border-slate-100">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">Total Outstanding</span>
+                    <span className="font-medium text-rose-600">{totalPipelineValue}</span>
+                  </div>
+                </div>
               </div>
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs text-slate-600">
-                <p className="font-semibold text-charcoal-900">Health Snapshot</p>
-                <p>82% invoices cleared • 4 briefs awaiting rates • 2 galleries exporting</p>
-              </div>
-            </div>
+            </section>
           </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {heroStats.map((item) => (
-              <HeroStat key={item.label} {...item} />
-            ))}
-          </div>
-        </header>
+        </div>
 
-        <div className="grid gap-6 mt-6 lg:grid-cols-[1.7fr,1fr]">
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-semibold text-charcoal-900">Upcoming Shoots</h2>
-                <p className="text-xs text-slate-500">Logistics, scope, and readiness trackers.</p>
-              </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">{upcomingShoots.length} scheduled</span>
+        {/* Sidebar Column */}
+        <div className="space-y-8">
+
+          {/* Quick Health Stats */}
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 font-semibold text-charcoal-900">Content Health</h3>
+            <div className="space-y-3">
+              <HealthRow label="Gallery Queued" value={kpi.galleryQueue} />
+              <HealthRow label="Active Slider" value={contentHealth.sliderActive} />
+              <HealthRow label="Stories Live" value={contentHealth.storiesPublished} />
+              <HealthRow label="Testimonials" value={contentHealth.testimonialsPublished} />
             </div>
-            <div className="mt-6 space-y-4">
-              {upcomingShoots.map((shoot) => (
-                <UpcomingCard key={shoot.id} {...shoot} />
+          </section>
+
+          {/* Activity Feed */}
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 font-semibold text-charcoal-900">Recent Activity</h3>
+            <div className="relative space-y-6 pl-4 before:absolute before:left-1.5 before:top-2 before:h-full before:w-px before:bg-slate-200">
+              {activityFeed.map((item, i) => (
+                <div key={i} className="relative">
+                  <div className={`absolute -left-[21px] top-1.5 h-3 w-3 rounded-full border-2 border-white ${item.type === 'Enquiry' ? 'bg-blue-500' :
+                      item.type === 'Order' ? 'bg-emerald-500' : 'bg-amber-500'
+                    }`} />
+                  <p className="text-sm font-medium text-charcoal-900">{item.text}</p>
+                  <p className="text-xs text-slate-400">{format(new Date(item.date), 'MMM dd, HH:mm')}</p>
+                </div>
               ))}
             </div>
           </section>
 
-          <aside className="space-y-4">
-            {financePulse.map((pulse) => (
-              <FinanceCard key={pulse.label} {...pulse} />
-            ))}
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-lg shadow-slate-200/60">
-              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Ops note</p>
-              <p className="mt-2 text-charcoal-900">Kolhapur crew ETA confirmed • Swap gimbal battery packs.</p>
-            </div>
-          </aside>
         </div>
-
-        <div className="grid gap-6 mt-6 lg:grid-cols-2">
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-charcoal-900">Action Queue</h2>
-                <p className="text-xs text-slate-500">Generated from finance + production signals.</p>
-              </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">{actionQueue.length} tasks</span>
-            </div>
-            <div className="mt-6 space-y-4">
-              {actionQueue.map((task) => (
-                <ActionCard key={task.id} {...task} />
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-charcoal-900">Studio Signals</h2>
-                <p className="text-xs text-slate-500">Mirrors the admin/profile tonal palette.</p>
-              </div>
-              <button className="text-xs font-semibold text-gold-600">Share pulse</button>
-            </div>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {signalTiles.map((tile) => (
-                <SignalCard key={tile.label} {...tile} />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <div className="grid gap-6 mt-6 xl:grid-cols-3">
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <h2 className="text-lg font-semibold text-charcoal-900">Crew Capacity</h2>
-            <p className="text-xs text-slate-500">Match admin register vibes with soft badges.</p>
-            <div className="mt-5 grid gap-3 text-sm text-charcoal-900">
-              <CapacityBadge label="Lead shooters" value="4 / 5" helper="One slot open" />
-              <CapacityBadge label="Editors" value="6 / 6" helper="All assigned" />
-              <CapacityBadge label="Drone pilots" value="2 / 3" helper="Need backup" />
-            </div>
-          </section>
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <h2 className="text-lg font-semibold text-charcoal-900">Finance Snapshot</h2>
-            <dl className="mt-4 space-y-3 text-sm text-slate-600">
-              <SignalRow label="Payables" value="₹1.4L" helper="Due this week" />
-              <SignalRow label="Receivables" value="₹2.1L" helper="3 files follow-up" />
-              <SignalRow label="Avg collection" value="5.2 days" helper="Down 1.3 days WoW" />
-            </dl>
-          </section>
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <h2 className="text-lg font-semibold text-charcoal-900">Integrations</h2>
-            <p className="text-xs text-slate-500">Keeps parity with profile cards.</p>
-            <ul className="mt-5 space-y-3 text-sm text-charcoal-900">
-              <li className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3">
-                <span>Google Drive ingest</span>
-                <span className="text-xs text-emerald-600">Synced 2 hrs ago</span>
-              </li>
-              <li className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3">
-                <span>Slack alerts</span>
-                <span className="text-xs text-amber-600">Muted till 9am</span>
-              </li>
-              <li className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3">
-                <span>Notion shotlists</span>
-                <span className="text-xs text-slate-500">Manual refresh</span>
-              </li>
-            </ul>
-          </section>
-        </div>
-
-        <div className="grid gap-6 mt-6 lg:grid-cols-[1.2fr,1fr]">
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-charcoal-900">Today Timeline</h2>
-                <p className="text-xs text-slate-500">In sync with profile’s activity language.</p>
-              </div>
-              <button className="text-xs font-semibold text-slate-600">Export agenda</button>
-            </div>
-            <div className="mt-6 space-y-4">
-              {dayTimeline.map((entry) => (
-                <TimelineItem key={entry.time} {...entry} />
-              ))}
-            </div>
-          </section>
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-            <h2 className="text-lg font-semibold text-charcoal-900">Spotlight Stories</h2>
-            <p className="text-xs text-slate-500">Keeps hero energy flowing into gallery teasers.</p>
-            <div className="mt-5 grid gap-4">
-              <SpotlightCard title="Aditi × Neel" detail="Sunrise engagement | Mumbai" status="Gallery drafting" />
-              <SpotlightCard title="Studio Samarth" detail="Lookbook | Commercial" status="In color grade" />
-              <SpotlightCard title="Kavya × Ohm" detail="Reception | Goa" status="Awaiting approvals" />
-            </div>
-          </section>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
 
-function HeroStat({ label, value, helper, accent = "from-slate-50" }) {
+function KpiCard({ label, value, sub, icon: Icon, accent }) {
   return (
-    <div className={`rounded-3xl border border-slate-100 bg-gradient-to-br ${accent} to-white p-4 shadow-[0_15px_40px_rgba(15,23,42,0.06)]`}>
-      <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-semibold text-charcoal-900">{value}</p>
-      <p className="text-xs text-slate-500">{helper}</p>
-    </div>
-  );
-}
-
-function UpcomingCard({ event, scope, date, city, status }) {
-  return (
-    <article className="rounded-2xl border border-slate-100 p-4 shadow-[0_10px_40px_rgba(15,23,42,0.04)]">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className={`rounded-2xl border p-5 transition hover:-translate-y-1 hover:shadow-md ${accent ? 'border-indigo-100 bg-indigo-50/30' : 'border-slate-100 bg-white'
+      }`}>
+      <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-semibold text-charcoal-900">{event}</p>
-          <p className="text-xs text-slate-500">{scope}</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</p>
+          <p className="mt-2 text-3xl font-bold text-charcoal-900">{value}</p>
         </div>
-        <div className="text-right text-xs text-slate-500">
-          <p>{date}</p>
-          <p>{city}</p>
+        <div className={`rounded-xl p-2.5 ${accent ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-500'}`}>
+          <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className="mt-3 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">{status}</p>
-    </article>
-  );
-}
-
-function FinanceCard({ label, value, detail, accent }) {
-  return (
-    <div className={`rounded-3xl border border-slate-100 bg-gradient-to-br ${accent} to-white p-5 shadow-sm`}>
-      <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-charcoal-900">{value}</p>
-      <p className="text-xs text-slate-500">{detail}</p>
+      {sub && <p className="mt-2 text-xs font-medium text-slate-400">{sub}</p>}
     </div>
   );
 }
 
-function ActionCard({ title, detail, due, type }) {
+function QuickAction({ to, label, icon: Icon }) {
   return (
-    <article className="flex items-start justify-between rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
-      <div>
-        <p className="text-sm font-semibold text-charcoal-900">{title}</p>
-        <p className="text-xs text-slate-500">{detail}</p>
-      </div>
-      <div className="text-right text-xs">
-        <p className="font-semibold text-slate-600">{due}</p>
-        <p className="text-rose-500">{type}</p>
-      </div>
-    </article>
-  );
-}
-
-function SignalCard({ label, value, helper }) {
-  return (
-    <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
-      <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{label}</p>
-      <p className="mt-2 text-xl font-semibold text-charcoal-900">{value}</p>
-      <p className="text-xs text-slate-500">{helper}</p>
-    </div>
-  );
-}
-
-function SignalRow({ label, value, helper }) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
-      <div>
-        <p className="font-semibold text-charcoal-900">{label}</p>
-        <p className="text-xs text-slate-500">{helper}</p>
-      </div>
-      <p className="text-sm font-semibold text-charcoal-900">{value}</p>
-    </div>
-  );
-}
-
-function CapacityBadge({ label, value, helper }) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
-      <div>
-        <p className="font-semibold text-charcoal-900">{label}</p>
-        <p className="text-xs text-slate-500">{helper}</p>
-      </div>
-      <p className="text-sm font-semibold text-charcoal-900">{value}</p>
-    </div>
-  );
-}
-
-function QuickFilter({ label, count }) {
-  return (
-    <button className="rounded-full border border-slate-200 bg-white/90 px-4 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-amber-200 hover:text-amber-600">
+    <Link to={to} className="inline-flex items-center gap-2 rounded-xl bg-charcoal-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-charcoal-800">
+      <Icon className="h-4 w-4" />
       {label}
-      <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-600">{count}</span>
-    </button>
+    </Link>
   );
 }
 
-function TimelineItem({ time, title, detail, state }) {
-  const badgeMap = {
-    live: "bg-emerald-50 text-emerald-600",
-    due: "bg-amber-50 text-amber-600",
-    next: "bg-slate-100 text-slate-600",
-    queued: "bg-slate-100 text-slate-600",
-  };
+function HealthRow({ label, value }) {
   return (
-    <div className="flex items-start gap-4">
-      <div className="text-xs font-semibold text-slate-500">{time}</div>
-      <div className="flex-1 rounded-2xl border border-slate-100 px-4 py-3 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-charcoal-900">{title}</p>
-          <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${badgeMap[state] || "bg-slate-100 text-slate-600"}`}>
-            {state}
-          </span>
-        </div>
-        <p className="text-xs text-slate-500">{detail}</p>
-      </div>
+    <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+      <span className="text-sm font-medium text-slate-600">{label}</span>
+      <span className="font-bold text-charcoal-900">{value}</span>
     </div>
-  );
-}
-
-function SpotlightCard({ title, detail, status }) {
-  return (
-    <article className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
-      <p className="text-sm font-semibold text-charcoal-900">{title}</p>
-      <p className="text-xs text-slate-500">{detail}</p>
-      <p className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-gold-600">{status}</p>
-    </article>
   );
 }
