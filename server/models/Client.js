@@ -1,81 +1,26 @@
-import mongoose from 'mongoose';
 
-const clientSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, 'Client name is required'],
-      trim: true,
-      minlength: [2, 'Name must be at least 2 characters'],
-    },
-    email: {
-      type: String,
-      required: [true, 'Email is required'],
-      lowercase: true,
-      trim: true,
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email'],
-    },
-    phone: {
-      type: String,
-      required: [true, 'Phone number is required'],
-      trim: true,
-    },
-    address: {
-      type: String,
-      trim: true,
-    },
-    city: {
-      type: String,
-      trim: true,
-    },
-    state: {
-      type: String,
-      trim: true,
-    },
-    zipCode: {
-      type: String,
-      trim: true,
-    },
-    category: {
-      type: String,
-      enum: ['Regular', 'VIP', 'New Inquiry'],
-      default: 'New Inquiry',
-    },
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    notes: {
-      type: String,
-      trim: true,
-    },
-    totalBilled: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    totalPaid: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    pendingAmount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-    // New fields for CRM
-    event: { type: String, trim: true },
-    budget: { type: Number, default: 0 },
-    status: {
-      type: String,
-      enum: ['Lead', 'Active', 'Archived'],
-      default: 'Lead'
-    },
-  },
-  { timestamps: true }
-);
-
-export default mongoose.models.Client || mongoose.model('Client', clientSchema);
+export default (sequelize, DataTypes) => {
+  const Client = sequelize.define("Client", {
+    name: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, allowNull: false },
+    phone: { type: DataTypes.STRING },
+    address: { type: DataTypes.TEXT },
+    city: { type: DataTypes.STRING },
+    state: { type: DataTypes.STRING },
+    zipCode: { type: DataTypes.STRING },
+    category: { type: DataTypes.ENUM('Regular', 'VIP', 'New Inquiry'), defaultValue: 'New Inquiry' },
+    tags: { type: DataTypes.JSON },
+    notes: { type: DataTypes.TEXT },
+    totalBilled: { type: DataTypes.DECIMAL(10, 2), defaultValue: 0 },
+    totalPaid: { type: DataTypes.DECIMAL(10, 2), defaultValue: 0 },
+    pendingAmount: { type: DataTypes.DECIMAL(10, 2), defaultValue: 0 },
+    event: { type: DataTypes.STRING },
+    budget: { type: DataTypes.DECIMAL(10, 2), defaultValue: 0 },
+    status: { type: DataTypes.ENUM('Lead', 'Active', 'Archived'), defaultValue: 'Lead' },
+    _id: {
+      type: DataTypes.VIRTUAL,
+      get() { return this.id; }
+    }
+  }, { tableName: "clients", timestamps: true });
+  return Client;
+};

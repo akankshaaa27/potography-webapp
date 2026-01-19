@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
@@ -9,6 +10,23 @@ const Stories = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Helper to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('data:')) return imagePath;
+
+    try {
+      new URL(imagePath);
+      return imagePath;
+    } catch (_) { }
+
+    // Check for proxy or use direct API URL
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const baseUrl = API_URL.replace(/\/api$/, '');
+    return `${baseUrl}${imagePath}`;
+  };
 
   useEffect(() => {
     try {
@@ -39,8 +57,8 @@ const Stories = () => {
     setSelectedStory({
       ...story,
       subtitle: story.location,
-      // Ensure gallery is formatted correctly if needed, matching Home.jsx logic
-      images: story.gallery || []
+      // Ensure gallery is formatted correctly and URLs are resolved
+      images: (story.gallery || []).map(img => getImageUrl(img))
     });
     setShowModal(true);
   };
@@ -98,7 +116,7 @@ const Stories = () => {
                       <div className="project-card">
                         <div className="project-image">
                           <img
-                            src={story.thumbnail}
+                            src={getImageUrl(story.thumbnail)}
                             alt={story.title}
                             className="img-fluid"
                             style={{ width: '100%', height: '300px', objectFit: 'cover' }}

@@ -1,15 +1,17 @@
-import mongoose from "mongoose";
 
-const loveStorySchema = new mongoose.Schema(
-    {
-        title: { type: String, required: true },
-        location: { type: String, required: true },
-        description: { type: String, required: true }, // Full Description
-        thumbnail: { type: String, required: true }, // Base64 or URL
-        gallery: [{ type: String }], // Array of Base64 or URLs
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.LoveStory || mongoose.model("LoveStory", loveStorySchema);
+export default (sequelize, DataTypes) => {
+    const LoveStory = sequelize.define("LoveStory", {
+        title: { type: DataTypes.STRING, allowNull: false },
+        location: { type: DataTypes.STRING, allowNull: false },
+        description: { type: DataTypes.TEXT, allowNull: false },
+        // Use TEXT('long') for Base64 images
+        thumbnail: { type: DataTypes.TEXT('long'), allowNull: false },
+        gallery: { type: DataTypes.JSON },
+        status: { type: DataTypes.ENUM("Active", "Inactive"), defaultValue: "Active" },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "love_stories", timestamps: true });
+    return LoveStory;
+};

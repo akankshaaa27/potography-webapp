@@ -1,14 +1,15 @@
-import mongoose from "mongoose";
 
-const contactSchema = new mongoose.Schema(
-    {
-        name: { type: String, required: true },
-        email: { type: String, required: true },
-        subject: { type: String, required: true },
-        message: { type: String, required: true },
-        status: { type: String, enum: ["New", "Read", "Replied"], default: "New" },
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.Contact || mongoose.model("Contact", contactSchema);
+export default (sequelize, DataTypes) => {
+    const Contact = sequelize.define("Contact", {
+        name: { type: DataTypes.STRING, allowNull: false },
+        email: { type: DataTypes.STRING, allowNull: false },
+        subject: { type: DataTypes.STRING, allowNull: false },
+        message: { type: DataTypes.TEXT, allowNull: false },
+        status: { type: DataTypes.ENUM("New", "Read", "Replied"), defaultValue: "New" },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "contacts", timestamps: true });
+    return Contact;
+};

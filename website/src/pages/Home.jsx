@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
@@ -12,16 +13,36 @@ const Home = () => {
   console.log('Home component rendering');
   const [slides, setSlides] = useState([]);
 
+  // Helper to format image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('data:')) return imagePath;
+
+    // If we have a proxy, we can just return the path relative to root
+    // But sticking to full URL is safer for ensuring we hit the backend
+    // especially if proxy fails or in production without same-domain proxy
+    return `http://localhost:5000${imagePath}`;
+  };
+
   useEffect(() => {
     fetch('/api/slider')
-      .then(res => res.json())
+      .then(res => {
+        // Check if response is JSON (api) or HTML (error/frontend fallback)
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          return res.json();
+        } else {
+          throw new TypeError("Oops, we haven't got JSON!");
+        }
+      })
       .then(data => {
         const activeSlides = data.filter(s => s.status === 'Active');
         if (activeSlides.length > 0) {
           setSlides(activeSlides.map(s => ({
-            image: s.image, // Base64 or URL
+            image: getImageUrl(s.image), // Use helper
             title: s.title,
-            subtitle: s.subtitle || 'Capturing moments...' // Fallback
+            subtitle: s.subtitle || 'Capturing moments...'
           })));
         }
       })
@@ -34,24 +55,12 @@ const Home = () => {
   const [instagramPosts, setInstagramPosts] = useState([]);
 
   useEffect(() => {
-    // ... Existing slider fetch ...
-    fetch('/api/slider')
-      .then(res => res.json())
-      .then(data => {
-        const activeSlides = data.filter(s => s.status === 'Active');
-        if (activeSlides.length > 0) {
-          setSlides(activeSlides.map(s => ({
-            image: s.image,
-            title: s.title,
-            subtitle: s.subtitle || 'Capturing moments...'
-          })));
-        }
-      })
-      .catch(err => console.error("Error fetching slider:", err));
-
     // Fetch Love Stories
     fetch('/api/love-stories')
-      .then(res => res.json())
+      .then(res => {
+        if (res.headers.get("content-type")?.includes("application/json")) return res.json();
+        throw new TypeError("Not JSON");
+      })
       .then(data => {
         if (Array.isArray(data)) {
           setLoveStories(data.filter(s => s.status === 'Active'));
@@ -61,7 +70,10 @@ const Home = () => {
 
     // Fetch Testimonials
     fetch('/api/testimonials?type=active')
-      .then(res => res.json())
+      .then(res => {
+        if (res.headers.get("content-type")?.includes("application/json")) return res.json();
+        throw new TypeError("Not JSON");
+      })
       .then(data => {
         if (Array.isArray(data)) {
           setTestimonials(data); // Controller already filters active
@@ -70,6 +82,7 @@ const Home = () => {
       .catch(err => console.error("Error fetching testimonials:", err));
 
   }, []);
+
   useEffect(() => {
     let preloaderTimeout;
     let aosTimeout;
@@ -106,10 +119,13 @@ const Home = () => {
 
       // Fetch Instagram posts
       const fetchInstagramPosts = async () => {
-        const accessToken = process.env.REACT_APP_INSTAGRAM_ACCESS_TOKEN || 'YOUR_INSTAGRAM_ACCESS_TOKEN';
-        const accountId = process.env.REACT_APP_INSTAGRAM_ACCOUNT_ID || 'YOUR_INSTAGRAM_ACCOUNT_ID';
+        // FIXED: Use import.meta.env instead of process.env for Vite
+        const accessToken = import.meta.env.VITE_INSTAGRAM_ACCESS_TOKEN || 'YOUR_INSTAGRAM_ACCESS_TOKEN';
+        const accountId = import.meta.env.VITE_INSTAGRAM_ACCOUNT_ID || 'YOUR_INSTAGRAM_ACCOUNT_ID';
+
         if (accessToken === 'YOUR_INSTAGRAM_ACCESS_TOKEN' || accountId === 'YOUR_INSTAGRAM_ACCOUNT_ID') {
-          console.log('Please set your Instagram access token and account ID in environment variables');
+          // Log only once or suppress to avoid spamming console
+          // console.log('Instagram tokens not set'); 
           return;
         }
         try {
@@ -122,7 +138,11 @@ const Home = () => {
           console.error('Error fetching Instagram posts:', error);
         }
       };
-      fetchInstagramPosts();
+
+      // Only call if we have env vars set, otherwise skip to prevent errors
+      if (import.meta.env.VITE_INSTAGRAM_ACCESS_TOKEN) {
+        fetchInstagramPosts();
+      }
 
       // Initialize other vendor libraries
       if (typeof window !== 'undefined') {
@@ -329,7 +349,7 @@ const Home = () => {
                     <div className="project-card" style={{ height: '100%' }}>
                       <div className="project-image">
                         <img
-                          src={story.thumbnail}
+                          src={getImageUrl(story.thumbnail)}
                           alt={story.title}
                           className="img-fluid"
                           style={{ width: '100%', height: '300px', objectFit: 'cover' }}
@@ -423,7 +443,7 @@ const Home = () => {
         story={selectedStory ? {
           ...selectedStory,
           subtitle: selectedStory.location,
-          images: selectedStory.gallery || []
+          images: selectedStory.gallery || [] // You might need to map getImageUrl here too if gallery has stored files
         } : null}
       />
 

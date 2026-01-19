@@ -1,31 +1,32 @@
-import mongoose from "mongoose";
 
-const orderSchema = new mongoose.Schema(
-    {
-        name: { type: String, required: true },
-        whatsapp_no: { type: String, required: true },
-        email: { type: String },
-        event_name: { type: String },
-        photography_type: { type: String },
-        location: { type: String },
-        event_date: { type: Date },
-        event_end_date: { type: Date },
-        serviceConfig: { type: mongoose.Schema.Types.Mixed },
-        start_time: { type: String },
-        end_time: { type: String },
-        service: { type: String }, // Storing as comma-separated string as per frontend logic
-        album_pages: { type: String },
-        amount: { type: Number },
-        amount_paid: { type: Number },
-        remaining_amount: { type: Number },
-        deliverables: { type: String },
-        delivery_date: { type: Date },
-        order_status: { type: String, enum: ["Pending", "In Progress", "Delivered", "Cancelled"], default: "Pending" },
-        notes: { type: String },
-        relatedUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        client: { type: mongoose.Schema.Types.ObjectId, ref: 'Client' }
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.Order || mongoose.model("Order", orderSchema);
+export default (sequelize, DataTypes) => {
+    const Order = sequelize.define("Order", {
+        name: { type: DataTypes.STRING, allowNull: false },
+        whatsapp_no: { type: DataTypes.STRING, allowNull: false },
+        email: { type: DataTypes.STRING },
+        event_name: { type: DataTypes.STRING },
+        photography_type: { type: DataTypes.STRING },
+        location: { type: DataTypes.STRING },
+        event_date: { type: DataTypes.DATE },
+        event_end_date: { type: DataTypes.DATE },
+        serviceConfig: { type: DataTypes.JSON },
+        start_time: { type: DataTypes.STRING },
+        end_time: { type: DataTypes.STRING },
+        service: { type: DataTypes.STRING },
+        album_pages: { type: DataTypes.STRING },
+        amount: { type: DataTypes.DECIMAL(10, 2) },
+        amount_paid: { type: DataTypes.DECIMAL(10, 2) },
+        remaining_amount: { type: DataTypes.DECIMAL(10, 2) },
+        deliverables: { type: DataTypes.TEXT },
+        delivery_date: { type: DataTypes.DATE },
+        order_status: { type: DataTypes.ENUM("Pending", "In Progress", "Delivered", "Cancelled"), defaultValue: "Pending" },
+        notes: { type: DataTypes.TEXT },
+        relatedUser_id: { type: DataTypes.INTEGER },
+        client_id: { type: DataTypes.INTEGER },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "orders", timestamps: true });
+    return Order;
+};

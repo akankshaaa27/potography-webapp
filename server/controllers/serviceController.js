@@ -1,6 +1,7 @@
-import Service from '../models/Service.js';
 
-// Default services
+import db from '../models/index.js';
+const { Service } = db;
+
 const DEFAULT_SERVICES = [
   { name: 'Traditional Photography', category: 'photography', ratePerDay: 25000 },
   { name: 'Candid Photography', category: 'photography', ratePerDay: 20000 },
@@ -11,15 +12,13 @@ const DEFAULT_SERVICES = [
   { name: 'Frames', category: 'product', ratePerUnit: 2000 },
 ];
 
-// Get all active services
 export const getAllServices = async (req, res) => {
   try {
-    let services = await Service.find({ isActive: true }).sort({ name: 1 });
+    let services = await Service.findAll({ where: { isActive: true }, order: [['name', 'ASC']] });
 
-    // Initialize default services if none exist
     if (services.length === 0) {
-      const createdServices = await Service.insertMany(DEFAULT_SERVICES);
-      services = createdServices;
+      await Service.bulkCreate(DEFAULT_SERVICES);
+      services = await Service.findAll({ where: { isActive: true }, order: [['name', 'ASC']] });
     }
 
     res.json(services);
@@ -28,10 +27,9 @@ export const getAllServices = async (req, res) => {
   }
 };
 
-// Get single service
 export const getServiceById = async (req, res) => {
   try {
-    const service = await Service.findById(req.params.id);
+    const service = await Service.findByPk(req.params.id);
     if (!service) {
       return res.status(404).json({ message: 'Service not found' });
     }
@@ -41,7 +39,6 @@ export const getServiceById = async (req, res) => {
   }
 };
 
-// Create service
 export const createService = async (req, res) => {
   const { name, description, category, ratePerDay, ratePerUnit } = req.body;
 
@@ -50,7 +47,7 @@ export const createService = async (req, res) => {
   }
 
   try {
-    const service = new Service({
+    const service = await Service.create({
       name,
       description,
       category,
@@ -58,41 +55,33 @@ export const createService = async (req, res) => {
       ratePerUnit,
     });
 
-    const savedService = await service.save();
-    res.status(201).json(savedService);
+    res.status(201).json(service);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Update service
 export const updateService = async (req, res) => {
   try {
-    const service = await Service.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const [updated] = await Service.update(req.body, { where: { id: req.params.id } });
 
-    if (!service) {
+    if (!updated && !(await Service.findByPk(req.params.id))) {
       return res.status(404).json({ message: 'Service not found' });
     }
 
+    const service = await Service.findByPk(req.params.id);
     res.json(service);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Delete service (soft delete by marking inactive)
 export const deleteService = async (req, res) => {
   try {
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
+    // Soft delete
+    const [updated] = await Service.update({ isActive: false }, { where: { id: req.params.id } });
 
-    if (!service) {
+    if (!updated && !(await Service.findByPk(req.params.id))) {
       return res.status(404).json({ message: 'Service not found' });
     }
 

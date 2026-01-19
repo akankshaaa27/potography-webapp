@@ -1,8 +1,13 @@
-import Order from "../models/Order.js";
+
+import db from "../models/index.js";
+const { Order, Client } = db;
 
 export const getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find().populate('relatedUser', 'name email').sort({ delivery_date: -1, createdAt: -1 });
+        const orders = await Order.findAll({
+            include: ['relatedUser'],
+            order: [['delivery_date', 'DESC'], ['createdAt', 'DESC']]
+        });
         res.json(orders);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -16,28 +21,26 @@ export const createOrder = async (req, res) => {
 
         // Try to link with existing client or create new one
         if (name || email || whatsapp_no) {
-            const Client = (await import("../models/Client.js")).default;
 
             // Try to find client by unique identifiers
             let client = null;
-            if (email) client = await Client.findOne({ email });
-            if (!client && whatsapp_no) client = await Client.findOne({ phone: whatsapp_no });
-            if (!client && name) client = await Client.findOne({ name }); // Fallback to name
+            if (email) client = await Client.findOne({ where: { email } });
+            if (!client && whatsapp_no) client = await Client.findOne({ where: { phone: whatsapp_no } });
+            if (!client && name) client = await Client.findOne({ where: { name } });
 
             if (client) {
-                orderData.client = client._id;
+                orderData.client_id = client.id;
             } else {
                 // Create new client if enough info
                 try {
-                    client = new Client({
+                    client = await Client.create({
                         name: name || "Unknown",
                         email: email || `temp_${Date.now()}@example.com`,
                         phone: whatsapp_no || "0000000000",
-                        type: "Regular", // Default
-                        source: "Order"
+                        category: "Regular", // Default
+                        tags: ["Order"]
                     });
-                    await client.save();
-                    orderData.client = client._id;
+                    orderData.client_id = client.id;
                 } catch (clientErr) {
                     console.error("Auto-create client failed:", clientErr);
                     // Proceed without linking if client creation fails
@@ -45,8 +48,7 @@ export const createOrder = async (req, res) => {
             }
         }
 
-        const order = new Order(orderData);
-        await order.save();
+        const order = await Order.create(orderData);
         res.status(201).json(order);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -55,8 +57,10 @@ export const createOrder = async (req, res) => {
 
 export const updateOrder = async (req, res) => {
     try {
-        const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!order) return res.status(404).json({ message: "Order not found" });
+        const [updated] = await Order.update(req.body, { where: { id: req.params.id } });
+        if (!updated && !(await Order.findByPk(req.params.id))) return res.status(404).json({ message: "Order not found" });
+
+        const order = await Order.findByPk(req.params.id);
         res.json(order);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -65,8 +69,8 @@ export const updateOrder = async (req, res) => {
 
 export const deleteOrder = async (req, res) => {
     try {
-        const order = await Order.findByIdAndDelete(req.params.id);
-        if (!order) return res.status(404).json({ message: "Order not found" });
+        const deleted = await Order.destroy({ where: { id: req.params.id } });
+        if (!deleted) return res.status(404).json({ message: "Order not found" });
         res.json({ message: "Order deleted" });
     } catch (error) {
         res.status(500).json({ message: error.message });

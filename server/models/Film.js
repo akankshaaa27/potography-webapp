@@ -1,13 +1,14 @@
-import mongoose from "mongoose";
 
-const filmSchema = new mongoose.Schema(
-    {
-        title: { type: String, required: true },
-        youtubeUrl: { type: String, required: true },
-        category: { type: String, default: "Wedding" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.Film || mongoose.model("Film", filmSchema);
+export default (sequelize, DataTypes) => {
+    const Film = sequelize.define("Film", {
+        title: { type: DataTypes.STRING, allowNull: false },
+        youtubeUrl: { type: DataTypes.STRING, allowNull: false },
+        category: { type: DataTypes.STRING, defaultValue: "Wedding" },
+        status: { type: DataTypes.ENUM("Active", "Inactive"), defaultValue: "Active" },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "films", timestamps: true });
+    return Film;
+};

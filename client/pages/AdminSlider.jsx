@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -8,6 +9,27 @@ export default function AdminSlider() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState({ id: null, title: "", subtitle: "", image: "", status: "Active", order: 0 });
   const [deleteId, setDeleteId] = useState(null);
+
+  // Helper to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('data:')) return imagePath;
+
+    // Check if it's already a full URL from a different source
+    try {
+      new URL(imagePath);
+      return imagePath;
+    } catch (_) { }
+
+    // Prepend API URL for relative paths
+    // In Vite, use import.meta.env.VITE_API_URL or default to localhost:5000
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    // Ensure we don't double up /api if imagePath doesn't have it (it shouldn't)
+    // and remove /api from base if it's there, because imagePath is /uploads/foo.png
+    const baseUrl = API_URL.replace(/\/api$/, '');
+    return `${baseUrl}${imagePath}`;
+  };
 
   const { data: sliders = [], isLoading } = useQuery({
     queryKey: ["slider"],
@@ -89,7 +111,7 @@ export default function AdminSlider() {
                 <div key={slider._id} className="p-4 space-y-3">
                   <div className="relative h-40 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shadow-sm group">
                     {slider.image ? (
-                      <img src={slider.image} alt={slider.title} className="w-full h-full object-cover" />
+                      <img src={getImageUrl(slider.image)} alt={slider.title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <ImageIcon className="text-gray-400" size={32} />
@@ -107,7 +129,7 @@ export default function AdminSlider() {
 
                   <div className="flex justify-end gap-2 pt-1">
                     <button
-                      onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: slider.image, status: slider.status, order: slider.order }); setModalOpen(true); }}
+                      onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: getImageUrl(slider.image), status: slider.status, order: slider.order }); setModalOpen(true); }}
                       className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-200"
                     >
                       <Pencil size={18} />
@@ -148,7 +170,7 @@ export default function AdminSlider() {
                     <td className="p-4">
                       <div className="w-32 h-20 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm group">
                         {slider.image ? (
-                          <img src={slider.image} alt={slider.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          <img src={getImageUrl(slider.image)} alt={slider.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                         ) : (
                           <ImageIcon className="text-gray-400" />
                         )}
@@ -164,7 +186,7 @@ export default function AdminSlider() {
                     <td className="p-4 text-right">
                       <div className="inline-flex gap-2">
                         <button
-                          onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: slider.image, status: slider.status, order: slider.order }); setModalOpen(true); }}
+                          onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: getImageUrl(slider.image), status: slider.status, order: slider.order }); setModalOpen(true); }}
                           className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         >
                           <Pencil size={18} />
@@ -248,7 +270,7 @@ export default function AdminSlider() {
                   />
                   {form.image ? (
                     <div className="relative">
-                      <img src={form.image} alt="Preview" className="w-full h-48 object-cover rounded-lg shadow-sm" />
+                      <img src={getImageUrl(form.image)} alt="Preview" className="w-full h-48 object-cover rounded-lg shadow-sm" />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
                         <span className="text-white font-medium">Change Image</span>
                       </div>

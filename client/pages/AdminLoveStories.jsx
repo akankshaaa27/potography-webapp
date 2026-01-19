@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 
@@ -26,6 +27,24 @@ export default function AdminLoveStories() {
         } catch (error) {
             console.error("Error fetching stories:", error);
         }
+    };
+
+    // Helper to get image URL
+    const getImageUrl = (imagePath) => {
+        if (!imagePath) return '';
+        if (imagePath.startsWith('http')) return imagePath;
+        if (imagePath.startsWith('data:')) return imagePath;
+
+        try {
+            new URL(imagePath);
+            return imagePath;
+        } catch (_) { }
+
+        // Check for proxy or use direct API URL
+        // In dev, sometimes proxy handles it, but explicit URL is safer
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const baseUrl = API_URL.replace(/\/api$/, '');
+        return `${baseUrl}${imagePath}`;
     };
 
     const handleChange = (e) => {
@@ -178,7 +197,7 @@ export default function AdminLoveStories() {
                                     <div className="flex items-center gap-4">
                                         {form.thumbnail && (
                                             <img
-                                                src={form.thumbnail}
+                                                src={getImageUrl(form.thumbnail)}
                                                 alt="Thumbnail"
                                                 className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                                             />
@@ -210,7 +229,7 @@ export default function AdminLoveStories() {
                                     {form.gallery.map((img, index) => (
                                         <div key={index} className="relative group aspect-square">
                                             <img
-                                                src={img}
+                                                src={getImageUrl(img)}
                                                 alt={`Gallery ${index}`}
                                                 className="w-full h-full object-cover rounded-lg border border-gray-200"
                                             />
@@ -269,7 +288,7 @@ export default function AdminLoveStories() {
                                     <div className="relative h-40 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shadow-sm group">
                                         {story.thumbnail ? (
                                             <img
-                                                src={story.thumbnail}
+                                                src={getImageUrl(story.thumbnail)}
                                                 alt={story.title}
                                                 className="w-full h-full object-cover"
                                             />
@@ -326,7 +345,7 @@ export default function AdminLoveStories() {
                                     <td className="px-6 py-4">
                                         <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
                                             <img
-                                                src={story.thumbnail}
+                                                src={getImageUrl(story.thumbnail)}
                                                 alt={story.title}
                                                 className="w-full h-full object-cover"
                                             />

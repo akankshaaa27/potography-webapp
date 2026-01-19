@@ -1,20 +1,21 @@
-import mongoose from "mongoose";
 
-const enquirySchema = new mongoose.Schema(
-    {
-        groomName: { type: String, required: true },
-        brideName: { type: String, required: true },
-        phoneNumber: { type: String, required: true },
-        eventStartDate: { type: Date, required: true },
-        eventEndDate: { type: Date, required: true },
-        events: [{ type: String }], // Array of event names
-        budget: { type: Number },
-        location: { type: String, required: true },
-        services: [{ type: String }], // Array of services (Photography/Films/Both)
-        message: { type: String },
-        status: { type: String, enum: ["New", "Contacted", "Booked", "Closed"], default: "New" },
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.Enquiry || mongoose.model("Enquiry", enquirySchema);
+export default (sequelize, DataTypes) => {
+    const Enquiry = sequelize.define("Enquiry", {
+        groomName: { type: DataTypes.STRING, allowNull: false },
+        brideName: { type: DataTypes.STRING, allowNull: false },
+        phoneNumber: { type: DataTypes.STRING, allowNull: false },
+        eventStartDate: { type: DataTypes.DATE, allowNull: false },
+        eventEndDate: { type: DataTypes.DATE, allowNull: false },
+        events: { type: DataTypes.JSON },
+        budget: { type: DataTypes.DECIMAL(10, 2) },
+        location: { type: DataTypes.STRING, allowNull: false },
+        services: { type: DataTypes.JSON },
+        message: { type: DataTypes.TEXT },
+        status: { type: DataTypes.ENUM("New", "Contacted", "Booked", "Closed"), defaultValue: "New" },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "enquiries", timestamps: true });
+    return Enquiry;
+};

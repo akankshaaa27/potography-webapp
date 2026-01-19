@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Trash2, Edit2, Plus, GripVertical, Star, AlertCircle, Search, ToggleLeft, ToggleRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -54,6 +55,24 @@ export default function AdminTestimonials() {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Helper to get image URL
+    const getImageUrl = (imagePath) => {
+        if (!imagePath) return '';
+        if (imagePath.startsWith('http')) return imagePath;
+        if (imagePath.startsWith('data:')) return imagePath;
+
+        try {
+            new URL(imagePath);
+            return imagePath;
+        } catch (_) { }
+
+        // Check for proxy or use direct API URL
+        // In dev, sometimes proxy handles it, but explicit URL is safer
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const baseUrl = API_URL.replace(/\/api$/, '');
+        return `${baseUrl}${imagePath}`;
     };
 
     const handleImageUpload = (e) => {
@@ -190,7 +209,7 @@ export default function AdminTestimonials() {
                                     <div className="flex items-start gap-3">
                                         <div className="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
                                             <img
-                                                src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                                                src={getImageUrl(t.thumbnail) || "https://placehold.co/250x250?text=Couple"}
                                                 alt={t.coupleName}
                                                 className="w-full h-full object-cover"
                                             />
@@ -259,7 +278,7 @@ export default function AdminTestimonials() {
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
                                                     <img
-                                                        src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                                                        src={getImageUrl(t.thumbnail) || "https://placehold.co/250x250?text=Couple"}
                                                         alt={t.coupleName}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -392,7 +411,7 @@ export default function AdminTestimonials() {
                                         {currentTestimonial.thumbnail ? (
                                             <>
                                                 <img
-                                                    src={currentTestimonial.thumbnail}
+                                                    src={getImageUrl(currentTestimonial.thumbnail)}
                                                     alt="Preview"
                                                     className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-50"
                                                 />

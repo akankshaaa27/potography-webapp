@@ -1,13 +1,15 @@
-import mongoose from "mongoose";
 
-const gallerySchema = new mongoose.Schema(
-    {
-        title: { type: String },
-        image: { type: String, required: true },
-        category: { type: String, default: "General" },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.Gallery || mongoose.model("Gallery", gallerySchema);
+export default (sequelize, DataTypes) => {
+    const Gallery = sequelize.define("Gallery", {
+        title: { type: DataTypes.STRING },
+        // Use TEXT('long') for Base64 images
+        image: { type: DataTypes.TEXT('long'), allowNull: false },
+        category: { type: DataTypes.STRING, defaultValue: "General" },
+        status: { type: DataTypes.ENUM("Active", "Inactive"), defaultValue: "Active" },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "galleries", timestamps: true });
+    return Gallery;
+};

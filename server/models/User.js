@@ -1,15 +1,16 @@
-import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
-    {
-        name: { type: String, required: true },
-        email: { type: String, required: true, unique: true, lowercase: true },
-        password: { type: String, required: true },
-        role: { type: String, default: "user", enum: ["user", "admin", "editor"] },
-        phone: { type: String },
-        status: { type: String, default: "Active", enum: ["Active", "Inactive"] },
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.User || mongoose.model("User", userSchema);
+export default (sequelize, DataTypes) => {
+    const User = sequelize.define("User", {
+        name: { type: DataTypes.STRING, allowNull: false },
+        email: { type: DataTypes.STRING, allowNull: false, unique: true },
+        password: { type: DataTypes.STRING, allowNull: false },
+        role: { type: DataTypes.ENUM("user", "admin", "editor"), defaultValue: "user" },
+        phone: { type: DataTypes.STRING },
+        status: { type: DataTypes.ENUM("Active", "Inactive"), defaultValue: "Active" },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "users", timestamps: true });
+    return User;
+};

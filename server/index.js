@@ -1,7 +1,8 @@
+
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { connectDB, getDbStatus } from "./db.js";
+import db from "./models/index.js";
 import { handleDemo } from "./routes/demo.js";
 import clientRoutes from "./routes/clientRoutes.js";
 import serviceRoutes from "./routes/serviceRoutes.js";
@@ -19,8 +20,6 @@ import contactRoutes from "./routes/contactRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import testimonialRoutes from "./routes/testimonialRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
-
-// Root route - Only for production/standalone
 
 const defaultAllowedOrigins = [
   "http://localhost:5173",
@@ -48,7 +47,6 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    // Allow vercel preview apps
     if (origin.endsWith(".vercel.app")) {
       return callback(null, true);
     }
@@ -62,8 +60,8 @@ const corsOptions = {
 let dbConnectionPromise;
 const ensureDbConnection = () => {
   if (!dbConnectionPromise) {
-    dbConnectionPromise = connectDB().catch((error) => {
-      console.error("❌ MongoDB connection failed", error);
+    dbConnectionPromise = db.connectDB().catch((error) => {
+      console.error("❌ MySQL connection failed", error);
       dbConnectionPromise = undefined;
       throw error;
     });
@@ -74,46 +72,36 @@ const ensureDbConnection = () => {
 export function createServer(config = {}) {
   const app = express();
 
-  // Middleware
   app.use(cors(corsOptions));
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-  // Ensure MongoDB connection starts as soon as the server boots
   ensureDbConnection();
 
-  // Example API routes
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });
   });
 
   app.get("/api/demo", handleDemo);
-  app.get("/api/db-status", (_req, res) => {
-    const state = getDbStatus();
-    // Map mongoose readyState to human-readable
-    const map = {
-      0: "disconnected",
-      1: "connected",
-      2: "connecting",
-      3: "disconnecting",
-    };
-    res.json({ state, status: map[state] ?? "unknown" });
+  app.get("/api/db-status", async (_req, res) => {
+    try {
+      await db.sequelize.authenticate();
+      res.json({ state: 1, status: "connected" });
+    } catch (e) {
+      res.json({ state: 0, status: "disconnected" });
+    }
   });
 
   app.get("/api/health", (_req, res) => {
     res.json({
       status: "ok",
-      dbState: getDbStatus(),
       timestamp: new Date().toISOString(),
       allowedOrigins,
     });
   });
 
-  // Auth routes
   app.use("/api/auth", authRoutes);
-
-  // API Routes
   app.use("/api/clients", clientRoutes);
   app.use("/api/services", serviceRoutes);
   app.use("/api/quotations", quotationRoutes);
@@ -130,14 +118,12 @@ export function createServer(config = {}) {
   app.use("/api/testimonials", testimonialRoutes);
   console.log("✅ Contact, Dashboard & Testimonial routes registered");
 
-  // Root route - Only for production/standalone
   if (!config.middlewareMode) {
     app.get("/", (req, res) => {
       res.json({ message: "Photography API is running 🚀", status: "active" });
     });
   }
 
-  // 404 + error handling
   if (!config.middlewareMode) {
     app.use(notFoundHandler);
   }
@@ -146,4 +132,3 @@ export function createServer(config = {}) {
 
   return app;
 }
-

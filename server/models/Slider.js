@@ -1,14 +1,16 @@
-import mongoose from "mongoose";
 
-const sliderSchema = new mongoose.Schema(
-    {
-        title: { type: String, required: true },
-        subtitle: { type: String },
-        image: { type: String, required: true },
-        status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-        order: { type: Number, default: 0 },
-    },
-    { timestamps: true }
-);
-
-export default mongoose.models.Slider || mongoose.model("Slider", sliderSchema);
+export default (sequelize, DataTypes) => {
+    const Slider = sequelize.define("Slider", {
+        title: { type: DataTypes.STRING, allowNull: false },
+        subtitle: { type: DataTypes.STRING },
+        // Use TEXT (longtext) for Base64 images as they are > 255 chars
+        image: { type: DataTypes.TEXT('long'), allowNull: false },
+        status: { type: DataTypes.ENUM("Active", "Inactive"), defaultValue: "Active" },
+        order: { type: DataTypes.INTEGER, defaultValue: 0 },
+        _id: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.id; }
+        }
+    }, { tableName: "sliders", timestamps: true });
+    return Slider;
+};

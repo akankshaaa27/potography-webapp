@@ -1,12 +1,11 @@
-import Enquiry from "../models/Enquiry.js";
 
+import db from "../models/index.js";
+const { Enquiry } = db;
 import { sendEmail } from "../utils/emailService.js";
 
-// Create a new enquiry (Public)
 export const createEnquiry = async (req, res) => {
     try {
-        const enquiry = new Enquiry(req.body);
-        await enquiry.save();
+        const enquiry = await Enquiry.create(req.body);
 
         // Send Email Notification
         const adminEmail = "pixelproitsolutions@gmail.com";
@@ -37,37 +36,33 @@ export const createEnquiry = async (req, res) => {
     }
 };
 
-// Get all enquiries (Admin)
 export const getAllEnquiries = async (req, res) => {
     try {
-        const enquiries = await Enquiry.find().sort({ createdAt: -1 });
+        const enquiries = await Enquiry.findAll({ order: [['createdAt', 'DESC']] });
         res.json(enquiries);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Update enquiry status (Admin)
 export const updateEnquiryStatus = async (req, res) => {
     try {
         const { status } = req.body;
-        const enquiry = await Enquiry.findByIdAndUpdate(
-            req.params.id,
-            { status },
-            { new: true }
-        );
-        if (!enquiry) return res.status(404).json({ message: "Enquiry not found" });
+        const [updated] = await Enquiry.update({ status }, { where: { id: req.params.id } });
+
+        if (!updated && !(await Enquiry.findByPk(req.params.id))) return res.status(404).json({ message: "Enquiry not found" });
+
+        const enquiry = await Enquiry.findByPk(req.params.id);
         res.json(enquiry);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
 
-// Delete enquiry (Admin)
 export const deleteEnquiry = async (req, res) => {
     try {
-        const enquiry = await Enquiry.findByIdAndDelete(req.params.id);
-        if (!enquiry) return res.status(404).json({ message: "Enquiry not found" });
+        const deleted = await Enquiry.destroy({ where: { id: req.params.id } });
+        if (!deleted) return res.status(404).json({ message: "Enquiry not found" });
         res.json({ message: "Enquiry deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });

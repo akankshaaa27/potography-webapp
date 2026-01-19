@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -8,6 +9,24 @@ export default function AdminGallery() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState({ id: null, title: "", image: "", category: "General", status: "Active" });
   const [deleteId, setDeleteId] = useState(null);
+
+  // Helper to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('data:')) return imagePath;
+
+    try {
+      new URL(imagePath);
+      return imagePath;
+    } catch (_) { }
+
+    // Check for proxy or use direct API URL
+    // In dev, sometimes proxy handles it, but explicit URL is safer
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const baseUrl = API_URL.replace(/\/api$/, '');
+    return `${baseUrl}${imagePath}`;
+  };
 
   const { data: galleryItems = [], isLoading } = useQuery({
     queryKey: ["gallery"],
@@ -88,13 +107,13 @@ export default function AdminGallery() {
             <div key={item._id} className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
               <div className="relative aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
                 {item.image ? (
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={getImageUrl(item.image)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <ImageIcon className="text-gray-400" />
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                   <button
-                    onClick={() => { setForm({ id: item._id, title: item.title, image: item.image, category: item.category, status: item.status }); setModalOpen(true); }}
+                    onClick={() => { setForm({ id: item._id, title: item.title, image: getImageUrl(item.image), category: item.category, status: item.status }); setModalOpen(true); }}
                     className="p-2 bg-white text-gray-900 rounded-full hover:scale-110 transition-transform"
                   >
                     <Pencil size={16} />
@@ -174,7 +193,7 @@ export default function AdminGallery() {
                   />
                   {form.image ? (
                     <div className="relative">
-                      <img src={form.image} alt="Preview" className="w-full h-48 object-cover rounded-lg shadow-sm" />
+                      <img src={getImageUrl(form.image)} alt="Preview" className="w-full h-48 object-cover rounded-lg shadow-sm" />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
                         <span className="text-white font-medium">Change Image</span>
                       </div>

@@ -1,9 +1,12 @@
-import Client from '../models/Client.js';
+
+import db from '../models/index.js';
+const { Client } = db;
+import { Op } from 'sequelize';
 
 // Get all clients
 export const getAllClients = async (req, res) => {
   try {
-    const clients = await Client.find().sort({ createdAt: -1 });
+    const clients = await Client.findAll({ order: [['createdAt', 'DESC']] });
     res.json(clients);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -13,7 +16,7 @@ export const getAllClients = async (req, res) => {
 // Get single client
 export const getClientById = async (req, res) => {
   try {
-    const client = await Client.findById(req.params.id);
+    const client = await Client.findByPk(req.params.id);
     if (!client) {
       return res.status(404).json({ message: 'Client not found' });
     }
@@ -33,10 +36,10 @@ export const createClient = async (req, res) => {
   }
 
   try {
-    const client = new Client({
+    const client = await Client.create({
       name,
       email,
-      phone: phone || whatsapp, // Accept phone or whatsapp
+      phone: phone || whatsapp,
       address,
       city,
       state,
@@ -49,10 +52,9 @@ export const createClient = async (req, res) => {
       status,
     });
 
-    const savedClient = await client.save();
-    res.status(201).json(savedClient);
+    res.status(201).json(client);
   } catch (error) {
-    if (error.code === 11000) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({ message: 'Email already exists' });
     }
     res.status(400).json({ message: error.message });
@@ -62,18 +64,16 @@ export const createClient = async (req, res) => {
 // Update client
 export const updateClient = async (req, res) => {
   try {
-    const client = await Client.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const [updated] = await Client.update(req.body, { where: { id: req.params.id } });
 
-    if (!client) {
+    if (!updated && !(await Client.findByPk(req.params.id))) {
       return res.status(404).json({ message: 'Client not found' });
     }
 
+    const client = await Client.findByPk(req.params.id);
     res.json(client);
   } catch (error) {
-    if (error.code === 11000) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({ message: 'Email already exists' });
     }
     res.status(400).json({ message: error.message });
@@ -83,8 +83,8 @@ export const updateClient = async (req, res) => {
 // Delete client
 export const deleteClient = async (req, res) => {
   try {
-    const client = await Client.findByIdAndDelete(req.params.id);
-    if (!client) {
+    const deleted = await Client.destroy({ where: { id: req.params.id } });
+    if (!deleted) {
       return res.status(404).json({ message: 'Client not found' });
     }
     res.json({ message: 'Client deleted successfully' });
@@ -101,12 +101,14 @@ export const searchClients = async (req, res) => {
       return res.status(400).json({ message: 'Search query is required' });
     }
 
-    const clients = await Client.find({
-      $or: [
-        { name: { $regex: query, $options: 'i' } },
-        { email: { $regex: query, $options: 'i' } },
-        { phone: { $regex: query, $options: 'i' } },
-      ],
+    const clients = await Client.findAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.like]: `%${query}%` } },
+          { email: { [Op.like]: `%${query}%` } },
+          { phone: { [Op.like]: `%${query}%` } },
+        ],
+      },
     });
 
     res.json(clients);

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -5,6 +6,23 @@ import Footer from "../components/Footer";
 const Gallery = () => {
     const [galleryItems, setGalleryItems] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // Helper to get image URL
+    const getImageUrl = (imagePath) => {
+        if (!imagePath) return '';
+        if (imagePath.startsWith('http')) return imagePath;
+        if (imagePath.startsWith('data:')) return imagePath;
+
+        try {
+            new URL(imagePath);
+            return imagePath;
+        } catch (_) { }
+
+        // Check for proxy or use direct API URL
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const baseUrl = API_URL.replace(/\/api$/, '');
+        return `${baseUrl}${imagePath}`;
+    };
 
     useEffect(() => {
         document.body.className = "portfolio-page";
@@ -89,14 +107,14 @@ const Gallery = () => {
                                         <div key={item._id} className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                                             <div className="gallery-item position-relative overflow-hidden rounded-3 shadow-sm h-100">
                                                 <a
-                                                    href={item.image}
+                                                    href={getImageUrl(item.image)}
                                                     className="glightbox"
                                                     data-gallery="gallery"
                                                     data-title={item.title}
                                                     data-description={item.category}
                                                 >
                                                     <img
-                                                        src={item.image}
+                                                        src={getImageUrl(item.image)}
                                                         alt={item.title}
                                                         className="img-fluid w-100 h-100 object-fit-cover"
                                                         style={{ minHeight: "250px", maxHeight: "300px", objectFit: "cover" }}

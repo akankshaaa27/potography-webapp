@@ -1,41 +1,38 @@
-import Client from "../models/Client.js";
-import Enquiry from "../models/Enquiry.js";
-import Order from "../models/Order.js";
-import Invoice from "../models/Invoice.js";
-import Quotation from "../models/Quotation.js";
-import Contact from "../models/Contact.js";
-import Gallery from "../models/Gallery.js";
+
+import db from "../models/index.js";
+const { Client, Enquiry, Order, Invoice, Quotation, Contact, Gallery } = db;
 
 export const getDashboardStats = async (req, res) => {
     try {
-        const clientsCount = await Client.countDocuments();
-        const enquiriesCount = await Enquiry.countDocuments();
-        const ordersCount = await Order.countDocuments();
-        const invoicesCount = await Invoice.countDocuments();
-        const quotationsCount = await Quotation.countDocuments();
-        const contactsCount = await Contact.countDocuments();
-        const galleryCount = await Gallery.countDocuments();
+        const clientsCount = await Client.count();
+        const enquiriesCount = await Enquiry.count();
+        const ordersCount = await Order.count();
+        const invoicesCount = await Invoice.count();
+        const quotationsCount = await Quotation.count();
+        const contactsCount = await Contact.count();
+        const galleryCount = await Gallery.count();
 
         // Calculate total revenue (paid invoices)
-        const paidInvoices = await Invoice.find({ status: "Paid" });
-        const totalRevenue = paidInvoices.reduce((sum, inv) => sum + (inv.totalAmount || 0), 0);
+        // Check exact enum value for Paid
+        const paidInvoices = await Invoice.findAll({ where: { paymentStatus: 'Paid' } });
+        const totalRevenue = paidInvoices.reduce((sum, inv) => sum + (Number(inv.grandTotal) || 0), 0);
 
         // Pending actions
-        const pendingEnquiries = await Enquiry.countDocuments({ status: "Pending" });
-        const pendingContacts = await Contact.countDocuments({ status: "New" });
+        const pendingEnquiries = await Enquiry.count({ where: { status: "New" } }); // Assuming 'New' is pending
+        const pendingContacts = await Contact.count({ where: { status: "New" } });
 
         res.json({
             metrics: {
                 totalClients: clientsCount,
                 activeShoots: ordersCount,
-                pipelineValue: quotationsCount, // Simplify for now
+                pipelineValue: quotationsCount,
                 totalRevenue: totalRevenue
             },
             actionQueue: [
                 { label: "New Enquiries", count: pendingEnquiries, link: "/enquiries" },
                 { label: "Contact Messages", count: pendingContacts, link: "/contact-messages" }
             ],
-            upcomingShoots: [], // Populate if we have date logic
+            upcomingShoots: [],
             recentActivity: []
         });
     } catch (error) {

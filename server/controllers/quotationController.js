@@ -1,62 +1,71 @@
-import Quotation from '../models/Quotation.js';
-import Client from '../models/Client.js';
 
-// Generate unique quotation number
+import db from '../models/index.js';
+const { Quotation, Client } = db;
+
+// Helper to mimic Mongoose populate behavior
+const transformQuotation = (q) => {
+  if (!q) return null;
+  const json = q.toJSON();
+  if (json.client) {
+    json.clientId = json.client;
+    delete json.client;
+  }
+  return json;
+};
+
 const generateQuotationNumber = async () => {
-  const count = await Quotation.countDocuments();
+  const count = await Quotation.count();
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   return `QT-${year}${month}-${String(count + 1).padStart(5, '0')}`;
 };
 
-// Get all quotations
 export const getAllQuotations = async (req, res) => {
   try {
-    const quotations = await Quotation.find()
-      .populate('clientId')
-      .sort({ createdAt: -1 });
-    res.json(quotations);
+    const quotations = await Quotation.findAll({
+      include: ['client'],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(quotations.map(transformQuotation));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get single quotation
 export const getQuotationById = async (req, res) => {
   try {
-    const quotation = await Quotation.findById(req.params.id).populate('clientId');
+    const quotation = await Quotation.findByPk(req.params.id, { include: ['client'] });
     if (!quotation) {
       return res.status(404).json({ message: 'Quotation not found' });
     }
-    res.json(quotation);
+    res.json(transformQuotation(quotation));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create quotation
 export const createQuotation = async (req, res) => {
   try {
     let { clientId, clientName, client } = req.body;
-
-    // Handle "Client" string from frontend
     const nameToSearch = clientName || client;
 
-    // If no ID but we have a name, try to find or create the client
+    // Logic: clientId might be an object ID string or int. In SQL it's int.
+    // If incoming clientId is string (from old frontend?), we might need to be careful.
+    // Assuming new system or consistent IDs.
+
     if (!clientId && nameToSearch) {
-      let existingClient = await Client.findOne({ name: nameToSearch });
+      let existingClient = await Client.findOne({ where: { name: nameToSearch } });
       if (existingClient) {
-        clientId = existingClient._id;
+        clientId = existingClient.id;
       } else {
-        // Create new Lead client
         const newClient = await Client.create({
           name: nameToSearch,
-          email: `pending-${Date.now()}@example.com`, // Placeholder
+          email: `pending-${Date.now()}@example.com`,
           phone: "0000000000",
           status: 'Lead'
         });
-        clientId = newClient._id;
+        clientId = newClient.id;
       }
     }
 
@@ -64,47 +73,42 @@ export const createQuotation = async (req, res) => {
     const quotationData = {
       ...req.body,
       quotationNumber,
-      clientId,
-      clientName: nameToSearch // Snapshot
+      client_id: clientId,
+      clientName: nameToSearch,
+      services: req.body.services, // Ensure services is passed (JSON)
+      deliverables: req.body.deliverables
     };
 
-    const quotation = new Quotation(quotationData);
-    const savedQuotation = await quotation.save();
+    const quotation = await Quotation.create(quotationData);
 
-    // Try populating if we have an ID, otherwise ignore
-    if (clientId) {
-      await savedQuotation.populate('clientId');
-    }
+    // Fetch again to include client
+    const savedQuotation = await Quotation.findByPk(quotation.id, { include: ['client'] });
 
-    res.status(201).json(savedQuotation);
+    res.status(201).json(transformQuotation(savedQuotation));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Update quotation
 export const updateQuotation = async (req, res) => {
   try {
-    const quotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    }).populate('clientId');
+    const [updated] = await Quotation.update(req.body, { where: { id: req.params.id } });
 
-    if (!quotation) {
+    if (!updated && !(await Quotation.findByPk(req.params.id))) {
       return res.status(404).json({ message: 'Quotation not found' });
     }
 
-    res.json(quotation);
+    const quotation = await Quotation.findByPk(req.params.id, { include: ['client'] });
+    res.json(transformQuotation(quotation));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Delete quotation
 export const deleteQuotation = async (req, res) => {
   try {
-    const quotation = await Quotation.findByIdAndDelete(req.params.id);
-    if (!quotation) {
+    const deleted = await Quotation.destroy({ where: { id: req.params.id } });
+    if (!deleted) {
       return res.status(404).json({ message: 'Quotation not found' });
     }
     res.json({ message: 'Quotation deleted successfully' });
@@ -113,53 +117,58 @@ export const deleteQuotation = async (req, res) => {
   }
 };
 
-// Duplicate quotation
 export const duplicateQuotation = async (req, res) => {
   try {
-    const quotation = await Quotation.findById(req.params.id);
+    const quotation = await Quotation.findByPk(req.params.id);
     if (!quotation) {
       return res.status(404).json({ message: 'Quotation not found' });
     }
 
     const quotationNumber = await generateQuotationNumber();
-    const newQuotation = new Quotation({
-      ...quotation.toObject(),
-      _id: undefined,
+    const newData = quotation.toJSON();
+    delete newData.id;
+    delete newData._id;
+    delete newData.createdAt;
+    delete newData.updatedAt;
+
+    const newQuotation = await Quotation.create({
+      ...newData,
       quotationNumber,
       quotationDate: new Date(),
       status: 'Draft',
       convertedToInvoice: false,
-      invoiceId: null,
+      invoice_id: null,
     });
 
-    const savedQuotation = await newQuotation.save();
-    await savedQuotation.populate('clientId');
-    res.status(201).json(savedQuotation);
+    const savedQuotation = await Quotation.findByPk(newQuotation.id, { include: ['client'] });
+    res.status(201).json(transformQuotation(savedQuotation));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Get quotations by client
 export const getQuotationsByClient = async (req, res) => {
   try {
-    const quotations = await Quotation.find({ clientId: req.params.clientId })
-      .populate('clientId')
-      .sort({ createdAt: -1 });
-    res.json(quotations);
+    const quotations = await Quotation.findAll({
+      where: { client_id: req.params.clientId },
+      include: ['client'],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(quotations.map(transformQuotation));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get quotations by status
 export const getQuotationsByStatus = async (req, res) => {
   try {
     const { status } = req.query;
-    const quotations = await Quotation.find({ status })
-      .populate('clientId')
-      .sort({ createdAt: -1 });
-    res.json(quotations);
+    const quotations = await Quotation.findAll({
+      where: { status },
+      include: ['client'],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(quotations.map(transformQuotation));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
