@@ -7,9 +7,6 @@ import './lib/apiFetch'
 
 // Import CSS files
 import 'bootstrap/dist/css/bootstrap.min.css'
-import '../public/assets/css/main.css'
-import '../public/assets/vendor/bootstrap-icons/bootstrap-icons.css'
-
 // Import Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
