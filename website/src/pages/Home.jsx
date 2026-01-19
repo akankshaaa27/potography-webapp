@@ -19,10 +19,10 @@ const Home = () => {
     if (imagePath.startsWith('http')) return imagePath;
     if (imagePath.startsWith('data:')) return imagePath;
 
-    // If we have a proxy, we can just return the path relative to root
-    // But sticking to full URL is safer for ensuring we hit the backend
-    // especially if proxy fails or in production without same-domain proxy
-    return `http://localhost:5000${imagePath}`;
+    // Use relative path which will go through the Vite proxy/server
+    // Or if we need absolute, use the current window location
+    // relying on Vite's proxy config to handle /uploads or /api
+    return imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
   };
 
   useEffect(() => {

@@ -23,12 +23,17 @@ export default function AdminSlider() {
     } catch (_) { }
 
     // Prepend API URL for relative paths
-    // In Vite, use import.meta.env.VITE_API_URL or default to localhost:5000
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    // Ensure we don't double up /api if imagePath doesn't have it (it shouldn't)
-    // and remove /api from base if it's there, because imagePath is /uploads/foo.png
-    const baseUrl = API_URL.replace(/\/api$/, '');
-    return `${baseUrl}${imagePath}`;
+    // In Vite, use import.meta.env.VITE_API_URL, defaulting to relative path '/'
+    // which goes through the proxy to port 8080
+    const API_URL = import.meta.env.VITE_API_URL || '';
+
+    // Clean up base URL to ensure no double slashes if joining
+    const baseUrl = API_URL.replace(/\/$/, '').replace(/\/api$/, '');
+
+    // Ensure imagePath starts with /
+    const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+
+    return `${baseUrl}${cleanPath}`;
   };
 
   const { data: sliders = [], isLoading } = useQuery({
