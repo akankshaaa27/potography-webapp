@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Proposal & Roadmap</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: white;
+            padding: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #2c3e50;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .intro {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #eafaf1 !important;
+        }
+        .btn-print {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+        .btn-print:hover {
+            background-color: #2980b9;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+            .btn-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Print Button (Visible only on screen) -->
+        <button onclick="window.print()" class="btn-print">🖨️ Save as PDF</button>
+
+        <h1>Web Application Hosting Proposal</h1>
+        
+        <p><strong>Project:</strong> Photography Portfolio & Management System<br>
+        <strong>Date:</strong> January 19, 2026<br>
+        <strong>Prepared For:</strong> Client</p>
+
+        <div class="intro">
+            We have developed a high-performance web application tailored for your photography business, featuring a React.js portfolio, a Node.js/MySQL backend, and a comprehensive Admin Dashboard.
+        </div>
+
+        <h2>2. Budget Estimate (Annual)</h2>
+        <p>We have optimized this application to use <strong>MySQL</strong> (free with hosting) instead of expensive cloud databases, significantly reducing your recurring costs.</p>
+
+        <h3>Recommended Plan: Hostinger Business Web Hosting</h3>
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Description</th>
+                <th>Est. Annual Cost</th>
+                <th>Client Price Suggestion</th>
+            </tr>
+            <tr>
+                <td><strong>Server Hosting</strong></td>
+                <td>Hostinger Business Plan (4x Speed, Node.js support)</td>
+                <td>₹4,500 - ₹5,500</td>
+                <td>₹10,000</td>
+            </tr>
+            <tr>
+                <td><strong>Domain Name</strong></td>
+                <td>.com or .in Registration</td>
+                <td>Free (1st Year)</td>
+                <td>Included</td>
+            </tr>
+            <tr>
+                <td><strong>SSL Certificate</strong></td>
+                <td>HTTPS Security</td>
+                <td>Free</td>
+                <td>Included</td>
+            </tr>
+            <tr>
+                <td><strong>Database</strong></td>
+                <td>Managed MySQL Service</td>
+                <td>Free</td>
+                <td>Included</td>
+            </tr>
+            <tr>
+                <td><strong>Maintenance</strong></td>
+                <td>Updates & Monitoring (Optional)</td>
+                <td>--</td>
+                <td>₹5,000</td>
+            </tr>
+            <tr class="total-row">
+                <td>TOTAL</td>
+                <td></td>
+                <td>~₹5,000 / year</td>
+                <td>₹10,000 - ₹15,000 / year</td>
+            </tr>
+        </table>
+
+        <h2>3. Deployment Roadmap</h2>
+
+        <h3>Phase 1: Infrastructure Setup (Day 1)</h3>
+        <ul>
+            <li><strong>Domain & SSL:</strong> Configuration and security activation.</li>
+            <li><strong>Database:</strong> Setting up the secure MySQL database and importing schemas.</li>
+        </ul>
+
+        <h3>Phase 2: Backend Deployment (Day 1-2)</h3>
+        <ul>
+            <li><strong>API Upload:</strong> Deploying the Node.js server to the backend infrastructure.</li>
+            <li><strong>Storage:</strong> Configuring secure storage for high-resolution images.</li>
+        </ul>
+
+        <h3>Phase 3: Frontend Launch (Day 2)</h3>
+        <ul>
+            <li><strong>Website:</strong> Launching the public-facing React portfolio.</li>
+            <li><strong>Admin Panel:</strong> Deploying the secure dashboard for content management.</li>
+        </ul>
+
+        <h3>Phase 4: Final Verification (Day 3)</h3>
+        <ul>
+            <li><strong>Testing:</strong> Full system audit (Speed, Forms, Mobile responsiveness).</li>
+            <li><strong>Handover:</strong> Delivery of admin credentials and documentation.</li>
+        </ul>
+
+        <h2>4. Maintenance & Support</h2>
+        <p>Your plan includes automated daily backups, security patches, and 24/7 uptime monitoring to ensure your portfolio is always accessible to potential clients.</p>
+    </div>
+
+</body>
+</html>
