@@ -11,22 +11,6 @@ import 'swiper/css/navigation';
 const Home = () => {
   console.log('Home component rendering');
   const [slides, setSlides] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/slider')
-      .then(res => res.json())
-      .then(data => {
-        const activeSlides = data.filter(s => s.status === 'Active');
-        if (activeSlides.length > 0) {
-          setSlides(activeSlides.map(s => ({
-            image: s.image, // Base64 or URL
-            title: s.title,
-            subtitle: s.subtitle || 'Capturing moments...' // Fallback
-          })));
-        }
-      })
-      .catch(err => console.error("Error fetching slider:", err));
-  }, []);
   const [loveStories, setLoveStories] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -34,7 +18,7 @@ const Home = () => {
   const [instagramPosts, setInstagramPosts] = useState([]);
 
   useEffect(() => {
-    // ... Existing slider fetch ...
+    // Fetch Slider
     fetch('/api/slider')
       .then(res => res.json())
       .then(data => {
@@ -240,46 +224,72 @@ const Home = () => {
             <h2>From the Hearts of Our Couples</h2>
           </div>
 
-          <div className="container">
-            <div className="testimonial-masonry">
-              {testimonials.map((t, index) => (
-                <div key={t._id} className={`testimonial-item ${index === 1 ? 'highlight' : ''}`} data-aos="fade-up" data-aos-delay={index * 100}>
-                  <div className="testimonial-content">
-                    <div className="quote-pattern">
-                      <i className="bi bi-quote"></i>
-                    </div>
-                    <p>"{t.shortDescription}"</p>
+          <div className="container" data-aos="fade-up" data-aos-delay="100">
+            {testimonials.length > 0 ? (
+              <Swiper
+                modules={[Autoplay, Navigation]}
+                slidesPerView={1}
+                spaceBetween={30}
+                autoplay={{ delay: 5000, disableOnInteraction: true }}
+                navigation={testimonials.length > 1}
+                loop={testimonials.length > 1}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 1,
+                  },
+                  768: {
+                    slidesPerView: 2,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                  },
+                }}
+                className="testimonial-slider"
+              >
+                {testimonials.map((t, index) => (
+                  <SwiperSlide key={t._id}>
+                    <div 
+                      className={`testimonial-item ${index % 2 === 0 ? '' : 'highlight'}`}
+                      data-aos="fade-up"
+                      data-aos-delay={index * 100}
+                      style={{ height: '100%' }}
+                    >
+                      <div className="testimonial-content">
+                        <div className="quote-pattern">
+                          <i className="bi bi-quote"></i>
+                        </div>
+                        <p className='shortDescriptionLenth'>"{t.shortDescription}"</p>
 
-                    {/* Star Rating */}
-                    <div className="stars" style={{ color: '#ffc107', marginBottom: '10px' }}>
-                      {[...Array(t.rating || 5)].map((_, i) => (
-                        <i key={i} className="bi bi-star-fill"></i>
-                      ))}
-                    </div>
+                        {/* Star Rating */}
+                        <div className="stars" style={{ color: '#ffc107', marginBottom: '10px' }}>
+                          {[...Array(t.rating || 5)].map((_, i) => (
+                            <i key={i} className="bi bi-star-fill"></i>
+                          ))}
+                        </div>
 
-                    <div className="client-info">
-                      <div className="client-image">
-                        <img
-                          src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
-                          alt={t.coupleName}
-                          style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
-                        />
+                        <div className="client-info">
+                          <div className="client-image">
+                            <img
+                              src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                              alt={t.coupleName}
+                              style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
+                            />
+                          </div>
+                          <div className="client-details">
+                            <h3 className='coupleNameLenth'>{t.coupleName}</h3>
+                            <span className="position">{t.location}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="client-details">
-                        <h3>{t.coupleName}</h3>
-                        <span className="position">{t.location}</span>
-                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-
-              {testimonials.length === 0 && (
-                <div className="col-12 text-center p-5">
-                  <p>Currently updating our wall of love. Check back soon!</p>
-                </div>
-              )}
-            </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <div className="text-center p-5">
+                <p>Currently updating our wall of love. Check back soon!</p>
+              </div>
+            )}
           </div>
         </section>
 

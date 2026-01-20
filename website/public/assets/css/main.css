@@ -165,7 +165,7 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 90px;
+  max-height: 80px;
   margin-right: 8px;
 }
 
@@ -1914,8 +1914,7 @@ section,
 }
 
 /*--------------------------------------------------------------
-# Testimonials Section
---------------------------------------------------------------*/
+# Testimonials Section--------------------------------------------------*/
 .testimonials .testimonial-masonry {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1945,12 +1944,31 @@ section,
   background-color: color-mix(in srgb, var(--accent-color), transparent 92%);
   border: 1px solid color-mix(in srgb, var(--accent-color), transparent 70%);
 }
-
+/* 
 .testimonials .testimonial-item.highlight .testimonial-content .quote-pattern {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 85%);
+} */
+
+.testimonials .testimonial-item.highlight .testimonial-content .quote-pattern i {
+  color: var(--accent-color);
+}
+
+/* Alternating testimonial styles */
+.testimonials .swiper-wrapper .swiper-slide:nth-child(odd) .testimonial-content {
+  background-color: var(--surface-color);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);
+}
+
+.testimonials .swiper-wrapper .swiper-slide:nth-child(even) .testimonial-content {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 92%);
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 70%);
+}
+
+.testimonials .swiper-wrapper .swiper-slide:nth-child(even) .quote-pattern {
   background-color: color-mix(in srgb, var(--accent-color), transparent 85%);
 }
 
-.testimonials .testimonial-item.highlight .testimonial-content .quote-pattern i {
+.testimonials .swiper-wrapper .swiper-slide:nth-child(even) .quote-pattern i {
   color: var(--accent-color);
 }
 
@@ -2026,6 +2044,13 @@ section,
   color: color-mix(in srgb, var(--heading-color), transparent 40%);
 }
 
+#testimonials .container .swiper .swiper-wrapper {
+  margin: 25px 0px;
+}
+#testimonials .swiper-pagination-bullet-active {
+    background: var(--accent-color) !important;
+}
+
 @media (max-width: 1199.98px) {
   .testimonials .testimonial-masonry {
     grid-template-columns: repeat(2, 1fr);
@@ -2089,6 +2114,7 @@ section,
     font-size: 0.8125rem;
   }
 }
+
 
 /*--------------------------------------------------------------
 # Certifications Section
@@ -5023,4 +5049,23 @@ font-weight: 600 !important;
 
 .form-check-input:focus {
     box-shadow: none !important;
+}
+
+
+.founder-photo{
+  width: 60%;
+}
+
+
+.shortDescriptionLenth{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5; /* adjust */
+  overflow: hidden;
+}
+.coupleNameLenth{
+  width: 300px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
 }
