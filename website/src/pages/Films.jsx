@@ -121,11 +121,11 @@ const Films = () => {
                               <polygon points="6 3 20 12 6 21 6 3" />
                             </svg>
                           </div>
+                          <div className="film-info">
+                            <h5 className="film-title">{film.title}</h5>
+                            <p className="film-category">{film.category}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="mt-2 text-center">
-                        <h5 className="text-sm font-semibold mb-0">{film.title}</h5>
-                        <p className="text-xs text-muted">{film.category}</p>
                       </div>
                     </a>
                   );

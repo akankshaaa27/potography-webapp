@@ -101,7 +101,7 @@ const About = () => {
               >
                 <div className="founder-image m-auto">
                   <img
-                    src="/assets/img/person/founder.png"
+                    src="/assets/img/person/founder.jpg"
                     alt="Founder - The Patil Photography"
                     className="rounded founder-photo img-fluid"
                   />
