@@ -34,7 +34,7 @@ const quotationSchema = new mongoose.Schema(
         serviceId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Service',
-          required: true,
+          required: false,
         },
         serviceName: String,
         quantity: {
@@ -110,6 +110,8 @@ const quotationSchema = new mongoose.Schema(
     },
     // Enhanced CRM Fields
     clientName: { type: String, trim: true }, // Snapshot of client name
+    email: { type: String, trim: true },
+    whatsapp_no: { type: String, trim: true },
     location: { type: String, trim: true },
     retainerAmount: { type: Number, default: 0 },
     stage: { type: String, default: 'Concept' },

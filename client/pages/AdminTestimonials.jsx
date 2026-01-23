@@ -113,7 +113,7 @@ export default function AdminTestimonials() {
     };
 
     const handleToggleStatus = async (t) => {
-        const newStatus = t.status === "Active" ? "Inactive" : "Active";
+        const newStatus = (t.status === "Active") ? "Inactive" : "Active";
         try {
             await fetch(`/api/testimonials/${t._id}`, {
                 method: "PUT",
@@ -286,12 +286,21 @@ export default function AdminTestimonials() {
                                             {t.displayOrder}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => handleToggleStatus(t)}
-                                                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${t.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-600 border-slate-200'}`}
-                                            >
-                                                {t.status === 'Active' ? 'Active' : 'Inactive'}
-                                            </button>
+                                            {t.status === 'Pending' ? (
+                                                <button
+                                                    onClick={() => handleToggleStatus(t)}
+                                                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100"
+                                                >
+                                                    Approve
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleToggleStatus(t)}
+                                                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${t.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-600 border-slate-200'}`}
+                                                >
+                                                    {t.status === 'Active' ? 'Active' : 'Inactive'}
+                                                </button>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
@@ -381,6 +390,7 @@ export default function AdminTestimonials() {
                                         >
                                             <option value="Active">Active</option>
                                             <option value="Inactive">Inactive</option>
+                                            <option value="Pending">Pending</option>
                                         </select>
                                     </div>
                                 </div>

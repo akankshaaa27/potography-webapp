@@ -52,8 +52,8 @@ export const createQuotation = async (req, res) => {
         // Create new Lead client
         const newClient = await Client.create({
           name: nameToSearch,
-          email: `pending-${Date.now()}@example.com`, // Placeholder
-          phone: "0000000000",
+          email: req.body.email || `pending-${Date.now()}@example.com`,
+          phone: req.body.whatsapp_no || "0000000000",
           status: 'Lead'
         });
         clientId = newClient._id;

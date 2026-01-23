@@ -29,7 +29,7 @@ const Testimonials = () => {
     }
 
     // Fetch Testimonials
-    fetch("/api/testimonials?type=all")
+    fetch("/api/testimonials?type=active")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -103,14 +103,19 @@ const Testimonials = () => {
 
       <main className="main">
         {/* Page Header */}
-        <section className="testimonials-hero section">
-          <div className="container" data-aos="fade-up">
-            <h1 className="page-title">Testimonials & Reviews</h1>
-            <p className="page-subtitle">
-              Words from the heart of our beloved couples
-            </p>
+        {/* Page Title */}
+        <div className="page-title dark-background" style={{ backgroundImage: "url('/assets/img/HomePage/16.webp')" }}>
+          <div className="container position-relative">
+            <h1>Testimonials & Reviews</h1>
+            <p>Words from the heart of our beloved couples</p>
+            <nav className="breadcrumbs">
+              <ol>
+                <li><a href="/">Home</a></li>
+                <li className="current">Testimonials</li>
+              </ol>
+            </nav>
           </div>
-        </section>
+        </div>
 
         {/* Testimonials Section */}
         <section className="testimonials-full section">
@@ -255,61 +260,63 @@ const Testimonials = () => {
             )}
 
             {/* Testimonials Grid */}
-            {loading ? (
-              <div className="text-center py-5">
-                <p>Loading testimonials...</p>
-              </div>
-            ) : testimonials.length > 0 ? (
-              <div className="testimonials-grid">
-                <div className="row g-4">
-                  {testimonials.map((testimonial, index) => (
-                    <div
-                      key={testimonial._id}
-                      className="col-lg-4 col-md-6"
-                      data-aos="fade-up"
-                      data-aos-delay={index * 100}
-                    >
-                      <div className="testimonial-card">
-                        <div className="quote-icon">
-                          <i className="bi bi-quote"></i>
-                        </div>
-                        <p className="testimonial-text">
-                          "{testimonial.shortDescription}"
-                        </p>
+            {!showForm && (
+              loading ? (
+                <div className="text-center py-5">
+                  <p>Loading testimonials...</p>
+                </div>
+              ) : testimonials.length > 0 ? (
+                <div className="testimonials-grid">
+                  <div className="row g-4">
+                    {testimonials.map((testimonial, index) => (
+                      <div
+                        key={testimonial._id}
+                        className="col-lg-4 col-md-6"
+                        data-aos="fade-up"
+                        data-aos-delay={index * 100}
+                      >
+                        <div className="testimonial-card">
+                          <div className="quote-icon">
+                            <i className="bi bi-quote"></i>
+                          </div>
+                          <p className="testimonial-text">
+                            "{testimonial.shortDescription}"
+                          </p>
 
-                        {/* Star Rating */}
-                        <div className="testimonial-rating">
-                          {[...Array(testimonial.rating || 5)].map((_, i) => (
-                            <i key={i} className="bi bi-star-fill"></i>
-                          ))}
-                        </div>
+                          {/* Star Rating */}
+                          <div className="testimonial-rating">
+                            {[...Array(testimonial.rating || 5)].map((_, i) => (
+                              <i key={i} className="bi bi-star-fill"></i>
+                            ))}
+                          </div>
 
-                        <div className="testimonial-author">
-                          {testimonial.thumbnail && (
-                            <img
-                              src={testimonial.thumbnail}
-                              alt={testimonial.coupleName}
-                              className="author-image"
-                            />
-                          )}
-                          <div className="author-info">
-                            <h4 className="author-name">
-                              {testimonial.coupleName}
-                            </h4>
-                            <p className="author-location">
-                              {testimonial.location}
-                            </p>
+                          <div className="testimonial-author">
+                            {testimonial.thumbnail && (
+                              <img
+                                src={testimonial.thumbnail}
+                                alt={testimonial.coupleName}
+                                className="author-image"
+                              />
+                            )}
+                            <div className="author-info">
+                              <h4 className="author-name">
+                                {testimonial.coupleName}
+                              </h4>
+                              <p className="author-location">
+                                {testimonial.location}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-5">
-                <p>No testimonials yet. Be the first to share your experience!</p>
-              </div>
+              ) : (
+                <div className="text-center py-5">
+                  <p>No testimonials yet. Be the first to share your experience!</p>
+                </div>
+              )
             )}
           </div>
         </section>
@@ -339,7 +346,7 @@ const Testimonials = () => {
       </a>
 
       {/* Preloader */}
-      <div id="preloader"></div>
+
     </>
   );
 };
