@@ -16,6 +16,7 @@ const items = [
   { to: "/invoices", label: "Invoices" },
   { to: "/quotations", label: "Quotations" },
   { to: "/accessories", label: "Accessories" },
+  { to: "/common-types", label: "Common Types" },
   { to: "/register", label: "Admin Register" },
   { to: "/profile", label: "Profile" },
 ];

@@ -31,6 +31,7 @@ import AdminContacts from "./pages/AdminContacts";
 import AccessoriesManagement from "./pages/AccessoriesManagement";
 import AdminRegister from "./pages/AdminRegister";
 import UserProfile from "./pages/UserProfile";
+import AdminCommonTypes from "./pages/AdminCommonTypes";
 
 const queryClient = new QueryClient();
 
@@ -40,13 +41,13 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter  future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AppShell />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
-); 
+);
 
 const AppShell = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -57,7 +58,7 @@ const AppShell = () => {
   useEffect(() => {
     setMobileNavOpen(false);
   }, [location.pathname]);
-   
+
   return (
     <div className={isLoginRoute ? "min-h-screen bg-slate-50" : "flex min-h-screen bg-slate-50"}>
       {!isLoginRoute && <Navigation isMobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />}
@@ -104,6 +105,7 @@ const AppShell = () => {
             <Route path="/accessories" element={<AccessoriesManagement />} />
             <Route path="/register" element={<AdminRegister />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/common-types" element={<AdminCommonTypes />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

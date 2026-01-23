@@ -32,6 +32,8 @@ import AdminQuotations from "./pages/AdminQuotations";
 import AccessoriesManagement from "./pages/AccessoriesManagement";
 import AdminRegister from "./pages/AdminRegister";
 import UserProfile from "./pages/UserProfile";
+import AdminCommonTypes from "./pages/AdminCommonTypes";
+
 
 const queryClient = new QueryClient();
 
@@ -96,6 +98,7 @@ const AppShell = () => {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/common-types" element={<AdminCommonTypes />} />
 
             <Route path="/quotations" element={<Quotations />} />
 
@@ -110,10 +113,11 @@ const AppShell = () => {
             <Route path="/contact-messages" element={<AdminContacts />} />
             <Route path="/clients" element={<AdminClients />} />
             <Route path="/invoices" element={<AdminInvoices />} />
-            <Route path="/quotations" element={<AdminQuotations />} />
+
             <Route path="/accessories" element={<AccessoriesManagement />} />
             <Route path="/register" element={<AdminRegister />} />
             <Route path="/profile" element={<UserProfile />} />
+
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

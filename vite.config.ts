@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => ({
   },
 }));
 
-console.log('Vite config loaded - triggering restart');
+console.log('Vite config loaded - triggering restart ' + Date.now() + ' second retry');
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
