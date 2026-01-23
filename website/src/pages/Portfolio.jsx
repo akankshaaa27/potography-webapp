@@ -6,22 +6,43 @@ import LuxGallery from "../components/LuxGallery";
 
 const Portfolio = () => {
   const [portfolioImages, setPortfolioImages] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
   const lightboxRef = useRef(null);
 
   useEffect(() => {
-    fetch("/api/gallery")
-      .then((res) => res.json())
-      .then((data) => {
-        const activeItems = data.filter((item) => item.status === "Active");
-        setPortfolioImages(activeItems.map((item) => item.image));
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+    const fetchData = async () => {
+      try {
+        const [galleryRes, typesRes] = await Promise.all([
+          fetch("/api/gallery"),
+          fetch("/api/event-types")
+        ]);
+
+        const galleryData = await galleryRes.json();
+        const typesData = await typesRes.json();
+
+        const activeItems = galleryData.filter((item) => item.status === "Active");
+        setPortfolioImages(activeItems);
+
+        // Filter types to only show those that have images
+        const usedCategories = new Set(activeItems.map(item => item.category));
+        setCategories(typesData.filter(t => t.isActive && usedCategories.has(t.name)));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
+  const filteredImages = activeCategory === "All"
+    ? portfolioImages
+    : portfolioImages.filter(img => img.category === activeCategory);
+
   useEffect(() => {
-    if (!portfolioImages.length || !window.GLightbox) return;
+    if (!filteredImages.length || !window.GLightbox) return;
 
     // Destroy previous instance
     if (lightboxRef.current) {
@@ -36,7 +57,6 @@ const Portfolio = () => {
       touchNavigation: true,
       keyboardNavigation: true,
       zoomable: true,
-      // scrollThumb: false,  // keep if you want
     });
 
     return () => {
@@ -45,7 +65,7 @@ const Portfolio = () => {
         lightboxRef.current = null;
       }
     };
-  }, [portfolioImages]);
+  }, [filteredImages]);
   return (
     <>
       <Header />
@@ -90,17 +110,43 @@ const Portfolio = () => {
         {/* Gallery Section */}
         <section className="portfolio-gallery pt-3" id="Portfolio-gallery">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
+
+            {/* Category Filter Tabs */}
+            <div className="row mb-5">
+              <div className="col-12 d-flex justify-content-center">
+                <ul className="portfolio-filters list-unstyled d-flex flex-wrap justify-content-center gap-3 mb-0">
+                  <li
+                    className={`${activeCategory === "All" ? "filter-active" : ""}`}
+                    onClick={() => setActiveCategory("All")}
+                    style={{ cursor: 'pointer', padding: '8px 20px', borderRadius: '4px', fontWeight: '500', transition: 'all 0.3s ease', backgroundColor: activeCategory === 'All' ? '#daa520' : '#f4f4f4', color: activeCategory === 'All' ? '#fff' : '#333' }}
+                  >
+                    All
+                  </li>
+                  {categories.map((cat) => (
+                    <li
+                      key={cat._id}
+                      className={`${activeCategory === cat.name ? "filter-active" : ""}`}
+                      onClick={() => setActiveCategory(cat.name)}
+                      style={{ cursor: 'pointer', padding: '8px 20px', borderRadius: '4px', fontWeight: '500', transition: 'all 0.3s ease', backgroundColor: activeCategory === cat.name ? '#daa520' : '#f4f4f4', color: activeCategory === cat.name ? '#fff' : '#333' }}
+                    >
+                      {cat.label || cat.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             {loading ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-accent-color" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
               </div>
-            ) : portfolioImages.length > 0 ? (
-              <LuxGallery images={portfolioImages} galleryId="portfolio" />
+            ) : filteredImages.length > 0 ? (
+              <LuxGallery images={filteredImages.map(item => item.image)} galleryId="portfolio" />
             ) : (
               <div className="text-center py-5">
-                <p>No portfolio images found.</p>
+                <p>No images found {activeCategory !== "All" && `for ${activeCategory}`}.</p>
               </div>
             )}
           </div>

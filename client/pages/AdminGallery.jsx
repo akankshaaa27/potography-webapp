@@ -18,6 +18,15 @@ export default function AdminGallery() {
     },
   });
 
+  const { data: eventTypes = [] } = useQuery({
+    queryKey: ["eventTypes"],
+    queryFn: async () => {
+      const res = await fetch("/api/event-types");
+      if (!res.ok) throw new Error("Failed to fetch event types");
+      return res.json();
+    },
+  });
+
   const mutation = useMutation({
     mutationFn: async (data) => {
       const url = data.id ? `/api/gallery/${data.id}` : "/api/gallery";
@@ -142,13 +151,18 @@ export default function AdminGallery() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Category</label>
-                  <input
-                    type="text"
+                  <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-shadow"
-                    placeholder="e.g. Wedding"
-                  />
+                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-shadow bg-white"
+                  >
+                    <option value="General">General</option>
+                    {eventTypes.map((type) => (
+                      <option key={type._id} value={type.name}>
+                        {type.label || type.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Status</label>

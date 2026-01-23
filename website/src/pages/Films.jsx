@@ -13,40 +13,56 @@ const getYouTubeId = (url) => {
 
 const Films = () => {
   const [films, setFilms] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.body.className = "portfolio-page";
 
-    fetch("/api/films")
-      .then(res => res.json())
-      .then(data => {
-        const activeFilms = data.filter(f => f.status === "Active");
+    const fetchData = async () => {
+      try {
+        const [filmsRes, typesRes] = await Promise.all([
+          fetch("/api/films"),
+          fetch("/api/event-types")
+        ]);
+
+        const filmsData = await filmsRes.json();
+        const typesData = await typesRes.json();
+
+        const activeFilms = filmsData.filter(f => f.status === "Active");
         setFilms(activeFilms);
-        setLoading(false);
-      })
-      .catch(err => {
+
+        // Filter types to only show those that have films
+        const usedCategories = new Set(activeFilms.map(f => f.category));
+        setCategories(typesData.filter(t => t.isActive && usedCategories.has(t.name)));
+      } catch (err) {
         console.error(err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchData();
 
     return () => {
       document.body.className = "";
     };
   }, []);
 
+  const filteredFilms = activeCategory === "All"
+    ? films
+    : films.filter(film => film.category === activeCategory);
+
   // Initialize GLightbox
   useEffect(() => {
     if (!loading && window.GLightbox) {
-      // Destroy existing lightbox instance if any?
-      // Usually safe to just init
       const lightbox = window.GLightbox({
         selector: ".glightbox",
         touchNavigation: true,
         loop: true,
       });
     }
-  }, [loading, films]);
+  }, [loading, filteredFilms]);
 
   return (
     <>
@@ -84,6 +100,31 @@ const Films = () => {
               </p>
             </div>
 
+            {/* Category Filter Tabs */}
+            <div className="row mb-5">
+              <div className="col-12 d-flex justify-content-center">
+                <ul className="portfolio-filters list-unstyled d-flex flex-wrap justify-content-center gap-3 mb-0">
+                  <li
+                    className={`${activeCategory === "All" ? "filter-active" : ""}`}
+                    onClick={() => setActiveCategory("All")}
+                    style={{ cursor: 'pointer', padding: '8px 20px', borderRadius: '4px', fontWeight: '500', transition: 'all 0.3s ease', backgroundColor: activeCategory === 'All' ? '#daa520' : '#f4f4f4', color: activeCategory === 'All' ? '#fff' : '#333' }}
+                  >
+                    All
+                  </li>
+                  {categories.map((cat) => (
+                    <li
+                      key={cat._id}
+                      className={`${activeCategory === cat.name ? "filter-active" : ""}`}
+                      onClick={() => setActiveCategory(cat.name)}
+                      style={{ cursor: 'pointer', padding: '8px 20px', borderRadius: '4px', fontWeight: '500', transition: 'all 0.3s ease', backgroundColor: activeCategory === cat.name ? '#daa520' : '#f4f4f4', color: activeCategory === cat.name ? '#fff' : '#333' }}
+                    >
+                      {cat.label || cat.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             {loading ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-gold-500" role="status">
@@ -92,7 +133,7 @@ const Films = () => {
               </div>
             ) : (
               <div className="films-grid">
-                {films.length > 0 ? films.map((film) => {
+                {filteredFilms.length > 0 ? filteredFilms.map((film) => {
                   const videoId = getYouTubeId(film.youtubeUrl);
                   if (!videoId) return null;
                   const thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
@@ -131,7 +172,7 @@ const Films = () => {
                   );
                 }) : (
                   <div className="col-12 text-center">
-                    <p>No films found.</p>
+                    <p>No films found {activeCategory !== "All" && `for ${activeCategory}`}.</p>
                   </div>
                 )}
               </div>
