@@ -13,7 +13,9 @@ import {
   CheckCircle,
   Plus,
   TrendingUp,
-  Clock
+  Clock,
+  X,
+  Star
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -21,6 +23,7 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -70,6 +73,22 @@ export default function Dashboard() {
   const totalPipelineValue = "₹" + (revenue.totalOutstanding / 100000).toFixed(1) + "L";
   const collectedThisMonth = "₹" + (revenue.thisMonthCollected / 100000).toFixed(1) + "L";
 
+  const handleApproveTestimonial = async (id) => {
+    try {
+      await fetch(`/api/testimonials/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "Active" }),
+      });
+      // Refresh stats
+      const res = await fetch("/api/dashboard/stats");
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error("Error approving testimonial:", err);
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-slate-50 text-charcoal-900 pb-20">
 
@@ -89,7 +108,7 @@ export default function Dashboard() {
         </div>
 
         {/* Action Required Section */}
-        {(actionRequired.enquiriesNoReply.length > 0 || actionRequired.overdueInvoices.length > 0) && (
+        {(actionRequired.enquiriesNoReply.length > 0 || actionRequired.overdueInvoices.length > 0 || actionRequired.pendingTestimonialsList?.length > 0) && (
           <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-4">
             <div className="mb-3 flex items-center gap-2 text-rose-700">
               <AlertCircle className="h-5 w-5" />
@@ -98,7 +117,7 @@ export default function Dashboard() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {actionRequired.enquiriesNoReply.map(e => (
                 <Link key={e._id} to="/enquiries" className="flex items-center justify-between rounded-xl bg-white p-3 text-sm shadow-sm ring-1 ring-rose-100 transition hover:ring-rose-200">
-                  <span className="truncate font-medium text-charcoal-900">Reply to {e.groomName}</span>
+                  <span className="truncate font-medium text-charcoal-900">Reply to {e.names?.split('&')[0] || e.groomName}</span>
                   <span className="text-xs text-rose-500">Overdue</span>
                 </Link>
               ))}
@@ -107,6 +126,32 @@ export default function Dashboard() {
                   <span className="truncate font-medium text-charcoal-900">INV {i.invoiceNumber} Due</span>
                   <span className="text-xs text-rose-500">₹{i.grandTotal}</span>
                 </Link>
+              ))}
+              {actionRequired.pendingTestimonialsList?.map(t => (
+                <div key={t._id} className="flex flex-col justify-between rounded-xl bg-white p-3 text-sm shadow-sm ring-1 ring-amber-100 transition hover:ring-amber-200">
+                  <div className="mb-2">
+                    <div className="flex justify-between items-start">
+                      <span className="font-medium text-charcoal-900 line-clamp-1">{t.coupleName}</span>
+                      <span className="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full whitespace-nowrap ml-2">Pending</span>
+                    </div>
+                    {t.location && <p className="text-xs text-slate-500 mb-1">{t.location}</p>}
+                    <p className="text-xs text-slate-600 line-clamp-2 italic">"{t.shortDescription}"</p>
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={(e) => { e.preventDefault(); handleApproveTestimonial(t._id); }}
+                      className="flex-1 bg-amber-100 text-amber-700 py-1.5 rounded-lg text-xs font-semibold hover:bg-amber-200 transition"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => setSelectedTestimonial(t)}
+                      className="flex-1 bg-slate-50 text-slate-600 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-100 transition text-center"
+                    >
+                      View
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -121,7 +166,9 @@ export default function Dashboard() {
         <KpiCard label="Unpaid Invoices" value={kpi.unpaidInvoicesCount} sub={`Total ₹${(kpi.unpaidInvoicesAmount / 1000).toFixed(0)}k`} icon={CreditCard} accent />
         <KpiCard label="Shoots This Week" value={kpi.upcomingShootsCount} sub="Next 7 days" icon={Film} />
         <KpiCard label="Unread Messages" value={kpi.unreadMessages} sub="Contact forms" icon={MessageSquare} />
-        <KpiCard label="Testimonials" value={kpi.pendingTestimonials} sub="Pending review" icon={CheckCircle} />
+        <Link to="/testimonials" className="block">
+          <KpiCard label="Testimonials" value={kpi.pendingTestimonials} sub="Pending review" icon={CheckCircle} />
+        </Link>
       </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[2fr,1fr]">
@@ -226,7 +273,7 @@ export default function Dashboard() {
               {activityFeed.map((item, i) => (
                 <div key={i} className="relative">
                   <div className={`absolute -left-[21px] top-1.5 h-3 w-3 rounded-full border-2 border-white ${item.type === 'Enquiry' ? 'bg-blue-500' :
-                      item.type === 'Order' ? 'bg-emerald-500' : 'bg-amber-500'
+                    item.type === 'Order' ? 'bg-emerald-500' : 'bg-amber-500'
                     }`} />
                   <p className="text-sm font-medium text-charcoal-900">{item.text}</p>
                   <p className="text-xs text-slate-400">{format(new Date(item.date), 'MMM dd, HH:mm')}</p>
@@ -237,6 +284,77 @@ export default function Dashboard() {
 
         </div>
       </div>
+      {/* Testimonial Preview Modal */}
+      {selectedTestimonial && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="mb-4 flex items-start justify-between">
+              <h3 className="text-xl font-bold text-charcoal-900">Review Testimonial</h3>
+              <button
+                onClick={() => setSelectedTestimonial(null)}
+                className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mb-6 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                  <img
+                    src={selectedTestimonial.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                    alt={selectedTestimonial.coupleName}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-charcoal-900">{selectedTestimonial.coupleName}</h4>
+                  <p className="text-sm text-slate-500">{selectedTestimonial.location || "No Location"}</p>
+                  <div className="mt-1 flex items-center gap-1 text-amber-400">
+                    <span className="text-sm font-medium text-charcoal-900">{selectedTestimonial.rating || 5}</span>
+                    <Star className="h-3 w-3 fill-current" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-slate-50 p-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Short Description</p>
+                <p className="text-sm text-slate-700 italic">"{selectedTestimonial.shortDescription}"</p>
+              </div>
+
+              {selectedTestimonial.fullDescription && (
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Full Story</p>
+                  <p className="text-sm text-slate-700 whitespace-pre-line">{selectedTestimonial.fullDescription}</p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <span>Submitted: {new Date(selectedTestimonial.createdAt).toLocaleDateString()}</span>
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700">Pending Approval</span>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setSelectedTestimonial(null)}
+                className="flex-1 rounded-xl border border-slate-200 py-2.5 font-medium text-slate-600 hover:bg-slate-50"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  handleApproveTestimonial(selectedTestimonial._id);
+                  setSelectedTestimonial(null);
+                }}
+                className="flex-1 rounded-xl bg-charcoal-900 py-2.5 font-medium text-white hover:bg-charcoal-800"
+              >
+                Approve & Publish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

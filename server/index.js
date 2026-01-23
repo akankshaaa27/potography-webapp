@@ -130,7 +130,7 @@ export function createServer(config = {}) {
   app.use("/api/dashboard", dashboardRoutes);
   app.use("/api/testimonials", testimonialRoutes);
   app.use("/api/event-types", eventTypeRoutes);
-  console.log("✅ Contact, Dashboard & Testimonial routes registered");
+  console.log("✅ Contact, Dashboard & Testimonial routes registered " + Date.now() + " - Dashboard Pending Actions Added");
 
   // Root route - Only for production/standalone
   if (!config.middlewareMode) {
