@@ -1,9 +1,27 @@
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function QuotationForm({ quotation, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     clientId: "",
+    clientName: "",
+    email: "",
+    whatsapp_no: "",
     eventType: "Wedding",
     eventDate: "",
     validityDate: "",
@@ -19,6 +37,7 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
 
   const [clients, setClients] = useState([]);
   const [services, setServices] = useState([]);
+  const [open, setOpen] = useState(false);
   const [totals, setTotals] = useState({
     subtotal: 0,
     tax: 0,
@@ -160,8 +179,8 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.clientId || formData.services.length === 0) {
-      alert("Please select a client and add at least one service");
+    if ((!formData.clientId && !formData.clientName) || formData.services.length === 0) {
+      alert("Please select a client or enter a client name, and add at least one service");
       return;
     }
 
@@ -210,20 +229,87 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
               Client & Event Information
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <select
-                name="clientId"
-                value={formData.clientId}
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 text-charcoal-900 dark:text-white font-montserrat font-normal hover:bg-gold-50 dark:hover:bg-charcoal-600"
+                  >
+                    {formData.clientId
+                      ? clients.find((client) => client._id === formData.clientId)?.name
+                      : "Select Client (Optional)"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[400px] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search client..." />
+                    <CommandList>
+                      <CommandEmpty>No client found.</CommandEmpty>
+                      <CommandGroup>
+                        {clients.map((client) => (
+                          <CommandItem
+                            key={client._id}
+                            value={client.name}
+                            onSelect={() => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                clientId: client._id,
+                                clientName: client.name,
+                                email: client.email,
+                                whatsapp_no: client.phone,
+                              }));
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.clientId === client._id
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {client.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              <input
+                type="text"
+                name="clientName"
+                placeholder="Client Name *"
+                value={formData.clientName}
                 onChange={handleChange}
                 required
                 className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-              >
-                <option value="">Select Client *</option>
-                {clients.map((client) => (
-                  <option key={client._id} value={client._id}>
-                    {client.name}
-                  </option>
-                ))}
-              </select>
+              />
+
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
+              />
+
+              <input
+                type="text"
+                name="whatsapp_no"
+                placeholder="WhatsApp Number *"
+                value={formData.whatsapp_no}
+                onChange={handleChange}
+                required
+                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
+              />
+
               <select
                 name="eventType"
                 value={formData.eventType}
@@ -237,7 +323,7 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
               <input
                 type="date"
                 name="eventDate"
-                value={formData.eventDate}
+                value={formData.eventDate ? formData.eventDate.split('T')[0] : ''}
                 onChange={handleChange}
                 required
                 className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
@@ -245,7 +331,7 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
               <input
                 type="date"
                 name="validityDate"
-                value={formData.validityDate}
+                value={formData.validityDate ? formData.validityDate.split('T')[0] : ''}
                 onChange={handleChange}
                 required
                 className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
