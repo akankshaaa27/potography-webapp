@@ -108,7 +108,7 @@ export default function Dashboard() {
         </div>
 
         {/* Action Required Section */}
-        {(actionRequired.enquiriesNoReply.length > 0 || actionRequired.overdueInvoices.length > 0 || actionRequired.pendingTestimonialsList?.length > 0) && (
+        {(actionRequired.enquiriesNoReply.length > 0 || actionRequired.overdueInvoices.length > 0) && (
           <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-4">
             <div className="mb-3 flex items-center gap-2 text-rose-700">
               <AlertCircle className="h-5 w-5" />
@@ -126,32 +126,6 @@ export default function Dashboard() {
                   <span className="truncate font-medium text-charcoal-900">INV {i.invoiceNumber} Due</span>
                   <span className="text-xs text-rose-500">₹{i.grandTotal}</span>
                 </Link>
-              ))}
-              {actionRequired.pendingTestimonialsList?.map(t => (
-                <div key={t._id} className="flex flex-col justify-between rounded-xl bg-white p-3 text-sm shadow-sm ring-1 ring-amber-100 transition hover:ring-amber-200">
-                  <div className="mb-2">
-                    <div className="flex justify-between items-start">
-                      <span className="font-medium text-charcoal-900 line-clamp-1">{t.coupleName}</span>
-                      <span className="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full whitespace-nowrap ml-2">Pending</span>
-                    </div>
-                    {t.location && <p className="text-xs text-slate-500 mb-1">{t.location}</p>}
-                    <p className="text-xs text-slate-600 line-clamp-2 italic">"{t.shortDescription}"</p>
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={(e) => { e.preventDefault(); handleApproveTestimonial(t._id); }}
-                      className="flex-1 bg-amber-100 text-amber-700 py-1.5 rounded-lg text-xs font-semibold hover:bg-amber-200 transition"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => setSelectedTestimonial(t)}
-                      className="flex-1 bg-slate-50 text-slate-600 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-100 transition text-center"
-                    >
-                      View
-                    </button>
-                  </div>
-                </div>
               ))}
             </div>
           </div>
@@ -254,6 +228,50 @@ export default function Dashboard() {
 
         {/* Sidebar Column */}
         <div className="space-y-8">
+
+          {/* Pending Reviews */}
+          {actionRequired.pendingTestimonialsList?.length > 0 && (
+            <section className="rounded-3xl border border-amber-100 bg-amber-50/50 p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="font-semibold text-amber-900">Testimonal Reviews</h3>
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">{actionRequired.pendingTestimonialsList.length}</span>
+              </div>
+              <div className="space-y-3">
+                {actionRequired.pendingTestimonialsList.map((t) => (
+                  <div key={t._id} className="rounded-xl bg-white p-3 shadow-sm ring-1 ring-amber-100/50 transition hover:ring-amber-200">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="font-medium text-sm text-charcoal-900">{t.coupleName}</p>
+                        <p className="text-xs text-slate-500">{new Date(t.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      {/* Compact Star Rating */}
+                      <div className="flex text-amber-400">
+                        <Star className="w-3 h-3 fill-current" />
+                        <span className="text-xs ml-0.5 font-bold text-slate-600">{t.rating}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-600 line-clamp-2 italic mb-3 border-l-2 border-amber-200 pl-2">
+                      "{t.shortDescription}"
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleApproveTestimonial(t._id)}
+                        className="flex-1 rounded-lg bg-amber-100 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-200 transition"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => setSelectedTestimonial(t)}
+                        className="flex-1 rounded-lg bg-slate-50 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition"
+                      >
+                        Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Quick Health Stats */}
           <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
