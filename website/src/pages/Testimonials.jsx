@@ -29,7 +29,7 @@ const Testimonials = () => {
     }
 
     // Fetch Testimonials
-    fetch("/api/testimonials?type=all")
+    fetch("/api/testimonials?type=active")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -103,14 +103,19 @@ const Testimonials = () => {
 
       <main className="main">
         {/* Page Header */}
-        <section className="testimonials-hero section">
-          <div className="container" data-aos="fade-up">
-            <h1 className="page-title">Testimonials & Reviews</h1>
-            <p className="page-subtitle">
-              Words from the heart of our beloved couples
-            </p>
+        {/* Page Title */}
+        <div className="page-title dark-background" style={{ backgroundImage: "url('/assets/img/HomePage/16.webp')" }}>
+          <div className="container position-relative">
+            <h1>Testimonials & Reviews</h1>
+            <p>Words from the heart of our beloved couples</p>
+            <nav className="breadcrumbs">
+              <ol>
+                <li><a href="/">Home</a></li>
+                <li className="current">Testimonials</li>
+              </ol>
+            </nav>
           </div>
-        </section>
+        </div>
 
         {/* Testimonials Section */}
         <section className="testimonials-full section">
@@ -339,7 +344,7 @@ const Testimonials = () => {
       </a>
 
       {/* Preloader */}
-      <div id="preloader"></div>
+
     </>
   );
 };
