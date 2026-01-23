@@ -34,7 +34,7 @@ const quotationSchema = new mongoose.Schema(
         serviceId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Service',
-          required: true,
+          required: false,
         },
         serviceName: String,
         quantity: {

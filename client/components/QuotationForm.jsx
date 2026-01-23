@@ -15,6 +15,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function QuotationForm({ quotation, onSave, onCancel }) {
   const [formData, setFormData] = useState({
@@ -22,13 +29,12 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     clientName: "",
     email: "",
     whatsapp_no: "",
-    eventType: "Wedding",
+    eventType: "",
     eventDate: "",
+    location: "",
     validityDate: "",
     services: [],
-    discount: 0,
-    discountType: "fixed",
-    taxPercentage: 18,
+    discountPercentage: 0,
     paymentTerms: "50% advance, 50% on event date",
     notes: "",
     thankYouMessage:
@@ -36,11 +42,18 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
   });
 
   const [clients, setClients] = useState([]);
-  const [services, setServices] = useState([]);
+  const [predefinedServices, setPredefinedServices] = useState([]);
   const [open, setOpen] = useState(false);
+
+  // Modals state
+  const [isEventTypeModalOpen, setIsEventTypeModalOpen] = useState(false);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [newEventType, setNewEventType] = useState("");
+  const [newService, setNewService] = useState({ name: "", rate: 0 });
+
   const [totals, setTotals] = useState({
     subtotal: 0,
-    tax: 0,
+    discountAmount: 0,
     grandTotal: 0,
   });
 
@@ -53,19 +66,21 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     if (quotation) {
       setFormData({
         ...quotation,
-        clientId: quotation.clientId._id,
+        clientId: quotation.clientId?._id || "",
+        clientName: quotation.clientName || quotation.clientId?.name || "",
+        email: quotation.email || quotation.clientId?.email || "",
+        whatsapp_no: quotation.whatsapp_no || quotation.clientId?.phone || "",
+        services: quotation.services || [],
+        discountPercentage: quotation.discountType === 'percentage' ? quotation.discount : 0,
+        eventDate: quotation.eventDate ? quotation.eventDate.split('T')[0] : "",
+        validityDate: quotation.validityDate ? quotation.validityDate.split('T')[0] : "",
       });
     }
   }, [quotation]);
 
   useEffect(() => {
     calculateTotals();
-  }, [
-    formData.services,
-    formData.discount,
-    formData.discountType,
-    formData.taxPercentage,
-  ]);
+  }, [formData.services, formData.discountPercentage]);
 
   const fetchClients = async () => {
     try {
@@ -83,7 +98,7 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
       const response = await fetch("/api/services");
       if (!response.ok) throw new Error("Failed to fetch services");
       const data = await response.json();
-      setServices(data);
+      setPredefinedServices(data);
     } catch (error) {
       console.error("Error fetching services:", error);
     }
@@ -95,27 +110,25 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
       subtotal += item.total || 0;
     });
 
-    let discountAmount = 0;
-    if (formData.discountType === "percentage") {
-      discountAmount = (subtotal * formData.discount) / 100;
-    } else {
-      discountAmount = formData.discount;
-    }
+    let discountVal = parseFloat(formData.discountPercentage) || 0;
+    if (discountVal > 100) discountVal = 100;
+    if (discountVal < 0) discountVal = 0;
 
-    const taxableAmount = subtotal - discountAmount;
-    const tax = (taxableAmount * formData.taxPercentage) / 100;
-    const grandTotal = taxableAmount + tax;
+    const discountAmount = (subtotal * discountVal) / 100;
+    const grandTotal = subtotal - discountAmount;
 
     setTotals({
       subtotal,
-      tax: Math.round(tax),
+      discountAmount: Math.round(discountAmount),
       grandTotal: Math.round(grandTotal),
     });
 
     setFormData((prev) => ({
       ...prev,
       subtotal,
-      tax: Math.round(tax),
+      discount: discountVal, // Storing as percentage value in discount field
+      discountType: 'percentage',
+      tax: 0,
       grandTotal: Math.round(grandTotal),
     }));
   };
@@ -126,7 +139,6 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
       services: [
         ...prev.services,
         {
-          serviceId: "",
           serviceName: "",
           quantity: 1,
           days: 1,
@@ -141,17 +153,16 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     const updatedServices = [...formData.services];
     updatedServices[index][field] = value;
 
-    if (field === "serviceId") {
-      const selectedService = services.find((s) => s._id === value);
-      if (selectedService) {
-        updatedServices[index].serviceName = selectedService.name;
-        updatedServices[index].ratePerDay = selectedService.ratePerDay || 0;
+    if (field === "serviceName") {
+      const match = predefinedServices.find(s => s.name.toLowerCase() === value.toLowerCase());
+      if (match) {
+        updatedServices[index].ratePerDay = match.ratePerDay || updatedServices[index].ratePerDay;
       }
     }
 
     if (["quantity", "days", "ratePerDay"].includes(field)) {
-      const qty = parseInt(updatedServices[index].quantity) || 1;
-      const days = parseInt(updatedServices[index].days) || 1;
+      const qty = parseInt(updatedServices[index].quantity) || 0;
+      const days = parseInt(updatedServices[index].days) || 0;
       const rate = parseFloat(updatedServices[index].ratePerDay) || 0;
       updatedServices[index].total = qty * days * rate;
     }
@@ -179,10 +190,21 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if ((!formData.clientId && !formData.clientName) || formData.services.length === 0) {
-      alert("Please select a client or enter a client name, and add at least one service");
+
+    if (!formData.clientName?.trim()) { alert("Client Name is required"); return; }
+    if (!formData.whatsapp_no?.trim()) { alert("Mobile Number is required"); return; }
+
+    if (formData.services.length === 0) {
+      alert("Please add at least one service");
       return;
     }
+    const invalidService = formData.services.find(s => !s.serviceName?.trim());
+    if (invalidService) {
+      alert("All services must have a name");
+      return;
+    }
+
+    if (!formData.eventDate) { alert("Event Date is required"); return; }
 
     try {
       const method = quotation ? "PUT" : "POST";
@@ -205,11 +227,41 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     }
   };
 
+  const handleSaveEventType = () => {
+    if (newEventType.trim()) {
+      // Add to event types list (using state? or just select it?)
+      // Since eventType input is text with datalist, setting formData.eventType is enough to "select" it
+      setFormData(prev => ({ ...prev, eventType: newEventType }));
+      setIsEventTypeModalOpen(false);
+      setNewEventType("");
+    }
+  };
+
+  const handleSaveService = () => {
+    if (newService.name.trim()) {
+      // Add to predefined services locally
+      const newSvc = {
+        _id: `temp-${Date.now()}`,
+        name: newService.name,
+        ratePerDay: parseFloat(newService.rate) || 0
+      };
+      setPredefinedServices(prev => [...prev, newSvc]);
+
+      // If triggered from a specific row (optional feature), populate it
+      // But typically "Add New" adds to options. 
+      // Let's just reset
+      setIsServiceModalOpen(false);
+      setNewService({ name: "", rate: 0 });
+    }
+  };
+
+
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-charcoal-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[95vh] overflow-y-auto">
+      <div className="bg-white dark:bg-charcoal-800 rounded-lg shadow-xl max-w-5xl w-full mx-4 max-h-[95vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gold-200 dark:border-charcoal-700 sticky top-0 bg-white dark:bg-charcoal-800">
+        <div className="flex justify-between items-center p-6 border-b border-gold-200 dark:border-charcoal-700 sticky top-0 bg-white dark:bg-charcoal-800 z-10">
           <h2 className="font-playfair text-2xl font-bold text-charcoal-900 dark:text-white">
             {quotation ? "Edit Quotation" : "Create New Quotation"}
           </h2>
@@ -222,336 +274,368 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Client & Event Info */}
-          <div>
-            <h3 className="font-montserrat font-semibold text-charcoal-900 dark:text-white mb-3">
-              Client & Event Information
+        <form onSubmit={handleSubmit} className="p-6 space-y-8">
+
+          {/* Client Information */}
+          <section>
+            <h3 className="font-montserrat font-semibold text-lg text-gold-600 dark:text-gold-400 mb-4 border-b pb-2 border-gold-100">
+              Client Information
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 text-charcoal-900 dark:text-white font-montserrat font-normal hover:bg-gold-50 dark:hover:bg-charcoal-600"
-                  >
-                    {formData.clientId
-                      ? clients.find((client) => client._id === formData.clientId)?.name
-                      : "Select Client (Optional)"}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[400px] p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Search client..." />
-                    <CommandList>
-                      <CommandEmpty>No client found.</CommandEmpty>
-                      <CommandGroup>
-                        {clients.map((client) => (
-                          <CommandItem
-                            key={client._id}
-                            value={client.name}
-                            onSelect={() => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                clientId: client._id,
-                                clientName: client.name,
-                                email: client.email,
-                                whatsapp_no: client.phone,
-                              }));
-                              setOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                formData.clientId === client._id
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {client.name}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-1">Search or Enter Client Name *</label>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-full justify-between border-gray-300 dark:border-gray-600 bg-white dark:bg-charcoal-700 text-left font-normal"
+                    >
+                      {formData.clientName || "Search or Enter Client Name"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[400px] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search client..." onValueChange={(val) => {
+                        if (!clients.find(c => c.name.toLowerCase() === val.toLowerCase())) {
+                          setFormData(prev => ({ ...prev, clientName: val }));
+                        }
+                      }} />
+                      <CommandList>
+                        <CommandEmpty>
+                          <div className="p-2 text-sm text-gray-500 cursor-pointer" onClick={() => setOpen(false)}>
+                            Use entered name for new client
+                          </div>
+                        </CommandEmpty>
+                        <CommandGroup>
+                          {clients.map((client) => (
+                            <CommandItem
+                              key={client._id}
+                              value={client.name}
+                              onSelect={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  clientId: client._id,
+                                  clientName: client.name,
+                                  email: client.email,
+                                  whatsapp_no: client.phone,
+                                }));
+                                setOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  formData.clientId === client._id
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {client.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
 
-              <input
-                type="text"
-                name="clientName"
-                placeholder="Client Name *"
-                value={formData.clientName}
-                onChange={handleChange}
-                required
-                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-              />
-
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-              />
-
-              <input
-                type="text"
-                name="whatsapp_no"
-                placeholder="WhatsApp Number *"
-                value={formData.whatsapp_no}
-                onChange={handleChange}
-                required
-                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-              />
-
-              <select
-                name="eventType"
-                value={formData.eventType}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-              >
-                <option value="Wedding">Wedding</option>
-                <option value="Pre-wedding">Pre-wedding</option>
-                <option value="Other">Other</option>
-              </select>
-              <input
-                type="date"
-                name="eventDate"
-                value={formData.eventDate ? formData.eventDate.split('T')[0] : ''}
-                onChange={handleChange}
-                required
-                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-              />
-              <input
-                type="date"
-                name="validityDate"
-                value={formData.validityDate ? formData.validityDate.split('T')[0] : ''}
-                onChange={handleChange}
-                required
-                className="px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-              />
+              <div>
+                <label className="block text-sm font-medium mb-1">Email ID</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                  placeholder="client@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Mobile Number *</label>
+                <input
+                  type="text"
+                  name="whatsapp_no"
+                  value={formData.whatsapp_no}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                  placeholder="9876543210"
+                />
+              </div>
             </div>
-          </div>
+          </section>
+
+          {/* Event Information */}
+          <section>
+            <h3 className="font-montserrat font-semibold text-lg text-gold-600 dark:text-gold-400 mb-4 border-b pb-2 border-gold-100">
+              Event Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Event Type *</label>
+                <div className="flex gap-2">
+                  <input
+                    list="eventTypes"
+                    name="eventType"
+                    value={formData.eventType}
+                    onChange={handleChange}
+                    className="flex-1 px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                    placeholder="Select or Type (e.g. Wedding)"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="px-3"
+                    onClick={() => setIsEventTypeModalOpen(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <datalist id="eventTypes">
+                  <option value="Wedding" />
+                  <option value="Pre-Wedding" />
+                  <option value="Engagement" />
+                  <option value="Birthday" />
+                  <option value="Anniversary" />
+                  <option value="Baby Shower" />
+                </datalist>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Event Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                  placeholder="Venue / City"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Event Date *</label>
+                <input
+                  type="date"
+                  name="eventDate"
+                  value={formData.eventDate ? formData.eventDate.split('T')[0] : ''}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Quotation Validity</label>
+                <input
+                  type="date"
+                  name="validityDate"
+                  value={formData.validityDate ? formData.validityDate.split('T')[0] : ''}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                />
+              </div>
+            </div>
+          </section>
 
           {/* Services */}
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-montserrat font-semibold text-charcoal-900 dark:text-white">
-                Services
-              </h3>
-              <button
-                type="button"
-                onClick={handleAddService}
-                className="flex items-center gap-1 px-3 py-1 bg-gold-500 hover:bg-gold-600 text-white text-sm rounded transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Add Service
-              </button>
+          <section>
+            <div className="flex justify-between items-center mb-4 border-b pb-2 border-gold-100">
+              <h3 className="font-montserrat font-semibold text-lg text-gold-600 dark:text-gold-400">Services</h3>
+              <Button type="button" onClick={handleAddService} size="sm" className="bg-gold-500 hover:bg-gold-600 text-white">
+                <Plus className="w-4 h-4 mr-1" /> Add Service
+              </Button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {formData.services.map((service, index) => (
-                <div key={index} className="flex gap-3 items-end">
-                  <select
-                    value={service.serviceId}
-                    onChange={(e) =>
-                      handleServiceChange(index, "serviceId", e.target.value)
-                    }
-                    className="flex-1 px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white text-sm"
-                  >
-                    <option value="">Select Service</option>
-                    {services.map((svc) => (
-                      <option key={svc._id} value={svc._id}>
-                        {svc.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="number"
-                    min="1"
-                    value={service.quantity}
-                    onChange={(e) =>
-                      handleServiceChange(index, "quantity", e.target.value)
-                    }
-                    placeholder="Qty"
-                    className="w-16 px-2 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white text-sm"
-                  />
-                  <input
-                    type="number"
-                    min="1"
-                    value={service.days}
-                    onChange={(e) =>
-                      handleServiceChange(index, "days", e.target.value)
-                    }
-                    placeholder="Days"
-                    className="w-16 px-2 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white text-sm"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    value={service.ratePerDay}
-                    onChange={(e) =>
-                      handleServiceChange(index, "ratePerDay", e.target.value)
-                    }
-                    placeholder="Rate"
-                    className="w-24 px-2 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white text-sm"
-                  />
-                  <div className="w-24 px-2 py-2 bg-gold-50 dark:bg-charcoal-700 rounded font-montserrat font-semibold text-charcoal-900 dark:text-white text-right text-sm">
-                    ₹{service.total.toLocaleString()}
+                <div key={index} className="flex flex-wrap md:flex-nowrap gap-3 items-end p-4 bg-gray-50 dark:bg-charcoal-900 rounded-md border border-gray-100 dark:border-gray-700">
+                  <div className="flex-grow w-full md:w-auto">
+                    <label className="block text-xs text-gray-500 mb-1">Service Name *</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={service.serviceName}
+                        onChange={(e) => handleServiceChange(index, "serviceName", e.target.value)}
+                        placeholder="Photography, Drone, etc."
+                        className="flex-1 px-3 py-2 border rounded text-sm dark:bg-charcoal-700 dark:border-gray-600"
+                        list={`serviceSuggestions-${index}`}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => setIsServiceModalOpen(true)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <datalist id={`serviceSuggestions-${index}`}>
+                      {predefinedServices.map(s => <option key={s._id} value={s.name} />)}
+                    </datalist>
+                  </div>
+
+                  <div className="w-24">
+                    <label className="block text-xs text-gray-500 mb-1">Quantity</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={service.quantity}
+                      onChange={(e) => handleServiceChange(index, "quantity", e.target.value)}
+                      className="w-full px-3 py-2 border rounded text-sm dark:bg-charcoal-700 dark:border-gray-600"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <label className="block text-xs text-gray-500 mb-1">Days</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={service.days}
+                      onChange={(e) => handleServiceChange(index, "days", e.target.value)}
+                      className="w-full px-3 py-2 border rounded text-sm dark:bg-charcoal-700 dark:border-gray-600"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <label className="block text-xs text-gray-500 mb-1">Rate</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={service.ratePerDay}
+                      onChange={(e) => handleServiceChange(index, "ratePerDay", e.target.value)}
+                      className="w-full px-3 py-2 border rounded text-sm dark:bg-charcoal-700 dark:border-gray-600"
+                    />
+                  </div>
+                  <div className="w-32 text-right pb-2 font-semibold">
+                    ₹{(service.total || 0).toLocaleString()}
                   </div>
                   <button
                     type="button"
                     onClick={() => handleRemoveService(index)}
-                    className="p-2 hover:bg-red-100 dark:hover:bg-charcoal-700 rounded transition-colors"
+                    className="p-2 text-red-500 hover:bg-red-50 rounded"
                   >
-                    <Trash2 className="w-4 h-4 text-red-600" />
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Discount & Tax */}
-          <div>
-            <h3 className="font-montserrat font-semibold text-charcoal-900 dark:text-white mb-3">
-              Pricing
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block font-montserrat text-sm text-charcoal-600 dark:text-charcoal-300 mb-1">
-                  Discount
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.discount}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        discount: parseFloat(e.target.value) || 0,
-                      }))
-                    }
-                    className="flex-1 px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-                  />
-                  <select
-                    value={formData.discountType}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        discountType: e.target.value,
-                      }))
-                    }
-                    className="w-24 px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-                  >
-                    <option value="fixed">Fixed</option>
-                    <option value="percentage">%</option>
-                  </select>
-                </div>
+          {/* Pricing & Notes */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">Notes</label>
+              <textarea
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                rows="4"
+                className="w-full px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                placeholder="Additional details..."
+              />
+            </div>
+            <div className="bg-gold-50 dark:bg-charcoal-700 p-4 rounded-lg space-y-3 h-fit">
+              <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                <span>Subtotal</span>
+                <span>₹{totals.subtotal.toLocaleString()}</span>
               </div>
+
               <div>
-                <label className="block font-montserrat text-sm text-charcoal-600 dark:text-charcoal-300 mb-1">
-                  Tax (%)
-                </label>
+                <label className="block text-xs text-gray-500 mb-1">Discount (%)</label>
                 <input
                   type="number"
                   min="0"
                   max="100"
-                  value={formData.taxPercentage}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      taxPercentage: parseFloat(e.target.value) || 0,
-                    }))
-                  }
-                  className="w-full px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
+                  value={formData.discountPercentage}
+                  onChange={(e) => setFormData(prev => ({ ...prev, discountPercentage: e.target.value }))}
+                  className="w-full px-2 py-1 border rounded text-right dark:bg-charcoal-600"
                 />
               </div>
-              <div>
-                <label className="block font-montserrat text-sm text-charcoal-600 dark:text-charcoal-300 mb-1">
-                  Payment Terms
-                </label>
-                <input
-                  type="text"
-                  value={formData.paymentTerms}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      paymentTerms: e.target.value,
-                    }))
-                  }
-                  className="w-full px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white text-sm"
-                />
+
+              <div className="flex justify-between text-sm text-red-500">
+                <span>- Discount Amount</span>
+                <span>₹{totals.discountAmount.toLocaleString()}</span>
+              </div>
+
+              <div className="border-t border-gray-300 dark:border-gray-600 pt-3 flex justify-between font-bold text-lg">
+                <span>Total</span>
+                <span className="text-gold-600">₹{totals.grandTotal.toLocaleString()}</span>
               </div>
             </div>
-          </div>
-
-          {/* Notes */}
-          <div>
-            <label className="block font-montserrat font-semibold text-charcoal-900 dark:text-white mb-2">
-              Notes
-            </label>
-            <textarea
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              rows="2"
-              className="w-full px-4 py-2 border border-gold-200 dark:border-charcoal-700 bg-white dark:bg-charcoal-700 rounded font-montserrat text-charcoal-900 dark:text-white"
-            />
-          </div>
-
-          {/* Totals */}
-          <div className="bg-gold-50 dark:bg-charcoal-700 p-4 rounded space-y-2">
-            <div className="flex justify-between font-montserrat">
-              <span className="text-charcoal-700 dark:text-charcoal-300">
-                Subtotal:
-              </span>
-              <span className="font-semibold text-charcoal-900 dark:text-white">
-                ₹{totals.subtotal.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex justify-between font-montserrat">
-              <span className="text-charcoal-700 dark:text-charcoal-300">
-                Tax ({formData.taxPercentage}%):
-              </span>
-              <span className="font-semibold text-charcoal-900 dark:text-white">
-                ₹{totals.tax.toLocaleString()}
-              </span>
-            </div>
-            <div className="border-t border-gold-200 dark:border-charcoal-600 pt-2 flex justify-between font-montserrat font-bold text-lg">
-              <span className="text-charcoal-900 dark:text-white">
-                Grand Total:
-              </span>
-              <span className="text-gold-600">
-                ₹{totals.grandTotal.toLocaleString()}
-              </span>
-            </div>
-          </div>
+          </section>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-gold-500 hover:bg-gold-600 text-white font-montserrat font-semibold rounded transition-colors"
-            >
+          <div className="flex gap-4 pt-4 border-t border-gray-100">
+            <Button type="submit" className="flex-1 bg-gold-500 hover:bg-gold-600 text-white h-12 text-lg">
               {quotation ? "Update Quotation" : "Create Quotation"}
-            </button>
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 px-6 py-3 border border-gold-500 text-gold-600 hover:bg-gold-50 dark:hover:bg-charcoal-700 font-montserrat font-semibold rounded transition-colors"
-            >
+            </Button>
+            <Button type="button" onClick={onCancel} variant="outline" className="flex-1 h-12 text-lg">
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
       </div>
+
+      {/* Event Type Modal */}
+      <Dialog open={isEventTypeModalOpen} onOpenChange={setIsEventTypeModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Event Type</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <label className="block text-sm font-medium mb-2">Event Type Name</label>
+            <input
+              type="text"
+              value={newEventType}
+              onChange={(e) => setNewEventType(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md"
+              placeholder="e.g. Corporate Event"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEventTypeModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveEventType}>Add</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Modal */}
+      <Dialog open={isServiceModalOpen} onOpenChange={setIsServiceModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Service</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Service Name</label>
+              <input
+                type="text"
+                value={newService.name}
+                onChange={(e) => setNewService(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="e.g. Candid Photography"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Default Rate (Per Day)</label>
+              <input
+                type="number"
+                value={newService.rate}
+                onChange={(e) => setNewService(prev => ({ ...prev, rate: e.target.value }))}
+                className="w-full px-3 py-2 border rounded-md"
+                placeholder="0"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsServiceModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveService}>Add Service</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
