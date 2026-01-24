@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
+import Skeleton from "../components/Skeleton";
 
 export default function AdminLoveStories() {
+    const [loading, setLoading] = useState(true);
     const [stories, setStories] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [form, setForm] = useState({
@@ -25,6 +27,8 @@ export default function AdminLoveStories() {
             setStories(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Error fetching stories:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -260,7 +264,21 @@ export default function AdminLoveStories() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 {/* Mobile Card View */}
                 <div className="block md:hidden">
-                    {stories.length === 0 ? (
+                    {loading ? (
+                        <div className="divide-y divide-gray-100">
+                            {[1, 2, 3].map((_, index) => (
+                                <div key={index} className="p-4 space-y-3">
+                                    <div className="rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
+                                        <Skeleton width="100%" height="160px" />
+                                    </div>
+                                    <div>
+                                        <Skeleton width="70%" height="20px" style={{ marginBottom: "5px" }} />
+                                        <Skeleton width="50%" height="16px" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : stories.length === 0 ? (
                         <div className="p-8 text-center text-gray-500">No love stories found. Add your first one!</div>
                     ) : (
                         <div className="divide-y divide-gray-100">
@@ -321,7 +339,24 @@ export default function AdminLoveStories() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {stories.map((story) => (
+                            {loading ? (
+                                [1, 2, 3, 4, 5].map((_, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4">
+                                            <Skeleton width="64px" height="64px" borderRadius="8px" />
+                                        </td>
+                                        <td className="px-6 py-4"><Skeleton width="180px" height="20px" /></td>
+                                        <td className="px-6 py-4"><Skeleton width="120px" height="20px" /></td>
+                                        <td className="px-6 py-4"><Skeleton width="60px" height="24px" borderRadius="16px" /></td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Skeleton width="34px" height="34px" borderRadius="8px" />
+                                                <Skeleton width="34px" height="34px" borderRadius="8px" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : stories.map((story) => (
                                 <tr key={story._id} className="hover:bg-gray-50 transition">
                                     <td className="px-6 py-4">
                                         <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
@@ -362,7 +397,7 @@ export default function AdminLoveStories() {
                                     </td>
                                 </tr>
                             ))}
-                            {stories.length === 0 && (
+                            {!loading && stories.length === 0 && (
                                 <tr>
                                     <td colSpan="5" className="px-6 py-12 text-center text-gray-400">
                                         No love stories found. Add your first one!

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, Edit2, Plus, GripVertical, Star, AlertCircle, Search, ToggleLeft, ToggleRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import Skeleton from "../components/Skeleton";
 
 export default function AdminTestimonials() {
     const [testimonials, setTestimonials] = useState([]);
@@ -172,7 +173,64 @@ export default function AdminTestimonials() {
             </div>
 
             {loading ? (
-                <div className="text-center py-20 text-slate-500">Loading testimonials...</div>
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    {/* Mobile Card View */}
+                    <div className="block md:hidden">
+                        <div className="divide-y divide-slate-100">
+                            {[1, 2, 3].map((_, index) => (
+                                <div key={index} className="p-4 space-y-3">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                                            <Skeleton width="100%" height="100%" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <Skeleton width="70%" height="20px" style={{ marginBottom: "6px" }} />
+                                            <Skeleton width="40%" height="14px" style={{ marginBottom: "6px" }} />
+                                            <Skeleton width="30%" height="14px" />
+                                        </div>
+                                    </div>
+                                    <Skeleton width="100%" height="40px" borderRadius="8px" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full text-sm text-left">
+                            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th className="px-6 py-4">Couple</th>
+                                    <th className="px-6 py-4">Testimonial</th>
+                                    <th className="px-6 py-4">Rating</th>
+                                    <th className="px-6 py-4">Order</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {[1, 2, 3, 4, 5].map((_, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <Skeleton width="40px" height="40px" borderRadius="50%" />
+                                                <div>
+                                                    <Skeleton width="120px" height="18px" style={{ marginBottom: "4px" }} />
+                                                    <Skeleton width="80px" height="12px" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4"><Skeleton width="200px" height="16px" /></td>
+                                        <td className="px-6 py-4"><Skeleton width="60px" height="16px" /></td>
+                                        <td className="px-6 py-4"><Skeleton width="30px" height="16px" /></td>
+                                        <td className="px-6 py-4"><Skeleton width="70px" height="24px" borderRadius="16px" /></td>
+                                        <td className="px-6 py-4 text-right"><Skeleton width="60px" height="32px" borderRadius="8px" className="ml-auto" /></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             ) : filteredTestimonials.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
                     <p className="text-slate-500 mb-4">No testimonials found.</p>

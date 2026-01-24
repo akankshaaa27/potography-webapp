@@ -7,10 +7,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import Skeleton from "../components/Skeleton";
 
 const Home = () => {
   console.log("Home component rendering");
   const [slides, setSlides] = useState([]);
+  const [loadingSlider, setLoadingSlider] = useState(true);
+  const [loadingStories, setLoadingStories] = useState(true);
+  const [loadingTestimonials, setLoadingTestimonials] = useState(true);
+  const [loadingInstagram, setLoadingInstagram] = useState(true);
   const [loveStories, setLoveStories] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -33,7 +38,8 @@ const Home = () => {
           );
         }
       })
-      .catch((err) => console.error("Error fetching slider:", err));
+      .catch((err) => console.error("Error fetching slider:", err))
+      .finally(() => setLoadingSlider(false));
 
     // Fetch Love Stories
     fetch("/api/love-stories")
@@ -43,7 +49,8 @@ const Home = () => {
           setLoveStories(data.filter((s) => s.status === "Active"));
         }
       })
-      .catch((err) => console.error("Error fetching love stories:", err));
+      .catch((err) => console.error("Error fetching love stories:", err))
+      .finally(() => setLoadingStories(false));
 
     // Fetch Testimonials
     fetch("/api/testimonials?type=active")
@@ -53,7 +60,8 @@ const Home = () => {
           setTestimonials(data); // Controller already filters active
         }
       })
-      .catch((err) => console.error("Error fetching testimonials:", err));
+      .catch((err) => console.error("Error fetching testimonials:", err))
+      .finally(() => setLoadingTestimonials(false));
   }, []);
   useEffect(() => {
     let preloaderTimeout;
@@ -120,6 +128,8 @@ const Home = () => {
           }
         } catch (error) {
           console.error("Error fetching Instagram posts:", error);
+        } finally {
+          setLoadingInstagram(false);
         }
       };
       fetchInstagramPosts();
@@ -151,43 +161,81 @@ const Home = () => {
       <main className="main">
         {/* Hero Section */}
         <section id="hero" className="hero dark-background">
-          <Swiper
-            key={slides.length}
-            modules={[Autoplay, Navigation]}
-            autoplay={{ delay: 5000, disableOnInteraction: true }}
-            loop={slides.length > 1}
-            navigation={slides.length > 1}
-            allowTouchMove={slides.length > 1}
-            className="hero-slider"
-          >
-            {slides.map((slide, index) => (
-              <SwiperSlide key={index}>
-                <div className="hero-video-container">
-                  <img src={slide.image} className="img-fluid " alt="" />
-                  <div className="hero-overlay"></div>
-                </div>
-
-                <div
-                  className="container hfull"
-                  data-aos="fade-up"
-                  data-aos-delay="100"
-                >
-                  <div className="row justify-content-center text-center">
-                    <div className="col-lg-8">
-                      <div className="hero-content">
-                        <h1 data-aos="fade-up" data-aos-delay="200">
-                          {slide.title}
-                        </h1>
-                        <p data-aos="fade-up" data-aos-delay="300">
-                          {slide.subtitle}
-                        </p>
-                      </div>
+          {loadingSlider || slides.length === 0 ? (
+            <div className="hero-video-container" style={{ position: "relative", height: "100vh" }}>
+              <img
+                src="/assets/img/slider/hero6.jpg"
+                className="img-fluid"
+                alt="Beauty of Photography"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }}
+              />
+              <div className="hero-overlay"></div>
+              <div
+                className="container hfull d-flex align-items-center justify-content-center"
+                style={{ position: "relative", zIndex: 2, height: "100%" }}
+                data-aos="fade-up"
+                data-aos-delay="100"
+              >
+                <div className="row justify-content-center text-center">
+                  <div className="col-lg-8">
+                    <div className="hero-content">
+                      <h1 data-aos="fade-up" data-aos-delay="200">
+                        Capture the Moment
+                      </h1>
+                      <p data-aos="fade-up" data-aos-delay="300">
+                        Preserving memories that last a lifetime
+                      </p>
                     </div>
                   </div>
                 </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+              </div>
+            </div>
+          ) : (
+            <Swiper
+              key={slides.length}
+              modules={[Autoplay, Navigation]}
+              autoplay={{ delay: 5000, disableOnInteraction: true }}
+              loop={slides.length > 1}
+              navigation={slides.length > 1}
+              allowTouchMove={slides.length > 1}
+              className="hero-slider"
+            >
+              {slides.map((slide, index) => (
+                <SwiperSlide key={index}>
+                  <div className="hero-video-container">
+                    <img src={slide.image} className="img-fluid " alt="" />
+                    <div className="hero-overlay"></div>
+                  </div>
+
+                  <div
+                    className="container hfull"
+                    data-aos="fade-up"
+                    data-aos-delay="100"
+                  >
+                    <div className="row justify-content-center text-center">
+                      <div className="col-lg-8">
+                        <div className="hero-content">
+                          <h1 data-aos="fade-up" data-aos-delay="200">
+                            {slide.title}
+                          </h1>
+                          <p data-aos="fade-up" data-aos-delay="300">
+                            {slide.subtitle}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
         </section>
 
         {/* About Section */}
@@ -259,7 +307,7 @@ const Home = () => {
           </div>
         </section>
 
-     
+
         {/* Statistics Section */}
         <section className="about statistics-section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
@@ -279,64 +327,64 @@ const Home = () => {
                 </div>
               </div>
             </div>
-    
 
-          <div className="row g-4">
-            {/* Stat 1 */}
-            <div
-              className="col-md-6 col-lg-3"
-              data-aos="fade-up"
-              data-aos-delay="100"
-            >
-              <div className="stat-card">
-                <h3 className="stat-number">500+</h3>
-                <p className="stat-label">Elite Clients</p>
-                <p className="stat-description">Worldwide</p>
+
+            <div className="row g-4">
+              {/* Stat 1 */}
+              <div
+                className="col-md-6 col-lg-3"
+                data-aos="fade-up"
+                data-aos-delay="100"
+              >
+                <div className="stat-card">
+                  <h3 className="stat-number">500+</h3>
+                  <p className="stat-label">Elite Clients</p>
+                  <p className="stat-description">Worldwide</p>
+                </div>
               </div>
-            </div>
 
-            {/* Stat 2 */}
-            <div
-              className="col-md-6 col-lg-3"
-              data-aos="fade-up"
-              data-aos-delay="200"
-            >
-              <div className="stat-card">
-                <h3 className="stat-number">10+</h3>
-                <p className="stat-label">Years Excellence</p>
-                <p className="stat-description">Industry Leader</p>
+              {/* Stat 2 */}
+              <div
+                className="col-md-6 col-lg-3"
+                data-aos="fade-up"
+                data-aos-delay="200"
+              >
+                <div className="stat-card">
+                  <h3 className="stat-number">10+</h3>
+                  <p className="stat-label">Years Excellence</p>
+                  <p className="stat-description">Industry Leader</p>
+                </div>
               </div>
-            </div>
 
-            {/* Stat 3 */}
-            <div
-              className="col-md-6 col-lg-3"
-              data-aos="fade-up"
-              data-aos-delay="300"
-            >
-              <div className="stat-card">
-                <h3 className="stat-number">10+</h3>
-                <p className="stat-label">Expert Team</p>
-                <p className="stat-description">Certified Professionals</p>
+              {/* Stat 3 */}
+              <div
+                className="col-md-6 col-lg-3"
+                data-aos="fade-up"
+                data-aos-delay="300"
+              >
+                <div className="stat-card">
+                  <h3 className="stat-number">10+</h3>
+                  <p className="stat-label">Expert Team</p>
+                  <p className="stat-description">Certified Professionals</p>
+                </div>
               </div>
-            </div>
 
-            {/* Stat 4 */}
-            <div
-              className="col-md-6 col-lg-3"
-              data-aos="fade-up"
-              data-aos-delay="400"
-            >
-              <div className="stat-card">
-                <h3 className="stat-number">24/7</h3>
-                <p className="stat-label">Concierge Service</p>
-                <p className="stat-description">Always Available</p>
+              {/* Stat 4 */}
+              <div
+                className="col-md-6 col-lg-3"
+                data-aos="fade-up"
+                data-aos-delay="400"
+              >
+                <div className="stat-card">
+                  <h3 className="stat-number">24/7</h3>
+                  <p className="stat-label">Concierge Service</p>
+                  <p className="stat-description">Always Available</p>
+                </div>
               </div>
             </div>
           </div>
-                </div>
         </section>
-   {/* Quote Section */}
+        {/* Quote Section */}
         <section
           className="container px-5 pt-4"
           data-aos="fade-up"
@@ -489,7 +537,26 @@ const Home = () => {
           </div>
 
           <div className="container" data-aos="fade-up" data-aos-delay="100">
-            {testimonials.length > 0 ? (
+            {loadingTestimonials ? (
+              <div className="row">
+                {[1, 2, 3].map((_, index) => (
+                  <div key={index} className="col-lg-4">
+                    <div className="testimonial-item" style={{ height: "100%", padding: "30px" }}>
+                      <div className="d-flex align-items-center mb-3">
+                        <Skeleton borderRadius="50%" width="50px" height="50px" />
+                        <div className="ms-3">
+                          <Skeleton width="120px" height="20px" style={{ marginBottom: "5px" }} />
+                          <Skeleton width="80px" height="15px" />
+                        </div>
+                      </div>
+                      <Skeleton width="100%" height="15px" style={{ marginBottom: "10px" }} />
+                      <Skeleton width="100%" height="15px" style={{ marginBottom: "10px" }} />
+                      <Skeleton width="80%" height="15px" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : testimonials.length > 0 ? (
               <Swiper
                 modules={[Autoplay, Navigation]}
                 slidesPerView={1}
@@ -595,7 +662,22 @@ const Home = () => {
 
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             {/* Love Stories Slider */}
-            {loveStories.length === 0 ? (
+            {loadingStories ? (
+              <div className="row">
+                {[1, 2, 3].map((_, index) => (
+                  <div key={index} className="col-md-4">
+                    <div className="project-card" style={{ height: "100%" }}>
+                      <Skeleton width="100%" height="300px" style={{ marginBottom: "15px" }} />
+                      <div className="d-flex flex-column gap-2">
+                        <Skeleton width="80%" height="25px" />
+                        <Skeleton width="100%" height="15px" />
+                        <Skeleton width="90%" height="15px" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : loveStories.length === 0 ? (
               <div className="col-12 text-center p-5">
                 <p>No love stories to share yet.</p>
               </div>
@@ -690,37 +772,45 @@ const Home = () => {
               <div className="row g-2 justify-content-center">
                 {/* Static Grid to simulate Instagram Feed using existing portfolio images */}
                 {/* This avoids 404s from invalid widget IDs and requires no API tokens */}
-                {[
-                  "/assets/img/HomePage/7.webp",
-                  "/assets/img/HomePage/11.webp",
-                  "/assets/img/HomePage/16.webp",
-                  "/assets/img/HomePage/18.webp",
-                  "/assets/img/HomePage/128.webp",
-                  "/assets/img/HomePage/7.webp",
-                ].map((imgSrc, index) => (
-                  <div key={index} className="col-4 col-md-2">
-                    <a
-                      href="https://www.instagram.com/thepatilphotography"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="d-block overflow-hidden position-relative group"
-                      style={{ paddingBottom: "100%", position: "relative" }}
-                    >
-                      <img
-                        src={imgSrc}
-                        alt="Instagram view"
-                        className="img-fluid position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
-                        style={{ transition: "transform 0.3s ease" }}
-                        onMouseOver={(e) =>
-                          (e.currentTarget.style.transform = "scale(1.05)")
-                        }
-                        onMouseOut={(e) =>
-                          (e.currentTarget.style.transform = "scale(1)")
-                        }
-                      />
-                    </a>
-                  </div>
-                ))}
+                {loadingInstagram ? (
+                  [1, 2, 3, 4, 5, 6].map((_, index) => (
+                    <div key={index} className="col-4 col-md-2">
+                      <Skeleton width="100%" style={{ paddingBottom: "100%" }} />
+                    </div>
+                  ))
+                ) : (
+                  [
+                    "/assets/img/HomePage/7.webp",
+                    "/assets/img/HomePage/11.webp",
+                    "/assets/img/HomePage/16.webp",
+                    "/assets/img/HomePage/18.webp",
+                    "/assets/img/HomePage/128.webp",
+                    "/assets/img/HomePage/7.webp",
+                  ].map((imgSrc, index) => (
+                    <div key={index} className="col-4 col-md-2">
+                      <a
+                        href="https://www.instagram.com/thepatilphotography"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="d-block overflow-hidden position-relative group"
+                        style={{ paddingBottom: "100%", position: "relative" }}
+                      >
+                        <img
+                          src={imgSrc}
+                          alt="Instagram view"
+                          className="img-fluid position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+                          style={{ transition: "transform 0.3s ease" }}
+                          onMouseOver={(e) =>
+                            (e.currentTarget.style.transform = "scale(1.05)")
+                          }
+                          onMouseOut={(e) =>
+                            (e.currentTarget.style.transform = "scale(1)")
+                          }
+                        />
+                      </a>
+                    </div>
+                  ))
+                )}
               </div>
 
               <div className="text-center mt-4">
@@ -745,10 +835,10 @@ const Home = () => {
         story={
           selectedStory
             ? {
-                ...selectedStory,
-                subtitle: selectedStory.location,
-                images: selectedStory.gallery || [],
-              }
+              ...selectedStory,
+              subtitle: selectedStory.location,
+              images: selectedStory.gallery || [],
+            }
             : null
         }
       />

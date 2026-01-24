@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Image as ImageIcon } from "lucide-react";
+import Skeleton from "../components/Skeleton";
 
 export default function AdminSlider() {
   const queryClient = useQueryClient();
@@ -80,7 +81,19 @@ export default function AdminSlider() {
         {/* Mobile Card View */}
         <div className="block md:hidden">
           {isLoading ? (
-            <div className="p-8 text-center text-gray-500">Loading sliders...</div>
+            <div className="divide-y divide-gray-100">
+              {[1, 2, 3].map((_, index) => (
+                <div key={index} className="p-4 space-y-3">
+                  <div className="rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
+                    <Skeleton width="100%" height="160px" />
+                  </div>
+                  <div>
+                    <Skeleton width="70%" height="20px" style={{ marginBottom: "5px" }} />
+                    <Skeleton width="30%" height="16px" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : sliders.length === 0 ? (
             <div className="p-8 text-center text-gray-500">No slides found. Create one!</div>
           ) : (
@@ -139,7 +152,22 @@ export default function AdminSlider() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
-                <tr><td colSpan={5} className="p-8 text-center text-gray-500">Loading...</td></tr>
+                [1, 2, 3, 4, 5].map((_, index) => (
+                  <tr key={index}>
+                    <td className="p-4">
+                      <Skeleton width="128px" height="80px" borderRadius="8px" />
+                    </td>
+                    <td className="p-4"><Skeleton width="200px" height="24px" /></td>
+                    <td className="p-4"><Skeleton width="40px" height="24px" /></td>
+                    <td className="p-4"><Skeleton width="60px" height="24px" borderRadius="15px" /></td>
+                    <td className="p-4 text-right">
+                      <div className="inline-flex gap-2">
+                        <Skeleton width="36px" height="36px" borderRadius="8px" />
+                        <Skeleton width="36px" height="36px" borderRadius="8px" />
+                      </div>
+                    </td>
+                  </tr>
+                ))
               ) : sliders.length === 0 ? (
                 <tr><td colSpan={5} className="p-8 text-center text-gray-500">No slides found. Create one!</td></tr>
               ) : (

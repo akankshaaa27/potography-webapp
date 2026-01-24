@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import LuxGallery from "../components/LuxGallery";
+import Skeleton from "../components/Skeleton";
 
 const Portfolio = () => {
   const [portfolioImages, setPortfolioImages] = useState([]);
@@ -137,10 +138,12 @@ const Portfolio = () => {
             </div>
 
             {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-accent-color" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
+              <div className="row g-4">
+                {[1, 2, 3, 4, 5, 6].map((_, index) => (
+                  <div key={index} className="col-12 col-md-4">
+                    <Skeleton width="100%" height="300px" borderRadius="10px" />
+                  </div>
+                ))}
               </div>
             ) : filteredImages.length > 0 ? (
               <LuxGallery images={filteredImages.map(item => item.image)} galleryId="portfolio" />

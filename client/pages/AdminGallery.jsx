@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Image as ImageIcon, Filter } from "lucide-react";
+import Skeleton from "../components/Skeleton";
 
 export default function AdminGallery() {
   const queryClient = useQueryClient();
@@ -88,7 +89,22 @@ export default function AdminGallery() {
 
       {/* Gallery Grid */}
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Loading gallery...</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((_, index) => (
+            <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="relative aspect-square bg-gray-100">
+                <Skeleton width="100%" height="100%" />
+              </div>
+              <div className="p-4">
+                <Skeleton width="70%" height="24px" style={{ marginBottom: "8px" }} />
+                <div className="flex justify-between items-center mt-2">
+                  <Skeleton width="60px" height="20px" borderRadius="6px" />
+                  <Skeleton width="12px" height="12px" borderRadius="50%" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : galleryItems.length === 0 ? (
         <div className="text-center py-12 text-gray-500">No images in gallery. Add your first masterpiece!</div>
       ) : (
