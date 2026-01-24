@@ -100,10 +100,12 @@ const Home = () => {
       // Fetch Instagram posts
       const fetchInstagramPosts = async () => {
         const accessToken =
-          process.env.REACT_APP_INSTAGRAM_ACCESS_TOKEN ||
+          import.meta.env.VITE_INSTAGRAM_ACCESS_TOKEN ||
+          import.meta.env.REACT_APP_INSTAGRAM_ACCESS_TOKEN ||
           "YOUR_INSTAGRAM_ACCESS_TOKEN";
         const accountId =
-          process.env.REACT_APP_INSTAGRAM_ACCOUNT_ID ||
+          import.meta.env.VITE_INSTAGRAM_ACCOUNT_ID ||
+          import.meta.env.REACT_APP_INSTAGRAM_ACCOUNT_ID ||
           "YOUR_INSTAGRAM_ACCOUNT_ID";
         if (
           accessToken === "YOUR_INSTAGRAM_ACCESS_TOKEN" ||
@@ -112,6 +114,7 @@ const Home = () => {
           console.log(
             "Please set your Instagram access token and account ID in environment variables",
           );
+          setLoadingInstagram(false);
           return;
         }
         try {
