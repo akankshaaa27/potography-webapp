@@ -15,6 +15,8 @@ export default function AdminLoveStories() {
         status: "Active",
     });
     const [editingId, setEditingId] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     useEffect(() => {
         fetchStories();
@@ -69,11 +71,14 @@ export default function AdminLoveStories() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSaving) return;
+
         if (!form.thumbnail) {
             alert("Main Thumbnail is required");
             return;
         }
 
+        setIsSaving(true);
         const url = editingId ? `/api/love-stories/${editingId}` : "/api/love-stories";
         const method = editingId ? "PUT" : "POST";
 
@@ -89,11 +94,15 @@ export default function AdminLoveStories() {
                 setForm({ title: "", location: "", description: "", thumbnail: "", gallery: [], status: "Active" });
                 setEditingId(null);
                 fetchStories();
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 3000);
             } else {
                 alert("Failed to save story");
             }
         } catch (error) {
             console.error("Error saving story:", error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -127,8 +136,8 @@ export default function AdminLoveStories() {
             </div>
 
             {showForm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                             <h2 className="text-xl font-bold">{editingId ? "Edit Story" : "Add New Story"}</h2>
                             <button
@@ -179,18 +188,30 @@ export default function AdminLoveStories() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Main Thumbnail (Required)</label>
-                                    <div className="flex items-center gap-4">
-                                        {form.thumbnail && (
-                                            <img
-                                                src={form.thumbnail}
-                                                alt="Thumbnail"
-                                                className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                                            />
+                                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative h-32 flex items-center justify-center">
+                                        {form.thumbnail ? (
+                                            <div className="relative w-full h-full">
+                                                <img
+                                                    src={form.thumbnail}
+                                                    alt="Thumbnail"
+                                                    className="w-full h-full object-contain rounded-lg"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
+                                                    <span className="text-white font-medium text-sm">Change</span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-gray-400 flex flex-col items-center">
+                                                <span className="text-2xl">+</span>
+                                                <span className="text-xs">Upload Image</span>
+                                            </div>
                                         )}
-                                        <label className="cursor-pointer bg-gray-50 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-100 transition">
-                                            <span>Upload Image</span>
-                                            <input type="file" onChange={handleThumbnailChange} className="hidden" accept="image/*" />
-                                        </label>
+                                        <input
+                                            type="file"
+                                            onChange={handleThumbnailChange}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            accept="image/*"
+                                        />
                                     </div>
                                 </div>
 
@@ -253,7 +274,7 @@ export default function AdminLoveStories() {
                                     type="submit"
                                     className="px-6 py-2 rounded-lg bg-gold-500 text-white hover:bg-gold-600 font-medium shadow-sm"
                                 >
-                                    {editingId ? "Update Story" : "Create Story"}
+                                    {isSaving ? "Saving..." : (editingId ? "Update Story" : "Create Story")}
                                 </button>
                             </div>
                         </form>
@@ -408,6 +429,15 @@ export default function AdminLoveStories() {
                     </table>
                 </div>
             </div>
+            {/* Success Popup */}
+            {showSuccess && (
+                <div className="fixed bottom-10 right-10 z-[100] animate-bounce">
+                    <div className="flex items-center gap-3 rounded-xl bg-emerald-500 px-6 py-4 shadow-2xl text-white">
+                        <span className="text-2xl">👉</span>
+                        <div className="font-bold">Story saved successfully</div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -430,8 +430,8 @@ export default function AccessoriesManagement() {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4" onClick={() => setModalOpen(false)}>
+          <div className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-gold-500">Accessory</p>

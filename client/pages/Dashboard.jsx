@@ -304,8 +304,8 @@ export default function Dashboard() {
       </div>
       {/* Testimonial Preview Modal */}
       {selectedTestimonial && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" onClick={() => setSelectedTestimonial(null)}>
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-start justify-between">
               <h3 className="text-xl font-bold text-charcoal-900">Review Testimonial</h3>
               <button

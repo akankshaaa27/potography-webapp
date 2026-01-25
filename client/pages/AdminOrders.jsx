@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import jsPDF from "jspdf";
 import { Eye, FileText, Edit, Trash2, Download } from "lucide-react";
 
@@ -40,10 +40,32 @@ export default function AdminOrders() {
   const [clientSearch, setClientSearch] = useState("");
   const [showClientDropdown, setShowClientDropdown] = useState(false);
 
+  /* New states for UI enhancements */
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showServiceDropdown, setShowServiceDropdown] = useState(false); // For service multi-select
+
+  // Dropdown Ref
+  const dropdownRef = useRef(null);
+
   useEffect(() => {
     fetchOrders();
     fetchClients();
   }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowServiceDropdown(false);
+      }
+    }
+    if (showServiceDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showServiceDropdown]);
 
   const stats = useMemo(() => {
     const total = orders.length;
@@ -184,6 +206,8 @@ export default function AdminOrders() {
   }
 
   async function saveOrder() {
+    if (isSaving) return;
+
     // basic validation
     if (!form.name || !form.whatsapp_no) {
       alert("Please provide name and WhatsApp number");
@@ -260,9 +284,13 @@ export default function AdminOrders() {
       await fetchOrders();
       setShowForm(false);
       setEditingOrder(null);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     } catch (err) {
       console.error(err);
       alert(err.message);
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -296,26 +324,32 @@ export default function AdminOrders() {
     const doc = new jsPDF();
 
     // Helper to add text
-    const addText = (text, x, y, size = 12, font = "helvetica", style = "normal") => {
+    const addText = (text, x, y, size = 12, font = "helvetica", style = "normal", align = "left", color = [0, 0, 0]) => {
       doc.setFont(font, style);
       doc.setFontSize(size);
-      doc.text(text, x, y);
+      doc.setTextColor(...color);
+      doc.text(text, x, y, { align });
     };
 
-    // Header
-    doc.setFillColor(218, 165, 32); // Gold color approximation
-    doc.rect(0, 0, 210, 40, 'F');
-    doc.setTextColor(255, 255, 255);
+    // Header Background
+    doc.setFillColor(20, 20, 20); // Dark background
+    doc.rect(0, 0, 210, 50, 'F');
 
-    // Correct way to center text in jsPDF
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
-    doc.text("PAYMENT RECEIPT", 105, 25, { align: "center" });
+    // Shop Name & Logo (Text placeholder for logo if no image)
+    addText("POTOGRAPHY", 20, 20, 22, "helvetica", "bold", "left", [218, 165, 32]);
+    addText("Capturing Moments, Creating Memories", 20, 28, 10, "helvetica", "italic", "left", [255, 255, 255]);
 
-    // Reset
-    doc.setTextColor(0, 0, 0);
+    // Social Media
+    const socialY = 40;
+    const socialSize = 8;
+    const socialColor = [200, 200, 200];
+    const socialText = "WhatsApp: +91 XXXXX XXXXX | IG: @potography | FB: Potography | YT: Potography Films";
+    addText(socialText, 20, socialY, socialSize, "helvetica", "normal", "left", socialColor);
 
-    // Reset
+    // Title
+    addText("PAYMENT RECEIPT", 190, 30, 24, "helvetica", "bold", "right", [255, 255, 255]);
+
+    // Reset Color
     doc.setTextColor(0, 0, 0);
 
     const total = parseFloat(order.amount) || 0;
@@ -323,12 +357,12 @@ export default function AdminOrders() {
     const remaining = total - paid;
     const dateStr = new Date().toLocaleDateString();
 
-    let y = 60;
+    let y = 70;
 
     // Order Info Box
     doc.setFontSize(10);
-    doc.text(`Receipt Date: ${dateStr}`, 150, 50);
-    doc.text(`Order ID: #${order._id.slice(-6).toUpperCase()}`, 150, 55);
+    doc.text(`Receipt Date: ${dateStr}`, 150, 60);
+    doc.text(`Order ID: #${order._id.slice(-6).toUpperCase()}`, 150, 65);
 
     doc.setFontSize(14);
     doc.text(`Client: ${order.name || order.customerName}`, 20, y);
@@ -630,8 +664,8 @@ export default function AdminOrders() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-          <div className="flex flex-col w-full max-w-5xl max-h-[90vh] rounded-2xl bg-white shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm" onClick={() => setShowForm(false)}>
+          <div className="flex flex-col w-full max-w-5xl max-h-[90vh] rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
 
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-6 py-4">
@@ -757,31 +791,47 @@ export default function AdminOrders() {
                 </div>
 
                 <FormField label="Service" required>
-                  <div className="space-y-2 rounded-lg border border-slate-200 p-3">
-                    <div className="flex flex-wrap gap-3">
-                      {serviceTypes.map((svc) => (
-                        <label key={svc} className="inline-flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            value={svc}
-                            checked={(form.service || "").split(", ").includes(svc)}
-                            onChange={handleServiceChange}
-                            className="h-4 w-4 rounded border-slate-300 text-gold-500 focus:ring-gold-500"
-                          />
-                          <span className="text-sm text-slate-700">{svc}</span>
-                        </label>
-                      ))}
-                    </div>
+                  <div className="relative" ref={dropdownRef}>
                     <button
                       type="button"
-                      onClick={() => setShowServiceModal(true)}
-                      className="mt-2 text-xs font-semibold text-gold-600 hover:text-gold-700"
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-left focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none bg-white flex justify-between items-center"
+                      onClick={() => setShowServiceDropdown(!showServiceDropdown)}
                     >
-                      + Add New Service
+                      <span className={form.service ? "text-slate-900" : "text-slate-400"}>
+                        {form.service || "Select services..."}
+                      </span>
+                      <span className="text-slate-400">▼</span>
                     </button>
+                    {showServiceDropdown && (
+                      <div className="absolute z-20 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-xl max-h-60 overflow-y-auto">
+                        <div className="p-2 space-y-1">
+                          {serviceTypes.map((svc) => (
+                            <label key={svc} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                              <input
+                                type="checkbox"
+                                value={svc}
+                                checked={(form.service || "").split(", ").map(s => s.trim()).includes(svc)}
+                                onChange={handleServiceChange}
+                                className="h-4 w-4 rounded border-slate-300 text-gold-500 focus:ring-gold-500"
+                              />
+                              <span className="text-sm text-slate-700">{svc}</span>
+                            </label>
+                          ))}
+                        </div>
+                        <div className="border-t border-slate-100 p-2">
+                          <button
+                            type="button"
+                            onClick={() => { setShowServiceModal(true); setShowServiceDropdown(false); }}
+                            className="w-full text-left px-2 py-1 text-xs font-semibold text-gold-600 hover:text-gold-700 hover:bg-gold-50 rounded"
+                          >
+                            + Add New Service
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </FormField>
-                <FormField label="Album Pages" required>
+                <FormField label="Album Pages">
                   <textarea
                     name="album_pages"
                     value={form.album_pages}
@@ -877,7 +927,7 @@ export default function AdminOrders() {
                 className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition-colors shadow-sm"
                 onClick={saveOrder}
               >
-                Save Order
+                {isSaving ? "Saving..." : "Save Order"}
               </button>
             </div>
           </div>
@@ -887,8 +937,8 @@ export default function AdminOrders() {
 
       {
         showDelete && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowDelete(false)}>
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-3xl text-rose-500">
                 !
               </div>
@@ -912,8 +962,8 @@ export default function AdminOrders() {
       {/* Add Type Modal */}
       {
         showTypeModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4" onClick={() => setShowTypeModal(false)}>
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold text-charcoal-900">Add New Type</h3>
               <p className="mt-1 text-xs text-slate-500">Enter a new photography type to add to the list.</p>
               <div className="mt-4">
@@ -949,8 +999,8 @@ export default function AdminOrders() {
       {/* Add Service Modal */}
       {
         showServiceModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4" onClick={() => setShowServiceModal(false)}>
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold text-charcoal-900">Add New Service</h3>
               <p className="mt-1 text-xs text-slate-500">Enter a new service name to add to the checklist.</p>
               <div className="mt-4">
@@ -985,8 +1035,8 @@ export default function AdminOrders() {
       {/* View Order Modal */}
       {
         showView && viewOrder && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm" onClick={() => setShowView(false)}>
+            <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
               <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-6 py-4 bg-slate-50">
                 <h3 className="text-xl font-semibold text-charcoal-900">Order Details</h3>
                 <button
@@ -1006,22 +1056,14 @@ export default function AdminOrders() {
                       <span className="block text-slate-500 text-xs">Client Name</span>
                       <span className="font-medium text-slate-900">{viewOrder.name || viewOrder.customerName}</span>
                     </div>
-                    <div>
-                      <span className="block text-slate-500 text-xs">Event Name</span>
-                      <span className="font-medium text-slate-900">{viewOrder.event_name}</span>
-                    </div>
+
                     <div>
                       <span className="block text-slate-500 text-xs">Date</span>
                       <span className="font-medium text-slate-900">
                         {viewOrder.event_date || viewOrder.date ? new Date(viewOrder.event_date || viewOrder.date).toLocaleDateString() : "-"}
                       </span>
                     </div>
-                    <div>
-                      <span className="block text-slate-500 text-xs">Time</span>
-                      <span className="font-medium text-slate-900">
-                        {viewOrder.start_time || "--"} - {viewOrder.end_time || "--"}
-                      </span>
-                    </div>
+
                     <div>
                       <span className="block text-slate-500 text-xs">Location</span>
                       <span className="font-medium text-slate-900">{viewOrder.location || "-"}</span>

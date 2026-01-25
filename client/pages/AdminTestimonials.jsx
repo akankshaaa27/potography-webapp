@@ -9,6 +9,7 @@ export default function AdminTestimonials() {
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     const [currentTestimonial, setCurrentTestimonial] = useState({
         coupleName: "",
@@ -72,6 +73,8 @@ export default function AdminTestimonials() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSaving) return;
+        setIsSaving(true);
 
         try {
             const url = isEditing && currentTestimonial._id
@@ -97,6 +100,8 @@ export default function AdminTestimonials() {
         } catch (error) {
             console.error("Error saving testimonial:", error);
             alert("Network error. Please try again.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -379,8 +384,8 @@ export default function AdminTestimonials() {
             )}
 
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
+                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white px-6 py-4 border-b border-slate-100 flex justify-between items-center z-10">
                             <h2 className="text-xl font-bold text-charcoal-900">
                                 {isEditing ? "Edit Testimonial" : "New Testimonial"}
@@ -519,7 +524,7 @@ export default function AdminTestimonials() {
                                     type="submit"
                                     className="px-5 py-2.5 bg-charcoal-900 text-white rounded-xl hover:bg-charcoal-800 font-medium transition shadow-sm"
                                 >
-                                    {isEditing ? "Update Testimonial" : "Create Testimonial"}
+                                    {isSaving ? "Saving..." : (isEditing ? "Update Testimonial" : "Create Testimonial")}
                                 </button>
                             </div>
                         </form>

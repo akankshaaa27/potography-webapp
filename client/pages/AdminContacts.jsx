@@ -41,8 +41,8 @@ export default function AdminContacts() {
     };
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-semibold text-charcoal-900 mb-6">Contact Messages</h1>
+        <div className="p-6 max-w-7xl mx-auto">
+            <h1 className="text-3xl font-bold text-charcoal-900 mb-8 tracking-tight">Contact Messages</h1>
 
             <div className="grid gap-6">
                 {messages.length === 0 ? (

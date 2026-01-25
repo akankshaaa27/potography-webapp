@@ -8,6 +8,8 @@ export default function AdminFilms() {
     const [modalOpen, setModalOpen] = useState(false);
     const [form, setForm] = useState({ id: null, title: "", youtubeUrl: "", category: "Wedding", status: "Active" });
     const [deleteId, setDeleteId] = useState(null);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const { data: films = [], isLoading } = useQuery({
         queryKey: ["films"],
@@ -45,9 +47,18 @@ export default function AdminFilms() {
             toast.success(form.id ? "Film updated" : "Film created");
             setModalOpen(false);
             setForm({ id: null, title: "", youtubeUrl: "", category: "Wedding", status: "Active" });
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 3000);
         },
         onError: (err) => toast.error(err.message),
+        onSettled: () => setIsSaving(false),
     });
+
+    const handleSave = () => {
+        if (isSaving) return;
+        setIsSaving(true);
+        mutation.mutate(form);
+    };
 
     const deleteMutation = useMutation({
         mutationFn: async (id) => {
@@ -139,8 +150,8 @@ export default function AdminFilms() {
 
             {/* Modal */}
             {modalOpen && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setModalOpen(false)}>
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-gray-900">{form.id ? "Edit Film" : "New Film"}</h2>
                             <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">✕</button>
@@ -209,8 +220,8 @@ export default function AdminFilms() {
 
                         <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
                             <button onClick={() => setModalOpen(false)} className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                            <button onClick={() => mutation.mutate(form)} className="px-5 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-md">
-                                {form.id ? "Update Film" : "Create Film"}
+                            <button onClick={handleSave} disabled={isSaving} className="px-5 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-md disabled:bg-gray-400">
+                                {isSaving ? "Saving..." : (form.id ? "Update Film" : "Create Film")}
                             </button>
                         </div>
                     </div>
@@ -219,8 +230,8 @@ export default function AdminFilms() {
 
             {/* Delete Confirmation */}
             {deleteId && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center shadow-2xl animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setDeleteId(null)}>
+                    <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
                         <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Trash2 size={24} />
                         </div>
@@ -230,6 +241,16 @@ export default function AdminFilms() {
                             <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors">Cancel</button>
                             <button onClick={() => deleteMutation.mutate(deleteId)} className="flex-1 px-4 py-2.5 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md">Delete</button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Success Popup */}
+            {showSuccess && (
+                <div className="fixed bottom-10 right-10 z-[100] animate-bounce">
+                    <div className="flex items-center gap-3 rounded-xl bg-emerald-500 px-6 py-4 shadow-2xl text-white">
+                        <span className="text-2xl">👉</span>
+                        <div className="font-bold">Film saved successfully</div>
                     </div>
                 </div>
             )}

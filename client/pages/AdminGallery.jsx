@@ -9,6 +9,7 @@ export default function AdminGallery() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState({ id: null, title: "", image: "", category: "General", status: "Active" });
   const [deleteId, setDeleteId] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { data: galleryItems = [], isLoading } = useQuery({
     queryKey: ["gallery"],
@@ -46,6 +47,8 @@ export default function AdminGallery() {
       toast.success(form.id ? "Item updated" : "Item created");
       setModalOpen(false);
       setForm({ id: null, title: "", image: "", category: "General", status: "Active" });
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     },
     onError: (err) => toast.error(err.message),
   });
@@ -146,8 +149,8 @@ export default function AdminGallery() {
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setModalOpen(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">{form.id ? "Edit Item" : "New Item"}</h2>
               <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">✕</button>
@@ -195,19 +198,38 @@ export default function AdminGallery() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Image</label>
-                <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+
+                {/* Image URL Input */}
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    value={form.image && !form.image.startsWith("data:") ? form.image : ""}
+                    onChange={(e) => setForm({ ...form, image: e.target.value })}
+                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-shadow"
+                    placeholder="Paste Image URL..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Or upload from your device below</p>
+                </div>
+
+                <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative bg-gray-50/50">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    disabled={!!form.image}
                   />
                   {form.image ? (
-                    <div className="relative">
+                    <div className="relative z-20">
                       <img src={form.image} alt="Preview" className="w-full h-48 object-cover rounded-lg shadow-sm" />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                        <span className="text-white font-medium">Change Image</span>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); setForm({ ...form, image: "" }); }}
+                        className="absolute top-2 right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md hover:bg-red-50 transition-colors"
+                        title="Remove Image"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   ) : (
                     <div className="py-8 text-gray-400 flex flex-col items-center gap-2">
@@ -231,8 +253,8 @@ export default function AdminGallery() {
 
       {/* Delete Confirmation */}
       {deleteId && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setDeleteId(null)}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm text-center shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Trash2 size={24} />
             </div>
@@ -242,6 +264,16 @@ export default function AdminGallery() {
               <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors">Cancel</button>
               <button onClick={() => deleteMutation.mutate(deleteId)} className="flex-1 px-4 py-2.5 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md">Delete</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Popup */}
+      {showSuccess && (
+        <div className="fixed bottom-10 right-10 z-[100] animate-bounce">
+          <div className="flex items-center gap-3 rounded-xl bg-emerald-500 px-6 py-4 shadow-2xl text-white">
+            <span className="text-2xl">👉</span>
+            <div className="font-bold">Gallery saved successfully</div>
           </div>
         </div>
       )}
