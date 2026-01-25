@@ -14,7 +14,6 @@ const quotationSchema = new mongoose.Schema(
     },
     eventType: {
       type: String,
-      enum: ['Wedding', 'Pre-wedding', 'Other'],
       required: [true, 'Event type is required'],
     },
     quotationDate: {

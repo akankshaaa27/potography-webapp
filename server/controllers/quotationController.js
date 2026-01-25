@@ -38,41 +38,24 @@ export const getQuotationById = async (req, res) => {
 // Create quotation
 export const createQuotation = async (req, res) => {
   try {
-    let { clientId, clientName, client } = req.body;
-
-    // Handle "Client" string from frontend
+    // Only use provided clientId if it exists, otherwise leave it null
+    // We do NOT automatically create or lookup clients here anymore per user request
+    const { clientId, clientName, client } = req.body;
     const nameToSearch = clientName || client;
-
-    // If no ID but we have a name, try to find or create the client
-    if (!clientId && nameToSearch) {
-      let existingClient = await Client.findOne({ name: nameToSearch });
-      if (existingClient) {
-        clientId = existingClient._id;
-      } else {
-        // Create new Lead client
-        const newClient = await Client.create({
-          name: nameToSearch,
-          email: req.body.email || `pending-${Date.now()}@example.com`,
-          phone: req.body.whatsapp_no || "0000000000",
-          status: 'Lead'
-        });
-        clientId = newClient._id;
-      }
-    }
 
     const quotationNumber = await generateQuotationNumber();
     const quotationData = {
       ...req.body,
       quotationNumber,
-      clientId,
-      clientName: nameToSearch // Snapshot
+      clientId: clientId || null, // Explicitly null if not provided
+      clientName: nameToSearch
     };
 
     const quotation = new Quotation(quotationData);
     const savedQuotation = await quotation.save();
 
-    // Try populating if we have an ID, otherwise ignore
-    if (clientId) {
+    // Try populating if we have an ID
+    if (savedQuotation.clientId) {
       await savedQuotation.populate('clientId');
     }
 
@@ -85,7 +68,42 @@ export const createQuotation = async (req, res) => {
 // Update quotation
 export const updateQuotation = async (req, res) => {
   try {
-    const quotation = await Quotation.findByIdAndUpdate(req.params.id, req.body, {
+    const { id } = req.params;
+    let updateData = req.body;
+
+    // Check if we are converting to Accepted
+    if (updateData.status === 'Accepted') {
+      const existingQuotation = await Quotation.findById(id);
+
+      if (!existingQuotation) {
+        return res.status(404).json({ message: 'Quotation not found' });
+      }
+
+      // Logic: If status is becoming Accepted and we don't have a linked Client yet, create one
+      if (!existingQuotation.clientId && !updateData.clientId) {
+        const clientName = updateData.clientName || existingQuotation.clientName;
+        const email = updateData.email || existingQuotation.email;
+        const phone = updateData.whatsapp_no || existingQuotation.whatsapp_no;
+
+        if (clientName) {
+          // Check if client exists by name to avoid duplicates (optional, but good practice)
+          let clientObj = await Client.findOne({ name: clientName });
+
+          if (!clientObj) {
+            clientObj = await Client.create({
+              name: clientName,
+              email: email || "",
+              phone: phone || "",
+              status: 'Client' // Promoted directly to Client on acceptance
+            });
+          }
+
+          updateData.clientId = clientObj._id;
+        }
+      }
+    }
+
+    const quotation = await Quotation.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     }).populate('clientId');

@@ -68,10 +68,10 @@ export const generateQuotationPDF = (quotation, client) => {
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
         <div>
           <h3 style="color: #d4a574; font-size: 12px; font-weight: bold; margin-bottom: 10px;">QUOTATION TO</h3>
-          <p style="margin: 0; font-size: 16px; font-weight: bold;">${client.name}</p>
-          <p style="margin: 5px 0; font-size: 12px;">${client.email}</p>
-          <p style="margin: 5px 0; font-size: 12px;">${client.phone}</p>
-          <p style="margin: 5px 0; font-size: 12px;">${client.address || ""}</p>
+          <p style="margin: 0; font-size: 16px; font-weight: bold;">${client?.name || quotation.clientName || "Client"}</p>
+          <p style="margin: 5px 0; font-size: 12px;">${client?.email || quotation.email || ""}</p>
+          <p style="margin: 5px 0; font-size: 12px;">${client?.phone || quotation.whatsapp_no || ""}</p>
+          <p style="margin: 5px 0; font-size: 12px;">${client?.address || quotation.location || ""}</p>
         </div>
         <div style="text-align: right;">
           <p style="margin: 5px 0; font-size: 12px;"><strong>Quotation No:</strong> ${quotation.quotationNumber}</p>
@@ -95,8 +95,8 @@ export const generateQuotationPDF = (quotation, client) => {
         </thead>
         <tbody>
           ${quotation.services
-            .map(
-              (service) => `
+      .map(
+        (service) => `
             <tr style="border: 1px solid #e5e5e5;">
               <td style="padding: 12px; border: 1px solid #e5e5e5;">${service.serviceName}</td>
               <td style="padding: 12px; text-align: center; border: 1px solid #e5e5e5;">${service.quantity}</td>
@@ -105,8 +105,8 @@ export const generateQuotationPDF = (quotation, client) => {
               <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5;"><strong>₹${service.total.toLocaleString()}</strong></td>
             </tr>
           `,
-            )
-            .join("")}
+      )
+      .join("")}
         </tbody>
       </table>
 
@@ -122,16 +122,15 @@ export const generateQuotationPDF = (quotation, client) => {
             <span>Subtotal:</span>
             <span>₹${quotation.subtotal.toLocaleString()}</span>
           </div>
-          ${
-            quotation.discount > 0
-              ? `
+          ${quotation.discount > 0
+      ? `
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
               <span>Discount ${quotation.discountType === "percentage" ? `(${quotation.discount}%)` : ""}:</span>
               <span>-₹${(quotation.discountType === "percentage" ? (quotation.subtotal * quotation.discount) / 100 : quotation.discount).toLocaleString()}</span>
             </div>
           `
-              : ""
-          }
+      : ""
+    }
           <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
             <span>Tax (${quotation.taxPercentage}%):</span>
             <span>₹${quotation.tax.toLocaleString()}</span>
@@ -219,8 +218,8 @@ export const generateInvoicePDF = (invoice, client) => {
         </thead>
         <tbody>
           ${invoice.services
-            .map(
-              (service) => `
+      .map(
+        (service) => `
             <tr style="border: 1px solid #e5e5e5;">
               <td style="padding: 12px; border: 1px solid #e5e5e5;">${service.serviceName}</td>
               <td style="padding: 12px; text-align: center; border: 1px solid #e5e5e5;">${service.quantity}</td>
@@ -229,25 +228,24 @@ export const generateInvoicePDF = (invoice, client) => {
               <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5;"><strong>₹${service.total.toLocaleString()}</strong></td>
             </tr>
           `,
-            )
-            .join("")}
+      )
+      .join("")}
         </tbody>
       </table>
 
       <!-- Summary -->
       <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 30px;">
         <div>
-          ${
-            invoice.bankDetails?.accountName
-              ? `
+          ${invoice.bankDetails?.accountName
+      ? `
             <h3 style="color: #d4a574; font-weight: bold; margin-bottom: 10px; font-size: 12px;">PAYMENT DETAILS</h3>
             <p style="margin: 5px 0; font-size: 12px;"><strong>Account Name:</strong> ${invoice.bankDetails.accountName}</p>
             ${invoice.bankDetails.accountNumber ? `<p style="margin: 5px 0; font-size: 12px;"><strong>Account No:</strong> ${invoice.bankDetails.accountNumber}</p>` : ""}
             ${invoice.bankDetails.ifscCode ? `<p style="margin: 5px 0; font-size: 12px;"><strong>IFSC Code:</strong> ${invoice.bankDetails.ifscCode}</p>` : ""}
             ${invoice.bankDetails.upiId ? `<p style="margin: 5px 0; font-size: 12px;"><strong>UPI ID:</strong> ${invoice.bankDetails.upiId}</p>` : ""}
           `
-              : ""
-          }
+      : ""
+    }
           ${invoice.notes ? `<h3 style="color: #d4a574; font-weight: bold; margin-top: 15px; margin-bottom: 10px; font-size: 12px;">NOTES</h3><p style="margin: 0; font-size: 12px; line-height: 1.6;">${invoice.notes}</p>` : ""}
         </div>
         <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
@@ -255,16 +253,15 @@ export const generateInvoicePDF = (invoice, client) => {
             <span>Subtotal:</span>
             <span>₹${invoice.subtotal.toLocaleString()}</span>
           </div>
-          ${
-            invoice.discount > 0
-              ? `
+          ${invoice.discount > 0
+      ? `
             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
               <span>Discount ${invoice.discountType === "percentage" ? `(${invoice.discount}%)` : ""}:</span>
               <span>-₹${(invoice.discountType === "percentage" ? (invoice.subtotal * invoice.discount) / 100 : invoice.discount).toLocaleString()}</span>
             </div>
           `
-              : ""
-          }
+      : ""
+    }
           <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
             <span>Tax (${invoice.taxPercentage}%):</span>
             <span>₹${invoice.tax.toLocaleString()}</span>

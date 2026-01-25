@@ -41,7 +41,6 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
       "Thank you for choosing The Patil Photography & Film's. We look forward to capturing your special moments!",
   });
 
-  const [clients, setClients] = useState([]);
   const [predefinedServices, setPredefinedServices] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -58,7 +57,6 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
   });
 
   useEffect(() => {
-    fetchClients();
     fetchServices();
   }, []);
 
@@ -82,16 +80,7 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     calculateTotals();
   }, [formData.services, formData.discountPercentage]);
 
-  const fetchClients = async () => {
-    try {
-      const response = await fetch("/api/clients");
-      if (!response.ok) throw new Error("Failed to fetch clients");
-      const data = await response.json();
-      setClients(data);
-    } catch (error) {
-      console.error("Error fetching clients:", error);
-    }
-  };
+
 
   const fetchServices = async () => {
     try {
@@ -218,12 +207,15 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to save quotation");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save quotation");
+      }
       const savedQuotation = await response.json();
       onSave(savedQuotation);
     } catch (error) {
       console.error("Error saving quotation:", error);
-      alert("Error saving quotation");
+      alert(error.message);
     }
   };
 
@@ -283,64 +275,16 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-1">Search or Enter Client Name *</label>
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={open}
-                      className="w-full justify-between border-gray-300 dark:border-gray-600 bg-white dark:bg-charcoal-700 text-left font-normal"
-                    >
-                      {formData.clientName || "Search or Enter Client Name"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0" align="start">
-                    <Command>
-                      <CommandInput placeholder="Search client..." onValueChange={(val) => {
-                        if (!clients.find(c => c.name.toLowerCase() === val.toLowerCase())) {
-                          setFormData(prev => ({ ...prev, clientName: val }));
-                        }
-                      }} />
-                      <CommandList>
-                        <CommandEmpty>
-                          <div className="p-2 text-sm text-gray-500 cursor-pointer" onClick={() => setOpen(false)}>
-                            Use entered name for new client
-                          </div>
-                        </CommandEmpty>
-                        <CommandGroup>
-                          {clients.map((client) => (
-                            <CommandItem
-                              key={client._id}
-                              value={client.name}
-                              onSelect={() => {
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  clientId: client._id,
-                                  clientName: client.name,
-                                  email: client.email,
-                                  whatsapp_no: client.phone,
-                                }));
-                                setOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  formData.clientId === client._id
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {client.name}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                <label className="block text-sm font-medium mb-1">Client Name *</label>
+                <input
+                  type="text"
+                  name="clientName"
+                  value={formData.clientName}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-md dark:bg-charcoal-700 dark:border-gray-600"
+                  placeholder="Enter Client Name"
+                />
               </div>
 
               <div>

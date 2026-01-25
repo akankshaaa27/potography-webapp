@@ -74,6 +74,11 @@ export default function Quotations() {
   };
 
   const handleConvertToInvoice = async (quotation) => {
+    if (!quotation.clientId) {
+      toast.error("Please change status to 'Accepted' first to generate a Client record.");
+      return;
+    }
+
     if (!window.confirm("Convert this quotation to invoice?")) return;
 
     try {
@@ -121,8 +126,10 @@ export default function Quotations() {
   };
 
   const filteredQuotations = quotations.filter((q) => {
+    // New logic: clientName is the primary name source. clientId might be null.
+    const nameToCheck = q.clientName || q.clientId?.name || "Unknown Client";
     const matchesSearch =
-      q.clientId.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      nameToCheck.toLowerCase().includes(searchTerm.toLowerCase()) ||
       q.quotationNumber.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === "All" || q.status === filterStatus;
     return matchesSearch && matchesStatus;
@@ -244,7 +251,7 @@ export default function Quotations() {
                           Client
                         </p>
                         <p className="font-montserrat font-semibold text-charcoal-900 dark:text-white">
-                          {quotation.clientId.name}
+                          {quotation.clientName || quotation.clientId?.name || "Unknown"}
                         </p>
                       </div>
                       <div>
