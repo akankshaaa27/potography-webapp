@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useSettings } from "../hooks/useSettings";
 
 const items = [
   { to: "/dashboard", label: "Dashboard" },
@@ -25,10 +26,12 @@ const items = [
 export default function Navigation({ isMobileOpen = false, onClose = () => { } }) {
   return (
     <>
-      <aside aria-label="Main navigation" className="hidden flex-shrink-0 lg:flex" style={{ width: 240 }}>
-        <div className="flex min-h-screen w-60 flex-col border-r border-gold-200 bg-white p-4 dark:border-charcoal-800 dark:bg-charcoal-900">
+      <aside aria-label="Main navigation" className="hidden flex-shrink-0 lg:flex h-screen sticky top-0" style={{ width: 240 }}>
+        <div className="flex flex-col h-full border-r border-gold-200 bg-white p-4 dark:border-charcoal-800 dark:bg-charcoal-900 overflow-hidden">
           <BrandHeader />
-          <NavList />
+          <div className="flex-1 overflow-y-auto overflow-x-hidden thin-scrollbar -mr-2 pr-2">
+            <NavList />
+          </div>
         </div>
       </aside>
 
@@ -38,8 +41,8 @@ export default function Navigation({ isMobileOpen = false, onClose = () => { } }
         aria-label="Mobile navigation"
         className={`fixed inset-y-0 left-0 z-50 w-72 transform bg-white shadow-2xl transition-transform duration-300 dark:bg-charcoal-900 lg:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="flex h-full flex-col border-r border-gold-200 dark:border-charcoal-800">
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-charcoal-800">
+        <div className="flex h-full flex-col border-r border-gold-200 dark:border-charcoal-800 overflow-hidden">
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-charcoal-800 flex-shrink-0">
             <BrandHeader compact />
             <button
               type="button"
@@ -50,17 +53,16 @@ export default function Navigation({ isMobileOpen = false, onClose = () => { } }
               ✕
             </button>
           </div>
-          <NavList onNavigate={onClose} />
+          <div className="flex-1 overflow-y-auto p-4">
+            <NavList onNavigate={onClose} />
+          </div>
         </div>
       </aside>
     </>
   );
 }
 
-// Import at the top if not present, but since this is a multi_replace, I'll add the hook usage inside the component
-// and assume import is added or I'll add it separately. 
-// Actually, I need to add the import first.
-import { useSettings } from "../hooks/useSettings";
+
 
 function BrandHeader({ compact = false }) {
   const { data: settings } = useSettings();
@@ -87,7 +89,7 @@ function BrandHeader({ compact = false }) {
 function NavList({ onNavigate }) {
   const handleClick = onNavigate ? () => onNavigate() : undefined;
   return (
-    <nav className="mt-4 flex-1 overflow-y-auto">
+    <nav className="flex-1">
       <ul className="space-y-2">
         {items.map((it) => (
           <li key={it.to}>
