@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useSettings } from '../hooks/useSettings';
 
 const Contact = () => {
+  const { settings } = useSettings();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -77,7 +79,7 @@ const Contact = () => {
                     </div>
                     <div className="contact-text">
                       <h4>Location</h4>
-                      <p>karad Dist: Satara</p>
+                      <p>{settings?.address || "karad Dist: Satara"}</p>
                     </div>
                   </div>
 
@@ -87,7 +89,7 @@ const Contact = () => {
                     </div>
                     <div className="contact-text">
                       <h4>Email</h4>
-                      <p>info@thepatilphotography.com</p>
+                      <p>{settings?.contactEmail || "info@thepatilphotography.com"}</p>
                     </div>
                   </div>
 
@@ -97,7 +99,7 @@ const Contact = () => {
                     </div>
                     <div className="contact-text">
                       <h4>Call</h4>
-                      <p>+1 (212) 555-7890</p>
+                      <p>{settings?.contactPhone || "+1 (212) 555-7890"}</p>
                     </div>
                   </div>
 

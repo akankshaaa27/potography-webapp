@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useSettings } from "../hooks/useSettings";
 import { generateQuotationPDF } from "../utils/pdfGenerator";
 import QuotationForm from "../components/QuotationForm";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ const statusFilters = ["all", "Draft", "Sent", "Negotiation", "Accepted", "Rejec
 
 export default function AdminQuotations() {
   const queryClient = useQueryClient();
+  const { data: settings } = useSettings();
 
   const { data: quotes = [], isLoading } = useQuery({
     queryKey: ["quotations"],
@@ -91,7 +93,7 @@ export default function AdminQuotations() {
       address: quote.location,
     };
 
-    generateQuotationPDF(quote, clientProfile);
+    generateQuotationPDF(quote, clientProfile, settings);
   }
 
   function openForm(quote = null) {

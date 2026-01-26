@@ -19,6 +19,7 @@ const items = [
   { to: "/common-types", label: "Common Types" },
   { to: "/register", label: "Admin Register" },
   { to: "/profile", label: "Profile" },
+  { to: "/settings", label: "Global Settings" },
 ];
 
 export default function Navigation({ isMobileOpen = false, onClose = () => { } }) {
@@ -56,15 +57,28 @@ export default function Navigation({ isMobileOpen = false, onClose = () => { } }
   );
 }
 
+// Import at the top if not present, but since this is a multi_replace, I'll add the hook usage inside the component
+// and assume import is added or I'll add it separately. 
+// Actually, I need to add the import first.
+import { useSettings } from "../hooks/useSettings";
+
 function BrandHeader({ compact = false }) {
+  const { data: settings } = useSettings();
+  const businessName = settings?.businessName || "The Patil Photography";
+  const subName = "& Film's"; // Or split the business name if needed. For now, assuming standard format or just using businessName.
+  // Actually the user wants "Editable Shop / Business Name". 
+
   return (
     <div className={`flex items-center gap-2 ${compact ? "" : "mb-4"}`}>
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-gold-500 to-gold-600">
-        <span className="font-playfair text-lg font-bold text-white">P</span>
-      </div>
+      {settings?.primaryLogo ? (
+        <img src={settings.primaryLogo} alt="Logo" className="h-10 w-10 object-contain" />
+      ) : (
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-gold-500 to-gold-600">
+          <span className="font-playfair text-lg font-bold text-white">P</span>
+        </div>
+      )}
       <div>
-        <h1 className="font-playfair text-sm font-bold text-charcoal-900 dark:text-white">The Patil Photography</h1>
-        <p className="font-montserrat text-xs text-gold-600">& Film's</p>
+        <h1 className="font-playfair text-sm font-bold text-charcoal-900 dark:text-white leading-tight">{businessName}</h1>
       </div>
     </div>
   );

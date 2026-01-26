@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSettings } from "../hooks/useSettings";
 import { X, Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -37,9 +38,25 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     discountPercentage: 0,
     paymentTerms: "50% advance, 50% on event date",
     notes: "",
-    thankYouMessage:
-      "Thank you for choosing The Patil Photography & Film's. We look forward to capturing your special moments!",
+    thankYouMessage: "",
   });
+
+  const { data: settings } = useSettings();
+
+  useEffect(() => {
+    if (settings && !quotation) {
+      setFormData(prev => ({
+        ...prev,
+        thankYouMessage: `Thank you for choosing ${settings.businessName || "The Patil Photography"}. We look forward to capturing your special moments!`
+      }));
+    } else if (!quotation) {
+      // Fallback if settings not loaded yet or empty, though effect will re-run
+      setFormData(prev => ({
+        ...prev,
+        thankYouMessage: "Thank you for choosing The Patil Photography & Film's. We look forward to capturing your special moments!"
+      }));
+    }
+  }, [settings, quotation]);
 
   const [predefinedServices, setPredefinedServices] = useState([]);
   const [open, setOpen] = useState(false);

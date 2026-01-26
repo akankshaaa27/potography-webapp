@@ -1,7 +1,8 @@
 import "./global.css";
 import "./lib/apiFetch";
 import React, { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon } from "lucide-react";
+import { useSettings } from "./hooks/useSettings";
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -33,6 +34,7 @@ import AccessoriesManagement from "./pages/AccessoriesManagement";
 import AdminRegister from "./pages/AdminRegister";
 import UserProfile from "./pages/UserProfile";
 import AdminCommonTypes from "./pages/AdminCommonTypes";
+import AdminSettings from "./pages/AdminSettings";
 
 
 const queryClient = new QueryClient();
@@ -72,12 +74,29 @@ const App = () => (
 );
 
 const AppShell = () => {
+  const { data: settings } = useSettings();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     setMobileNavOpen(false);
   }, [location.pathname]);
+
+  // Dynamic Title & Favicon Update
+  useEffect(() => {
+    if (settings) {
+      if (settings.businessName) {
+        document.title = settings.businessName + " | Admin Console";
+      }
+      if (settings.primaryLogo) {
+        const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'icon';
+        link.href = settings.primaryLogo;
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+    }
+  }, [settings]);
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -92,7 +111,7 @@ const AppShell = () => {
             <Menu className="h-5 w-5" />
             Menu
           </button>
-          <span className="text-sm font-semibold text-charcoal-900">Studio Console</span>
+          <span className="text-sm font-semibold text-charcoal-900">{settings?.businessName || "Studio Console"}</span>
         </div>
         <main className="flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-10">
           <Routes>
@@ -117,12 +136,44 @@ const AppShell = () => {
             <Route path="/accessories" element={<AccessoriesManagement />} />
             <Route path="/register" element={<AdminRegister />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/settings" element={<AdminSettings />} />
 
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
+
+        <footer className="border-t border-slate-200 bg-white px-6 py-6 mt-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3">
+              {settings?.secondaryLogo ? (
+                <img src={settings.secondaryLogo} alt="Logo" className="h-8 object-contain" />
+              ) : (
+                <div className="font-playfair font-bold text-lg text-charcoal-900">{settings?.businessName || "Studio"}</div>
+              )}
+              <span className="text-xs text-slate-500">© {new Date().getFullYear()}</span>
+            </div>
+
+            <div className="flex gap-4">
+              {settings?.socialLinks?.filter(l => l.active).map((link, i) => {
+                const Icon = {
+                  'Instagram': Instagram,
+                  'Facebook': Facebook,
+                  'YouTube': Youtube,
+                  'Twitter': Twitter,
+                  'LinkedIn': Linkedin,
+                }[link.platform] || LinkIcon;
+
+                return (
+                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-gold-600 transition-colors">
+                    <Icon size={18} />
+                  </a>
+                )
+              })}
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

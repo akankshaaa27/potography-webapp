@@ -11,6 +11,7 @@ import quotationRoutes from './routes/quotationRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import loveStoryRoutes from './routes/loveStoryRoutes.js';
+import systemSettingsRoutes from './routes/systemSettingsRoutes.js'; // Note: using require in routes file but import here might be mixed? Checking server.js it uses imports.
 
 // Load environment variables
 dotenv.config();
@@ -42,6 +43,7 @@ app.use('/api/quotations', quotationRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/love-stories', loveStoryRoutes);
+app.use('/api/settings', systemSettingsRoutes);
 
 // Root route
 app.get('/', (req, res) => {

@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
+import { useSettings } from './hooks/useSettings'
 
 // Lazy load components
 const About = lazy(() => import('./pages/About'))
@@ -21,6 +22,24 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 
 function App() {
   console.log('App component rendering');
+  const { settings } = useSettings();
+
+  useEffect(() => {
+    if (settings) {
+      if (settings.businessName) {
+        document.title = settings.businessName;
+      }
+      if (settings.primaryLogo) {
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.getElementsByTagName('head')[0].appendChild(link);
+        }
+        link.href = settings.primaryLogo;
+      }
+    }
+  }, [settings]);
   useEffect(() => {
     console.log('App useEffect running');
     // Initialize AOS globally

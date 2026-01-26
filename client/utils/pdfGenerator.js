@@ -47,18 +47,24 @@ export const generatePDF = async (elementId, filename) => {
   }
 };
 
-export const generateQuotationPDF = (quotation, client) => {
+export const generateQuotationPDF = (quotation, client, settings = {}) => {
+  const businessName = settings.businessName || "The Patil Photography";
+  const primaryLogo = settings.primaryLogo || ""; // URL or Base64
+  const contactText = "Crafting beautiful moments, flawlessly documented";
+  // We can add contact info from settings if desired (settings.contactPhone, settings.contactEmail)
+
+  const logoHtml = primaryLogo
+    ? `<img src="${primaryLogo}" style="height: 50px; object-fit: contain;" />`
+    : `<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 20px;">P</span></div>`;
+
   const content = `
     <div style="font-family: 'Playfair Display', serif; padding: 40px; background: white; color: #1a1a1a;">
       <!-- Header -->
       <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #d4a574; padding-bottom: 20px;">
         <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
-          <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-            <span style="color: white; font-weight: bold; font-size: 20px;">P</span>
-          </div>
+          ${logoHtml}
           <div>
-            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #1a1a1a;">The Patil Photography</h1>
-            <p style="margin: 0; font-size: 14px; color: #d4a574;">& Film's</p>
+            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #1a1a1a;">${businessName}</h1>
           </div>
         </div>
         <h2 style="font-size: 24px; font-weight: bold; margin: 20px 0 0 0; color: #1a1a1a;">QUOTATION</h2>
@@ -149,7 +155,7 @@ export const generateQuotationPDF = (quotation, client) => {
 
       <!-- Footer -->
       <div style="border-top: 2px solid #d4a574; padding-top: 20px; text-align: center; font-size: 10px; color: #666;">
-        <p style="margin: 0;">The Patil Photography & Film's | Crafting beautiful moments, flawlessly documented</p>
+        <p style="margin: 0;">${businessName} | ${contactText}</p>
         <p style="margin: 5px 0 0 0;">This quotation is valid till ${new Date(quotation.validityDate).toLocaleDateString()}</p>
       </div>
     </div>
@@ -170,18 +176,23 @@ export const generateQuotationPDF = (quotation, client) => {
   }, 500);
 };
 
-export const generateInvoicePDF = (invoice, client) => {
+export const generateInvoicePDF = (invoice, client, settings = {}) => {
+  const businessName = settings.businessName || "The Patil Photography";
+  const primaryLogo = settings.primaryLogo || "";
+  const contactText = "Crafting beautiful moments, flawlessly documented";
+
+  const logoHtml = primaryLogo
+    ? `<img src="${primaryLogo}" style="height: 50px; object-fit: contain;" />`
+    : `<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 20px;">P</span></div>`;
+
   const content = `
     <div style="font-family: 'Playfair Display', serif; padding: 40px; background: white; color: #1a1a1a;">
       <!-- Header -->
       <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #d4a574; padding-bottom: 20px;">
         <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
-          <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-            <span style="color: white; font-weight: bold; font-size: 20px;">P</span>
-          </div>
+          ${logoHtml}
           <div>
-            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #1a1a1a;">The Patil Photography</h1>
-            <p style="margin: 0; font-size: 14px; color: #d4a574;">& Film's</p>
+            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #1a1a1a;">${businessName}</h1>
           </div>
         </div>
         <h2 style="font-size: 24px; font-weight: bold; margin: 20px 0 0 0; color: #1a1a1a;">INVOICE</h2>
@@ -280,7 +291,7 @@ export const generateInvoicePDF = (invoice, client) => {
 
       <!-- Footer -->
       <div style="border-top: 2px solid #d4a574; padding-top: 20px; text-align: center; font-size: 10px; color: #666;">
-        <p style="margin: 0;">The Patil Photography & Film's | Crafting beautiful moments, flawlessly documented</p>
+        <p style="margin: 0;">${businessName} | ${contactText}</p>
         <p style="margin: 5px 0 0 0;">Invoice Date: ${new Date(invoice.invoiceDate).toLocaleDateString()}</p>
       </div>
     </div>

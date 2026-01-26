@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useSettings } from '../hooks/useSettings';
 
 const Header = () => {
+  const { settings } = useSettings();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  // ... (rest of logic)
 
   const toggleMobileNav = () => {
     setIsMobileNavOpen(!isMobileNavOpen);
@@ -36,8 +40,17 @@ const Header = () => {
       <div className="container-fluid container-xl position-relative d-flex align-items-center">
 
         <Link to="/" className="logo d-flex align-items-center me-auto">
-          <img src="/assets/img/logo.PNG" alt="" />
-          {/* <h1 className="sitename d-none d-sm-block">The Patil Photography & Film's</h1> */}
+          {settings?.primaryLogo ? (
+            <img src={settings.primaryLogo} alt="Logo" style={{ maxHeight: '60px', width: 'auto', objectFit: 'contain' }} />
+          ) : (
+            <img src="/assets/img/logo.PNG" alt="Logo" />
+          )}
+          {(!settings?.primaryLogo && !settings) && (
+            // Fallback or if desired to show name alongside logo
+            null
+          )}
+          {/* Optional: Show business name if no logo, or responsive logic */}
+          {/* <h1 className="sitename d-none d-sm-block">{settings?.businessName || "The Patil Photography"}</h1> */}
         </Link>
 
         <nav id="navmenu" className="navmenu">

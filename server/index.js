@@ -19,6 +19,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import testimonialRoutes from "./routes/testimonialRoutes.js";
 import eventTypeRoutes from "./routes/eventTypeRoutes.js";
+import systemSettingsRoutes from "./routes/systemSettingsRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 // Root route - Only for production/standalone
@@ -130,6 +131,7 @@ export function createServer(config = {}) {
   app.use("/api/dashboard", dashboardRoutes);
   app.use("/api/testimonials", testimonialRoutes);
   app.use("/api/event-types", eventTypeRoutes);
+  app.use("/api/settings", systemSettingsRoutes);
   console.log("✅ Contact, Dashboard & Testimonial routes registered " + Date.now() + " - Dashboard Pending Actions Added");
 
   // Root route - Only for production/standalone
