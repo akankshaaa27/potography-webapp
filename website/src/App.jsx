@@ -19,6 +19,7 @@ const ProjectDetails = lazy(() => import('./pages/ProjectDetails'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+const Team = lazy(() => import('./pages/Team'))
 
 function App() {
   console.log('App component rendering');
@@ -96,6 +97,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/webtestimonials" element={<Testimonials />} />
             <Route path="/quote" element={<Quote />} />
+            <Route path="/team" element={<Team />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="*" element={<NotFound />} />

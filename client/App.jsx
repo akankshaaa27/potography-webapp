@@ -35,6 +35,7 @@ import AdminRegister from "./pages/AdminRegister";
 import UserProfile from "./pages/UserProfile";
 import AdminCommonTypes from "./pages/AdminCommonTypes";
 import AdminSettings from "./pages/AdminSettings";
+import AdminTeam from "./pages/AdminTeam";
 
 
 const queryClient = new QueryClient();
@@ -137,6 +138,7 @@ const AppShell = () => {
             <Route path="/register" element={<AdminRegister />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/settings" element={<AdminSettings />} />
+            <Route path="/team" element={<AdminTeam />} />
 
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
