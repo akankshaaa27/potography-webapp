@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Image as ImageIcon, Filter } from "lucide-react";
 import Skeleton from "../components/Skeleton";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminGallery() {
   const queryClient = useQueryClient();
@@ -75,20 +76,19 @@ export default function AdminGallery() {
   };
 
   return (
-    <div className="mt-4 container mx-auto p-4">
-      {/* Header */}
-      <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold-500 font-semibold mb-1">Portfolio</p>
-          <h1 className="text-2xl font-bold text-gray-900">Gallery</h1>
-        </div>
-        <button
-          onClick={() => { setForm({ id: null, title: "", image: "", category: "General", status: "Active" }); setModalOpen(true); }}
-          className="bg-gray-900 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
-        >
-          <Plus size={18} /> Add Item
-        </button>
-      </div>
+    <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+      <PageHeader
+        title="Gallery"
+        description="Manage your gallery and portfolio images."
+        action={
+          <button
+            onClick={() => { setForm({ id: null, title: "", image: "", category: "General", status: "Active" }); setModalOpen(true); }}
+            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all"
+          >
+            <Plus size={18} /> Add Item
+          </button>
+        }
+      />
 
       {/* Gallery Grid */}
       {isLoading ? (

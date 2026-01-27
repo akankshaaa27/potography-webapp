@@ -18,6 +18,7 @@ import {
   Star
 } from "lucide-react";
 import { format } from "date-fns";
+import PageHeader from "../components/PageHeader";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, MessageSquare, Mail, AlertCircle } from "lucide-react";
+import { Trash2, MessageSquare, Mail, AlertCircle, Plus } from "lucide-react";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminContacts() {
     const [messages, setMessages] = useState([]);
@@ -41,8 +42,11 @@ export default function AdminContacts() {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-charcoal-900 mb-8 tracking-tight">Contact Messages</h1>
+        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+            <PageHeader
+                title="Contact Messages"
+                description="Manage website contact form messages"
+            />
 
             <div className="grid gap-6">
                 {messages.length === 0 ? (

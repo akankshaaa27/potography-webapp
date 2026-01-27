@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import jsPDF from "jspdf";
-import { Eye, FileText, Edit, Trash2, Download } from "lucide-react";
+import { Eye, FileText, Edit, Trash2, Download, Plus } from "lucide-react";
+import PageHeader from "../components/PageHeader";
 
 const emptyOrder = {
   name: "",
@@ -475,25 +476,21 @@ export default function AdminOrders() {
   }
 
   return (
-    <section className="mt-4">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        {/* ... (keep existing header content) ... */}
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold-500">Production</p>
-          <h1 className="text-3xl font-semibold text-charcoal-900 dark:text-white">Orders</h1>
-          <p className="text-sm text-charcoal-500 dark:text-charcoal-300">
-            Monitor bookings, payment progress, and delivery milestones.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gold-600"
-          onClick={openAdd}
-        >
-          <span className="text-lg">+</span>
-          Add Order
-        </button>
-      </header>
+    <section className="mt-4 container mx-auto p-4">
+      <PageHeader
+        title="Orders"
+        description="Monitor bookings, payment progress, and delivery milestones."
+        action={
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all"
+            onClick={openAdd}
+          >
+            <Plus size={18} />
+            Add Order
+          </button>
+        }
+      />
 
       {/* ... (keep existing summary cards and table) ... */}
       <div className="grid gap-4 md:grid-cols-4 mb-4">

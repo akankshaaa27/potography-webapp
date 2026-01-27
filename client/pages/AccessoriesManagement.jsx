@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { Plus } from "lucide-react";
+import PageHeader from "../components/PageHeader";
 
 const initialAccessories = [
   {
@@ -168,24 +170,21 @@ export default function AccessoriesManagement() {
   }
 
   return (
-    <section className="page-shell space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold-500">Gear Vault</p>
-          <h1 className="text-3xl font-semibold text-charcoal-900 dark:text-white">Accessories Control Room</h1>
-          <p className="text-sm text-charcoal-500 dark:text-charcoal-300">
-            Track modifiers, lighting, motion rigs, and on-location essentials in one board.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gold-600"
-          onClick={() => openModal()}
-        >
-          <span className="text-lg">+</span>
-          Add Accessory
-        </button>
-      </header>
+    <section className="mt-4 container mx-auto p-4 animate-in fade-in duration-500 space-y-6">
+      <PageHeader
+        title="Accessories Control Room"
+        description="Track modifiers, lighting, motion rigs, and on-location essentials in one board."
+        action={
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all"
+            onClick={() => openModal()}
+          >
+            <Plus size={18} />
+            Add Accessory
+          </button>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Pieces in vault" value={stats.total} hint="Total units" accent="from-amber-50" />
