@@ -2,25 +2,25 @@ import { NavLink } from "react-router-dom";
 import { useSettings } from "../hooks/useSettings";
 
 const items = [
-  { to: "/dashboard", label: "Dashboard" },
+  { to: "/admin/dashboard", label: "Dashboard" },
   // { to: "/quotations", label: "Quotations" },
-  { to: "/orders", label: "Orders" },
-  { to: "/gallery", label: "Gallery" },
-  { to: "/films", label: "Films" },
-  { to: "/users", label: "Users" },
-  { to: "/slider", label: "Slider" },
-  { to: "/love-stories", label: "Love Stories" },
-  { to: "/testimonials", label: "Testimonials" },
-  { to: "/clients", label: "Clients" },
-  { to: "/enquiries", label: "Enquiries" },
-  { to: "/contact-messages", label: "Contact Messages" },
-  { to: "/invoices", label: "Invoices" },
-  { to: "/quotations", label: "Quotations" },
-  { to: "/accessories", label: "Accessories" },
-  { to: "/common-types", label: "Common Types" },
-  { to: "/register", label: "Admin Register" },
-  { to: "/profile", label: "Profile" },
-  { to: "/settings", label: "Global Settings" },
+  { to: "/admin/orders", label: "Orders" },
+  { to: "/admin/gallery", label: "Portfolio" },
+  { to: "/admin/films", label: "Films" },
+  { to: "/admin/users", label: "Users" },
+  { to: "/admin/slider", label: "Slider" },
+  { to: "/admin/love-stories", label: "Love Stories" },
+  { to: "/admin/testimonials", label: "Testimonials" },
+  { to: "/admin/clients", label: "Clients" },
+  { to: "/admin/enquiries", label: "Enquiries" },
+  { to: "/admin/contact-messages", label: "Contact Messages" },
+  { to: "/admin/invoices", label: "Invoices" },
+  { to: "/admin/quotations", label: "Quotations" },
+  { to: "/admin/accessories", label: "Accessories" },
+  { to: "/admin/common-types", label: "Common Types" },
+  { to: "/admin/register", label: "Admin Register" },
+  { to: "/admin/profile", label: "Profile" },
+  { to: "/admin/settings", label: "Global Settings" },
 ];
 
 export default function Navigation({ isMobileOpen = false, onClose = () => { } }) {
@@ -29,7 +29,7 @@ export default function Navigation({ isMobileOpen = false, onClose = () => { } }
       <aside aria-label="Main navigation" className="hidden flex-shrink-0 lg:flex h-screen sticky top-0" style={{ width: 240 }}>
         <div className="flex flex-col h-full border-r border-gold-200 bg-white p-4 dark:border-charcoal-800 dark:bg-charcoal-900 overflow-hidden">
           <BrandHeader />
-          <div className="flex-1 overflow-y-auto overflow-x-hidden thin-scrollbar -mr-2 pr-2">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden -mr-2 pr-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <NavList />
           </div>
         </div>
@@ -73,7 +73,7 @@ function BrandHeader({ compact = false }) {
   return (
     <div className={`flex items-center gap-2 ${compact ? "" : "mb-4"}`}>
       {settings?.primaryLogo ? (
-        <img src={settings.primaryLogo} alt="Logo" className="h-10 w-10 object-contain" />
+        <img src={settings.primaryLogo} alt="Logo" className="h-10 w-10 object-contain rounded-lg bg-gradient-to-br from-gold-500 to-gold-600 p-1" />
       ) : (
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-gold-500 to-gold-600">
           <span className="font-playfair text-lg font-bold text-white">P</span>

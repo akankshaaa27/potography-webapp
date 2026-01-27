@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Image as ImageIcon } from "lucide-react";
 import Skeleton from "../components/Skeleton";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminSlider() {
   const queryClient = useQueryClient();
@@ -70,19 +71,19 @@ export default function AdminSlider() {
   };
 
   return (
-    <div className="mt-4 container mx-auto p-4" >
-      <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold-500 font-semibold mb-1">Content</p>
-          <h1 className="text-2xl font-bold text-gray-900">Slider Management</h1>
-        </div>
-        <button
-          onClick={() => { setForm({ id: null, title: "", subtitle: "", image: "", status: "Active", order: 0 }); setModalOpen(true); }}
-          className="bg-gray-900 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
-        >
-          <Plus size={18} /> Add Slide
-        </button>
-      </div>
+    <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+      <PageHeader
+        title="Slider Management"
+        description="Manage homepage slider content and order"
+        action={
+          <button
+            onClick={() => { setForm({ id: null, title: "", subtitle: "", image: "", status: "Active", order: 0 }); setModalOpen(true); }}
+            className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-all shadow-lg"
+          >
+            <Plus size={18} /> Add Slide
+          </button>
+        }
+      />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {/* Mobile Card View */}

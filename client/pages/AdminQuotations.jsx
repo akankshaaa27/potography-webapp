@@ -4,6 +4,7 @@ import { generateQuotationPDF } from "../utils/pdfGenerator";
 import QuotationForm from "../components/QuotationForm";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import PageHeader from "../components/PageHeader";
 
 const quoteStatusStyles = {
   Draft: "bg-slate-100 text-slate-600",
@@ -153,24 +154,22 @@ export default function AdminQuotations() {
   }
 
   return (
-    <section className="page-shell mt-4">
-      <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold-500">Pitching</p>
-          <h1 className="text-3xl font-semibold text-charcoal-900 dark:text-white">Quotation Studio</h1>
-          <p className="text-sm text-charcoal-500 dark:text-charcoal-300">
-            Shape bespoke photography offers, track approvals, and keep follow-ups on rhythm.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gold-600 sm:w-auto"
-          onClick={() => openForm()}
-        >
-          <span className="text-lg">+</span>
-          Compose Quote
-        </button>
-      </header>
+    <section className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+      <PageHeader
+        title="Quotations"
+        description="Shape bespoke photography offers, track approvals, and keep follow-ups on rhythm."
+        action={
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all"
+            onClick={() => openForm()}
+          >
+            <Plus size={18} />
+            New Quotation
+          </button>
+        }
+      />
+
 
       <div className="grid gap-4 md:grid-cols-4 mb-4">
         <Metric label="Sent this month" value={`${stats.sent}`} sub="Client decks" accent="from-amber-50" />

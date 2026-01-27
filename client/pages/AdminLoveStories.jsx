@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Plus } from "lucide-react";
 import Skeleton from "../components/Skeleton";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminLoveStories() {
     const [loading, setLoading] = useState(true);
@@ -120,20 +121,23 @@ export default function AdminLoveStories() {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold text-charcoal-900">Love Stories</h1>
-                <button
-                    onClick={() => {
-                        setShowForm(true);
-                        setForm({ title: "", location: "", description: "", thumbnail: "", gallery: [], status: "Active" });
-                        setEditingId(null);
-                    }}
-                    className="bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600 transition"
-                >
-                    + Add New Story
-                </button>
-            </div>
+        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+            <PageHeader
+                title="Love Stories"
+                description="Manage and showcase beautiful love stories"
+                action={
+                    <button
+                        onClick={() => {
+                            setShowForm(true);
+                            setForm({ title: "", location: "", description: "", thumbnail: "", gallery: [], status: "Active" });
+                            setEditingId(null);
+                        }}
+                        className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-all shadow-lg"
+                    >
+                        <Plus size={18} /> Add New Story
+                    </button>
+                }
+            />
 
             {showForm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, Phone, MapPin, Calendar, CheckSquare, Eye, X, ChevronDown } from "lucide-react";
+import { Trash2, Phone, MapPin, Calendar, CheckSquare, Eye, X, ChevronDown, Plus } from "lucide-react";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminEnquiries() {
     const [enquiries, setEnquiries] = useState([]);
@@ -53,10 +54,12 @@ export default function AdminEnquiries() {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-charcoal-900 mb-8 tracking-tight">Book Us Enquiries</h1>
-
-            <div className="grid gap-6">
+         <>
+        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+            <PageHeader
+                title="Book Us Enquiries"
+                description="Manage enquiry requests and track customer interest"
+            />
                 {enquiries.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
                         <p className="text-slate-500">No enquiries found yet.</p>
@@ -285,6 +288,6 @@ export default function AdminEnquiries() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
+import PageHeader from "../components/PageHeader";
 
 const seedClients = [
   {
@@ -175,24 +177,21 @@ export default function AdminClients() {
   };
 
   return (
-    <section className="mt-4">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold-500">Clients</p>
-          <h1 className="text-3xl font-semibold text-charcoal-900 dark:text-white">Client Registry</h1>
-          <p className="text-sm text-charcoal-500 dark:text-charcoal-300">
-            Track couples, monitor budgets, and assign the next touchpoint.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gold-600"
-          onClick={() => openModal()}
-        >
-          <span className="text-lg">+</span>
-          Add Client
-        </button>
-      </header>
+    <section className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+      <PageHeader
+        title="Client Registry"
+        description="Track couples, monitor budgets, and assign the next touchpoint."
+        action={
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all"
+            onClick={() => openModal()}
+          >
+            <Plus size={18} />
+            Add Client
+          </button>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-4 mb-4">
         <Stat label="Total" value={stats.total} accent="from-amber-100 to-white" />

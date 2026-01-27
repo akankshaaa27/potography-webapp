@@ -3,8 +3,37 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Save, Plus, Trash2, Upload, Link as LinkIcon, Globe, Mail, MapPin, Phone } from "lucide-react";
 import { useSettings } from "../hooks/useSettings";
+import PageHeader from "../components/PageHeader";
 
 const PLATFORMS = ['WhatsApp', 'Instagram', 'Facebook', 'YouTube', 'Twitter', 'LinkedIn', 'Other'];
+
+// Validation patterns
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const URL_REGEX = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+const PHONE_REGEX = /^[\d\s\+\-\(\)]+$/;
+const MOBILE_REGEX = /^[0-9]{10}$/;
+
+// Validation functions
+const validateEmail = (email) => {
+    if (!email) return true; // Optional field
+    return EMAIL_REGEX.test(email);
+};
+
+const validateUrl = (url) => {
+    if (!url) return true; // Optional field
+    return URL_REGEX.test(url);
+};
+
+const validatePhone = (phone) => {
+    if (!phone) return true; // Optional field
+    return PHONE_REGEX.test(phone) && phone.replace(/\D/g, '').length >= 10;
+};
+
+const validateMobileNumber = (mobile) => {
+    if (!mobile) return true; // Optional field
+    const digitsOnly = mobile.replace(/\D/g, '');
+    return MOBILE_REGEX.test(digitsOnly) && digitsOnly.length === 10;
+};
 
 export default function AdminSettings() {
     const queryClient = useQueryClient();
@@ -16,10 +45,13 @@ export default function AdminSettings() {
         secondaryLogo: "",
         websiteUrl: "",
         contactEmail: "",
-        contactPhone: "",
+        primaryMobileNumber: "",
+        secondaryMobileNumber: "",
         address: "",
         socialLinks: []
     });
+
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (settings) {
@@ -29,7 +61,8 @@ export default function AdminSettings() {
                 secondaryLogo: settings.secondaryLogo || "",
                 websiteUrl: settings.websiteUrl || "",
                 contactEmail: settings.contactEmail || "",
-                contactPhone: settings.contactPhone || "",
+                primaryMobileNumber: settings.primaryMobileNumber || "",
+                secondaryMobileNumber: settings.secondaryMobileNumber || "",
                 address: settings.address || "",
                 socialLinks: settings.socialLinks || []
             });
@@ -82,28 +115,93 @@ export default function AdminSettings() {
         setFormData({ ...formData, socialLinks: newLinks });
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (formData.businessName.trim().length === 0) {
+            newErrors.businessName = "Business name is required";
+        }
+
+        if (formData.contactEmail && !validateEmail(formData.contactEmail)) {
+            newErrors.contactEmail = "Please enter a valid email address";
+        }
+
+        if (formData.websiteUrl && !validateUrl(formData.websiteUrl)) {
+            newErrors.websiteUrl = "Please enter a valid URL (e.g., https://example.com)";
+        }
+
+        if (formData.primaryMobileNumber && !validateMobileNumber(formData.primaryMobileNumber)) {
+            newErrors.primaryMobileNumber = "Please enter a valid 10-digit mobile number";
+        }
+
+        if (formData.secondaryMobileNumber && !validateMobileNumber(formData.secondaryMobileNumber)) {
+            newErrors.secondaryMobileNumber = "Please enter a valid 10-digit mobile number";
+        }
+
+        // Validate social links URLs
+        formData.socialLinks.forEach((link, index) => {
+            if (link.url && !validateUrl(link.url)) {
+                newErrors[`social_${index}`] = "Please enter a valid URL";
+            }
+        });
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleMobileNumberInput = (field, value) => {
+        // Only allow numbers
+        const digitsOnly = value.replace(/\D/g, '');
+        setFormData(prev => ({ ...prev, [field]: digitsOnly }));
+        
+        // Clear error on valid input
+        if (digitsOnly.length === 10 || digitsOnly.length === 0) {
+            setErrors(prev => ({ ...prev, [field]: "" }));
+        }
+    };
+
+    const handlePhoneInput = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+        // Clear error on change
+        if (value) {
+            setErrors(prev => ({ ...prev, [field]: "" }));
+        }
+    };
+
+    const handleInputChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+        // Clear error on change
+        if (value) {
+            setErrors(prev => ({ ...prev, [field]: "" }));
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutation.mutate(formData);
+        if (validateForm()) {
+            mutation.mutate(formData);
+        } else {
+            toast.error("Please fix the validation errors below");
+        }
     };
 
     if (isLoading) return <div className="p-8 text-center text-slate-500">Loading settings...</div>;
 
     return (
-        <div className="container mx-auto p-4 max-w-5xl animate-in fade-in duration-500">
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 font-playfair">Global Settings</h1>
-                    <p className="text-gray-500 mt-1">Manage branding, logos, and connections</p>
-                </div>
-                <button
-                    onClick={handleSubmit}
-                    disabled={mutation.isPending}
-                    className="bg-gray-900 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-70"
-                >
-                    {mutation.isPending ? "Saving..." : <><Save size={18} /> Save Changes</>}
-                </button>
-            </div>
+        <div className="container mx-auto p-4 mt-4 animate-in fade-in duration-500">
+            <PageHeader
+                title="Global Settings"
+                description="Manage branding, logos, and connections"
+                action={
+                    <button
+                        onClick={handleSubmit}
+                        disabled={mutation.isPending}
+                        className="bg-gray-900 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-70"
+                    >
+                        {mutation.isPending ? "Saving..." : <><Save size={18} /> Save Changes</>}
+                    </button>
+                }
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -118,14 +216,15 @@ export default function AdminSettings() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Business Name / Shop Name</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Business Name / Shop Name <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     value={formData.businessName}
-                                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition-all"
+                                    onChange={(e) => handleInputChange('businessName', e.target.value)}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 outline-none transition-all ${errors.businessName ? 'border-red-500' : 'border-gray-200'}`}
                                     placeholder="e.g. The Patil Photography"
                                 />
+                                {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -136,11 +235,12 @@ export default function AdminSettings() {
                                         <input
                                             type="url"
                                             value={formData.websiteUrl}
-                                            onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
-                                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none"
+                                            onChange={(e) => handleInputChange('websiteUrl', e.target.value)}
+                                            className={`w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none transition-all ${errors.websiteUrl ? 'border-red-500' : 'border-gray-200'}`}
                                             placeholder="https://..."
                                         />
                                     </div>
+                                    {errors.websiteUrl && <p className="text-red-500 text-xs mt-1">{errors.websiteUrl}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
@@ -149,13 +249,49 @@ export default function AdminSettings() {
                                         <input
                                             type="email"
                                             value={formData.contactEmail}
-                                            onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none"
+                                            onChange={(e) => handleInputChange('contactEmail', e.target.value)}
+                                            className={`w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none transition-all ${errors.contactEmail ? 'border-red-500' : 'border-gray-200'}`}
                                             placeholder="hello@studio.com"
                                         />
                                     </div>
+                                    {errors.contactEmail && <p className="text-red-500 text-xs mt-1">{errors.contactEmail}</p>}
                                 </div>
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Primary Mobile Number</label>
+                                    <div className="relative">
+                                        <Phone className="absolute left-3 top-2.5 text-gray-400 h-4 w-4" />
+                                        <input
+                                            type="tel"
+                                            value={formData.primaryMobileNumber}
+                                            onChange={(e) => handleMobileNumberInput('primaryMobileNumber', e.target.value)}
+                                            className={`w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none transition-all ${errors.primaryMobileNumber ? 'border-red-500' : 'border-gray-200'}`}
+                                            placeholder="9876543210"
+                                            maxLength="10"
+                                        />
+                                    </div>
+                                    {errors.primaryMobileNumber && <p className="text-red-500 text-xs mt-1">{errors.primaryMobileNumber}</p>}
+                                </div>
+                                  <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Secondary Mobile Number</label>
+                                <div className="relative">
+                                    <Phone className="absolute left-3 top-2.5 text-gray-400 h-4 w-4" />
+                                    <input
+                                        type="tel"
+                                        value={formData.secondaryMobileNumber}
+                                        onChange={(e) => handleMobileNumberInput('secondaryMobileNumber', e.target.value)}
+                                        className={`w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none transition-all ${errors.secondaryMobileNumber ? 'border-red-500' : 'border-gray-200'}`}
+                                        placeholder="9876543210"
+                                        maxLength="10"
+                                    />
+                                </div>
+                                {errors.secondaryMobileNumber && <p className="text-red-500 text-xs mt-1">{errors.secondaryMobileNumber}</p>}
+                            </div>
+                            </div>
+
+                          
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
@@ -163,8 +299,8 @@ export default function AdminSettings() {
                                     <MapPin className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
                                     <textarea
                                         value={formData.address}
-                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                        rows="2"
+                                        onChange={(e) => handleInputChange('address', e.target.value)}
+                                        rows="3"
                                         className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none"
                                         placeholder="Studio address..."
                                     />
@@ -287,8 +423,9 @@ export default function AdminSettings() {
                                         value={link.url}
                                         onChange={(e) => handleSocialChange(index, "url", e.target.value)}
                                         placeholder={`https://${link.platform.toLowerCase()}.com/...`}
-                                        className="w-full text-xs px-3 py-2 bg-white border border-gray-200 rounded-md outline-none focus:border-gold-500"
+                                        className={`w-full text-xs px-3 py-2 bg-white border rounded-md outline-none focus:border-gold-500 transition-all ${errors[`social_${index}`] ? 'border-red-500' : 'border-gray-200'}`}
                                     />
+                                    {errors[`social_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`social_${index}`]}</p>}
                                 </div>
                             ))}
                         </div>
