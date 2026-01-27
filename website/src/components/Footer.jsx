@@ -27,11 +27,7 @@ const Footer = () => {
           <div className="col-lg-12">
             <div className="footer-brand">
               <Link to="/" className="logo d-flex align-items-center mb-3">
-                {settings?.secondaryLogo ? (
-                  <img src={settings.secondaryLogo} alt="Logo" style={{ maxHeight: '50px' }} />
-                ) : (
-                  <span className="sitename"> {businessName}</span>
-                )}
+                <span className="sitename"> {businessName}</span>
               </Link>
               <p className="tagline">Preserving Pure Emotion in Every Frame.</p>
 
