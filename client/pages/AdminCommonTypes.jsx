@@ -8,6 +8,7 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminCommonTypes() {
     const [activeTab, setActiveTab] = useState("event-types");
@@ -104,20 +105,16 @@ export default function AdminCommonTypes() {
 
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-playfair font-bold text-charcoal-900 dark:text-white">
-                        Common Types Management
-                    </h1>
-                    <p className="text-charcoal-600 dark:text-charcoal-400 mt-1">
-                        Manage Event Types and Service Categories
-                    </p>
-                </div>
-                <Button onClick={handleAddNew} className="bg-gold-500 hover:bg-gold-600 text-white gap-2">
-                    <Plus className="w-4 h-4" /> Add New {activeTab === "event-types" ? "Event Type" : "Service"}
-                </Button>
-            </div>
+        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500 space-y-6">
+            <PageHeader
+                title="Common Types Management"
+                description="Manage Event Types and Service Categories"
+                action={
+                    <Button onClick={handleAddNew} className="bg-gray-900 hover:bg-gray-800 text-white gap-2 flex items-center">
+                        <Plus className="w-4 h-4" /> Add New {activeTab === "event-types" ? "Event Type" : "Service"}
+                    </Button>
+                }
+            />
 
             {/* Tabs */}
             <div className="flex border-b border-gray-200 dark:border-gray-700">
@@ -254,6 +251,6 @@ export default function AdminCommonTypes() {
                     </form>
                 </DialogContent>
             </Dialog>
-        </div>
+            </div>
     );
 }

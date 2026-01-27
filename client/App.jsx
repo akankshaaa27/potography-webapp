@@ -35,6 +35,7 @@ import AdminRegister from "./pages/AdminRegister";
 import UserProfile from "./pages/UserProfile";
 import AdminCommonTypes from "./pages/AdminCommonTypes";
 import AdminSettings from "./pages/AdminSettings";
+import AdminTeam from "./pages/AdminTeam";
 
 
 const queryClient = new QueryClient();
@@ -116,27 +117,28 @@ const AppShell = () => {
         <main className="flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-10">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/common-types" element={<AdminCommonTypes />} />
+            <Route path="/admin-dashboard" element={<Dashboard />} />
+            <Route path="/admin-common-types" element={<AdminCommonTypes />} />
 
-            <Route path="/quotations" element={<Quotations />} />
+            <Route path="/admin-quotations" element={<Quotations />} />
 
-            <Route path="/orders" element={<AdminOrders />} />
-            <Route path="/gallery" element={<AdminGallery />} />
-            <Route path="/films" element={<AdminFilms />} />
-            <Route path="/users" element={<AdminUsers />} />
-            <Route path="/slider" element={<AdminSlider />} />
-            <Route path="/love-stories" element={<AdminLoveStories />} />
-            <Route path="/testimonials" element={<AdminTestimonials />} />
-            <Route path="/enquiries" element={<AdminEnquiries />} />
-            <Route path="/contact-messages" element={<AdminContacts />} />
-            <Route path="/clients" element={<AdminClients />} />
-            <Route path="/invoices" element={<AdminInvoices />} />
+            <Route path="/admin-orders" element={<AdminOrders />} />
+            <Route path="/admin-gallery" element={<AdminGallery />} />
+            <Route path="/admin-films" element={<AdminFilms />} />
+            <Route path="/admin-users" element={<AdminUsers />} />
+            <Route path="/admin-slider" element={<AdminSlider />} />
+            <Route path="/admin-love-stories" element={<AdminLoveStories />} />
+            <Route path="/admin-testimonials" element={<AdminTestimonials />} />
+            <Route path="/admin-enquiries" element={<AdminEnquiries />} />
+            <Route path="/admin-contact-messages" element={<AdminContacts />} />
+            <Route path="/admin-clients" element={<AdminClients />} />
+            <Route path="/admin-invoices" element={<AdminInvoices />} />
 
-            <Route path="/accessories" element={<AccessoriesManagement />} />
-            <Route path="/register" element={<AdminRegister />} />
-            <Route path="/profile" element={<UserProfile />} />
-            <Route path="/settings" element={<AdminSettings />} />
+            <Route path="/admin-accessories" element={<AccessoriesManagement />} />
+            <Route path="/admin-register" element={<AdminRegister />} />
+            <Route path="/admin-profile" element={<UserProfile />} />
+            <Route path="/admin-settings" element={<AdminSettings />} />
+            <Route path="/admin-team" element={<AdminTeam />} />
 
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
@@ -147,11 +149,7 @@ const AppShell = () => {
         <footer className="border-t border-slate-200 bg-white px-6 py-6 mt-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              {settings?.secondaryLogo ? (
-                <img src={settings.secondaryLogo} alt="Logo" className="h-8 object-contain" />
-              ) : (
-                <div className="font-playfair font-bold text-lg text-charcoal-900">{settings?.businessName || "Studio"}</div>
-              )}
+                <div className="font-medium text-sm text-charcoal-600">{settings?.businessName || "Studio"}</div>
               <span className="text-xs text-slate-500">© {new Date().getFullYear()}</span>
             </div>
 

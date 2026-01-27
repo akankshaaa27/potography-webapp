@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Trash2, Edit2, Plus, GripVertical, Star, AlertCircle, Search, ToggleLeft, ToggleRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Skeleton from "../components/Skeleton";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminTestimonials() {
     const [testimonials, setTestimonials] = useState([]);
@@ -152,19 +153,19 @@ export default function AdminTestimonials() {
     );
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-charcoal-900 tracking-tight">Testimonials</h1>
-                    <p className="text-sm text-slate-500 mt-1">Manage accolades and love stories from couples.</p>
-                </div>
-                <button
-                    onClick={() => { resetForm(); setShowModal(true); }}
-                    className="flex items-center gap-2 bg-charcoal-900 text-white px-5 py-2.5 rounded-xl hover:bg-charcoal-800 transition shadow-sm font-medium"
-                >
-                    <Plus size={18} /> Add New Testimonial
-                </button>
-            </div>
+        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+            <PageHeader
+                title="Testimonials"
+                description="Manage accolades and love stories from couples."
+                action={
+                    <button
+                        onClick={() => { resetForm(); setShowModal(true); }}
+                        className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-all shadow-lg font-medium"
+                    >
+                        <Plus size={18} /> Add New Testimonial
+                    </button>
+                }
+            />
 
             <div className="mb-6 relative max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />

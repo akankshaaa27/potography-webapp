@@ -49,4 +49,9 @@ const patchFetch = () => {
 
 patchFetch();
 
-export {};
+// Basic wrapper around native fetch that just ensures global fetch is patched
+export const apiRequest = (input, init) => {
+  return window.fetch(input, init);
+};
+
+export { };

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import PageHeader from "../components/PageHeader";
 
 export default function AdminUsers() {
   const queryClient = useQueryClient();
@@ -53,20 +54,19 @@ export default function AdminUsers() {
   });
 
   return (
-    <div className="mt-4 container mx-auto p-4">
-      {/* Header */}
-      <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-gold-500 font-semibold mb-1">Access</p>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-        </div>
-        <button
-          onClick={() => { setForm({ id: null, name: "", email: "", phone: "", role: "user", status: "Active", password: "" }); setModalOpen(true); }}
-          className="bg-gray-900 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
-        >
-          <Plus size={18} /> Add User
-        </button>
-      </div>
+    <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+      <PageHeader
+        title="User Management"
+        description="Manage system users and access control"
+        action={
+          <button
+            onClick={() => { setForm({ id: null, name: "", email: "", phone: "", role: "user", status: "Active", password: "" }); setModalOpen(true); }}
+            className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-all shadow-lg"
+          >
+            <Plus size={18} /> Add User
+          </button>
+        }
+      />
 
       {/* Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
