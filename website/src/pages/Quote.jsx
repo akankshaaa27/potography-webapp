@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useSettings } from '../hooks/useSettings';
 
 const Quote = () => {
+  const { settings } = useSettings();
   const [formData, setFormData] = useState({
     groomName: '',
     brideName: '',
@@ -161,7 +163,8 @@ const Quote = () => {
                         <div className="contact-info">
                           <div className="contact-detail">
                             <i className="bi bi-telephone-fill"></i>
-                            <span>+1 (555) 942-8765</span>
+                            <span>{settings?.primaryMobileNumber}</span>
+                            {settings?.secondaryMobileNumber && <span>, {settings?.secondaryMobileNumber}</span>}
                           </div>
                           <div className="contact-detail">
                             <i className="bi bi-envelope-fill"></i>

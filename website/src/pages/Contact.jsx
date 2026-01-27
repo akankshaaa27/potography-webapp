@@ -99,7 +99,8 @@ const Contact = () => {
                     </div>
                     <div className="contact-text">
                       <h4>Call</h4>
-                      <p>{settings?.contactPhone || "+1 (212) 555-7890"}</p>
+                      <p>{settings?.primaryMobileNumber}</p>
+                      {settings?.secondaryMobileNumber && <p>{settings?.secondaryMobileNumber}</p>}
                     </div>
                   </div>
 

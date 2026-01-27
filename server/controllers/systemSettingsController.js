@@ -32,6 +32,8 @@ export const updateSettings = async (req, res) => {
             websiteUrl,
             contactEmail,
             contactPhone,
+            primaryMobileNumber,
+            secondaryMobileNumber,
             address
         } = req.body;
 
@@ -42,6 +44,8 @@ export const updateSettings = async (req, res) => {
         if (websiteUrl !== undefined) settings.websiteUrl = websiteUrl;
         if (contactEmail !== undefined) settings.contactEmail = contactEmail;
         if (contactPhone !== undefined) settings.contactPhone = contactPhone;
+        if (primaryMobileNumber !== undefined) settings.primaryMobileNumber = primaryMobileNumber;
+        if (secondaryMobileNumber !== undefined) settings.secondaryMobileNumber = secondaryMobileNumber;
         if (address !== undefined) settings.address = address;
 
         const updatedSettings = await settings.save();

@@ -46,6 +46,14 @@ const systemSettingsSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    primaryMobileNumber: {
+        type: String,
+        default: ""
+    },
+    secondaryMobileNumber: {
+        type: String,
+        default: ""
+    },
     address: {
         type: String,
         default: ""
