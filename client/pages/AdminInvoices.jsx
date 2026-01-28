@@ -1,66 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, FileText, Download, Eye, FileCheck } from "lucide-react";
 import PageHeader from "../components/PageHeader";
+import { generateInvoicePDF } from "../utils/pdfGenerator";
+import { useSettings } from "../hooks/useSettings";
 
 const seedInvoices = [
-  {
-    id: "INV-24021",
-    invoiceNo: "INV-24021",
-    client: "Rahul & Sneha",
-    event: "Wedding",
-    issueDate: "2025-10-02",
-    dueDate: "2025-10-12",
-    amount: 145000,
-    paid: 95000,
-    status: "Partial",
-    stage: "Editing",
-    paymentMethod: "Bank Transfer",
-    notes: "Awaiting highlight film approval.",
-  },
-  {
-    id: "INV-24018",
-    invoiceNo: "INV-24018",
-    client: "Ishaan Patil",
-    event: "Pre-Wedding",
-    issueDate: "2025-09-15",
-    dueDate: "2025-10-05",
-    amount: 62000,
-    paid: 62000,
-    status: "Paid",
-    stage: "Delivered",
-    paymentMethod: "UPI",
-    notes: "Paid in full before outdoor shoot.",
-  },
-  {
-    id: "INV-24010",
-    invoiceNo: "INV-24010",
-    client: "Aditi & Neel",
-    event: "Engagement",
-    issueDate: "2025-08-22",
-    dueDate: "2025-09-01",
-    amount: 88000,
-    paid: 30000,
-    status: "Overdue",
-    stage: "Album Design",
-    paymentMethod: "Cash",
-    notes: "Follow-up scheduled for Monday.",
-  },
-  {
-    id: "INV-24005",
-    invoiceNo: "INV-24005",
-    client: "Studio Samarth",
-    event: "Commercial",
-    issueDate: "2025-07-02",
-    dueDate: "2025-07-20",
-    amount: 156000,
-    paid: 156000,
-    status: "Paid",
-    stage: "Archived",
-    paymentMethod: "NEFT",
-    notes: "Annual retainer settled.",
-  },
+  // ... (keep seed data if needed, but we rely on API)
 ];
 
 const emptyInvoice = {
@@ -76,20 +23,22 @@ const emptyInvoice = {
   stage: "Planning",
   paymentMethod: "UPI",
   notes: "",
+  services: [] // Added services array
 };
 
 const statusStyles = {
-  Draft: "bg-slate-100 text-slate-600",
-  Sent: "bg-indigo-100 text-indigo-700",
-  Partial: "bg-amber-100 text-amber-700",
-  Paid: "bg-emerald-100 text-emerald-700",
-  Overdue: "bg-rose-100 text-rose-600",
+  Draft: "bg-slate-100 text-slate-600 border-slate-200",
+  Sent: "bg-blue-50 text-blue-700 border-blue-200",
+  Partial: "bg-amber-50 text-amber-700 border-amber-200",
+  Paid: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Overdue: "bg-rose-50 text-rose-700 border-rose-200",
 };
 
 const filterOptions = ["all", "Draft", "Sent", "Partial", "Paid", "Overdue"];
 
 export default function AdminInvoices() {
   const queryClient = useQueryClient();
+  const { data: settings } = useSettings(); // Get Settings
 
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["invoices"],
@@ -104,6 +53,7 @@ export default function AdminInvoices() {
         id: inv._id,
         invoiceNo: inv.invoiceNumber,
         client: inv.clientName || inv.clientId?.name || "Unknown",
+        clientData: inv.clientId, // Store full client object
         event: inv.eventType,
         issueDate: inv.invoiceDate,
         dueDate: inv.dueDate,
@@ -111,7 +61,8 @@ export default function AdminInvoices() {
         paid: inv.amountPaid,
         status: inv.paymentStatus,
         stage: inv.workflowStage,
-        paymentMethod: inv.paymentMethod
+        paymentMethod: inv.paymentMethod,
+        services: inv.services || [] // Ensure services exist
       }));
     },
     enabled: true,
@@ -122,6 +73,44 @@ export default function AdminInvoices() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(emptyInvoice);
   const [editingId, setEditingId] = useState(null);
+
+  const handleGeneratePDF = (e, invoice) => {
+    e.stopPropagation();
+    // Construct client object if missing or incomplete
+    const clientObj = invoice.clientData || {
+      name: invoice.client,
+      email: "clients@example.com", // Fallback
+      phone: "",
+      address: ""
+    };
+
+    // Construct invoice object for PDF generator
+    // We need to ensure logic for empty services to avoid empty table
+    const safeServices = (invoice.services && invoice.services.length > 0)
+      ? invoice.services
+      : [{
+        serviceName: "Consolidated Services",
+        quantity: 1,
+        days: 1,
+        ratePerDay: invoice.amount,
+        total: invoice.amount
+      }];
+
+    const pdfInvoice = {
+      ...invoice,
+      invoiceNumber: invoice.invoiceNo,
+      invoiceDate: invoice.issueDate,
+      services: safeServices,
+      subtotal: invoice.amount,
+      tax: 0, // Fallback as basic form doesn't track tax separately
+      taxPercentage: 0,
+      grandTotal: invoice.amount,
+      discount: 0,
+      bankDetails: settings?.bankDetails || {} // Use global settings bank details
+    };
+
+    generateInvoicePDF(pdfInvoice, clientObj, settings || {});
+  };
 
   const stats = useMemo(() => {
     const total = invoices.reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
@@ -348,49 +337,63 @@ export default function AdminInvoices() {
                     const balance = Math.max(Number(invoice.amount) - Number(invoice.paid), 0);
                     const progress = Math.min(100, Math.round((Number(invoice.paid || 0) / Number(invoice.amount || 1)) * 100));
                     return (
-                      <tr key={invoice.id} className="odd:bg-white even:bg-slate-50">
+                      <tr key={invoice.id} className="group odd:bg-white even:bg-slate-50 hover:bg-gold-50/30 transition-colors">
                         <td className="px-4 py-3">
                           <p className="font-semibold text-charcoal-900">{invoice.invoiceNo}</p>
                           <p className="text-xs text-slate-500">{invoice.stage}</p>
                         </td>
                         <td className="px-4 py-3">
-                          <p className="font-semibold text-charcoal-900">{invoice.client}</p>
+                          <p className="font-medium text-charcoal-900">{invoice.client}</p>
                           <p className="text-xs text-slate-500">{invoice.event}</p>
                         </td>
                         <td className="px-4 py-3 text-slate-600">
-                          <div className="text-xs">{formatDate(invoice.issueDate)} • Issue</div>
-                          <div className="text-xs text-rose-500">{formatDate(invoice.dueDate)} • Due</div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="font-semibold text-charcoal-900">{formatCurrency(invoice.amount)}</p>
-                          <p className="text-xs text-slate-500">Bal {formatCurrency(balance)}</p>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-xs font-semibold text-slate-600">{progress}%</div>
-                          <div className="mt-1 h-2 rounded-full bg-slate-100">
-                            <div className="h-full rounded-full bg-gold-500" style={{ width: `${progress}%` }} />
+                          <div className="text-xs">{formatDate(invoice.issueDate)}</div>
+                          <div className={`text-xs ${isOverdue(invoice) ? "text-rose-500 font-medium" : "text-slate-400"}`}>
+                            Due: {formatDate(invoice.dueDate)}
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[invoice.status] || "bg-slate-100 text-slate-600"}`}>
+                          <p className="font-semibold text-charcoal-900">{formatCurrency(invoice.amount)}</p>
+                          {balance > 0 ? (
+                            <p className="text-xs text-slate-500">Bal: {formatCurrency(balance)}</p>
+                          ) : (
+                            <p className="text-xs text-emerald-600 font-medium flex items-center gap-1"><FileCheck size={10} /> Fully Paid</p>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="relative h-2 w-16 rounded-full bg-slate-100 overflow-hidden mx-auto">
+                            <div className={`absolute top-0 left-0 h-full rounded-full ${progress === 100 ? "bg-emerald-500" : "bg-gold-500"}`} style={{ width: `${progress}%` }} />
+                          </div>
+                          <span className="text-[10px] font-medium text-slate-400 mt-1 block">{progress}%</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${isOverdue(invoice) ? statusStyles.Overdue : (statusStyles[invoice.status] || "bg-slate-100 text-slate-600 border-slate-200")}`}>
                             {isOverdue(invoice) ? "Overdue" : invoice.status}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          <div className="inline-flex gap-2">
+                          <div className="flex items-center justify-end gap-2">
                             <button
-                              className="rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                              onClick={(e) => handleGeneratePDF(e, invoice)}
+                              className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500 hover:text-charcoal-900 transition-colors"
+                              title="Download PDF"
+                            >
+                              <FileText size={16} />
+                            </button>
+                            <button
+                              className="px-3 py-1 rounded-md border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all bg-white"
                               onClick={() => openModal(invoice)}
                             >
                               Edit
                             </button>
-                            <button
-                              className="rounded-md border border-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-50"
-                              onClick={() => markAsPaid(invoice.id)}
-                              disabled={invoice.status === "Paid"}
-                            >
-                              Mark Paid
-                            </button>
+                            {invoice.status !== "Paid" && (
+                              <button
+                                className="px-3 py-1 rounded-md bg-emerald-50 border border-emerald-100 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 transition-all"
+                                onClick={() => markAsPaid(invoice.id)}
+                              >
+                                Mark Paid
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -408,53 +411,62 @@ export default function AdminInvoices() {
                 const balance = Math.max(Number(invoice.amount) - Number(invoice.paid), 0);
                 const progress = Math.min(100, Math.round((Number(invoice.paid || 0) / Number(invoice.amount || 1)) * 100));
                 return (
-                  <div key={invoice.id} className="space-y-3 rounded-2xl border border-slate-100 p-4 shadow-sm">
+                  <div key={invoice.id} className="space-y-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm hover:border-gold-200 transition-colors">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
                         <p className="text-base font-semibold text-charcoal-900">{invoice.invoiceNo}</p>
                         <p className="text-xs text-slate-500">{invoice.stage}</p>
                       </div>
                       <span
-                        className={`rounded-full px-3 py-1 text-[11px] font-semibold ${statusStyles[invoice.status] || "bg-slate-100 text-slate-600"
-                          }`}
+                        className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${isOverdue(invoice) ? statusStyles.Overdue : (statusStyles[invoice.status] || "bg-slate-100 text-slate-600 border-slate-200")}`}
                       >
                         {isOverdue(invoice) ? "Overdue" : invoice.status}
                       </span>
                     </div>
                     <div className="grid gap-3 text-xs text-slate-500 sm:grid-cols-2">
                       <div>
-                        <p className="text-sm font-semibold text-charcoal-900">{invoice.client}</p>
+                        <p className="text-sm font-medium text-charcoal-900">{invoice.client}</p>
                         <p>{invoice.event}</p>
                       </div>
-                      <div>
-                        <p>Issue — {formatDate(invoice.issueDate)}</p>
-                        <p>Due — {formatDate(invoice.dueDate)}</p>
+                      <div className="text-right sm:text-left">
+                        <p>Issue: {formatDate(invoice.issueDate)}</p>
+                        <p className={`${isOverdue(invoice) ? "text-rose-500 font-medium" : ""}`}>Due: {formatDate(invoice.dueDate)}</p>
                       </div>
                     </div>
-                    <div className="text-sm font-semibold text-charcoal-900">{formatCurrency(invoice.amount)}</div>
                     <div>
-                      <div className="text-xs font-semibold text-slate-600">{progress}% collected</div>
-                      <div className="mt-1 h-2 rounded-full bg-slate-100">
-                        <div className="h-full rounded-full bg-gold-500" style={{ width: `${progress}%` }} />
+                      <div className="flex justify-between items-baseline mb-1">
+                        <div className="text-sm font-semibold text-charcoal-900">{formatCurrency(invoice.amount)}</div>
+                        {balance === 0 && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><FileCheck size={10} /> Fully Paid</span>}
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">Balance {formatCurrency(balance)}</p>
+
+                      <div className="mt-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div className={`h-full rounded-full ${progress === 100 ? "bg-emerald-500" : "bg-gold-500"}`} style={{ width: `${progress}%` }} />
+                      </div>
+                      {balance > 0 && <p className="mt-1 text-xs text-slate-500 text-right">Balance {formatCurrency(balance)}</p>}
                     </div>
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 border-t border-slate-50 pt-3">
                       <span>{invoice.paymentMethod}</span>
                       <div className="flex gap-2 text-xs">
                         <button
-                          className="rounded-md border border-slate-200 px-3 py-1 font-semibold text-slate-700"
+                          onClick={(e) => handleGeneratePDF(e, invoice)}
+                          className="flex items-center justify-center h-8 w-8 rounded-full bg-slate-50 text-slate-600 border border-slate-200"
+                        >
+                          <FileText size={14} />
+                        </button>
+                        <button
+                          className="rounded-md border border-slate-200 px-3 py-1 font-semibold text-slate-700 bg-white"
                           onClick={() => openModal(invoice)}
                         >
                           Edit
                         </button>
-                        <button
-                          className="rounded-md border border-emerald-100 px-3 py-1 font-semibold text-emerald-600"
-                          onClick={() => markAsPaid(invoice.id)}
-                          disabled={invoice.status === "Paid"}
-                        >
-                          Paid
-                        </button>
+                        {invoice.status !== "Paid" && (
+                          <button
+                            className="rounded-md border border-emerald-100 px-3 py-1 font-semibold text-emerald-600 bg-emerald-50"
+                            onClick={() => markAsPaid(invoice.id)}
+                          >
+                            Paid
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -66,7 +66,7 @@ const useAutoLogout = (logoutCallback) => {
         timer = setTimeout(() => {
           console.log("Auto logging out due to screen off/hidden");
           logoutCallback();
-        }, 60 * 1000); // 1 minute allowed in background
+        }, INACTIVITY_LIMIT); // 15 minutes allowed in background matches inactivity
       } else {
         resetTimer();
       }
