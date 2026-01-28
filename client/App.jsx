@@ -149,7 +149,7 @@ const AppShell = () => {
         <footer className="border-t border-slate-200 bg-white px-6 py-6 mt-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-                <div className="font-medium text-sm text-charcoal-600">{settings?.businessName || "Studio"}</div>
+              <div className="font-medium text-sm text-charcoal-600">{settings?.businessName || "Studio"}</div>
               <span className="text-xs text-slate-500">© {new Date().getFullYear()}</span>
             </div>
 
