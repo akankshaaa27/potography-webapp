@@ -8,7 +8,7 @@ import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
 
 // Page Imports
 import Dashboard from "./pages/Dashboard";
@@ -40,10 +40,57 @@ import AdminTeam from "./pages/AdminTeam";
 
 const queryClient = new QueryClient();
 
-// Simple Protected Route Component
+// Auto Logout Hook
+const useAutoLogout = (logoutCallback) => {
+  useEffect(() => {
+    let timer;
+    const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 minutes
+
+    const resetTimer = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        console.log("Auto logging out due to inactivity");
+        logoutCallback();
+      }, INACTIVITY_LIMIT);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // If tab/screen is hidden, we might want to be more aggressive
+        // But for now, let's keep the timer running. 
+        // Or if the user explicitely meant "Screen Off" = "Phone locked" -> visibilityState becomes 'hidden'.
+        // Let's logout immediately if they want strict security, or maybe after 1 min?
+        // User said "automatically log out", implying immediacy or near-immediacy.
+        // I will set a separate shorter timer for hidden state.
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+          console.log("Auto logging out due to screen off/hidden");
+          logoutCallback();
+        }, 60 * 1000); // 1 minute allowed in background
+      } else {
+        resetTimer();
+      }
+    };
+
+    // Events to detect activity
+    const events = ["mousedown", "mousemove", "keydown", "scroll", "touchstart"];
+    events.forEach((event) => document.addEventListener(event, resetTimer));
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    resetTimer(); // Start timer
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      events.forEach((event) => document.removeEventListener(event, resetTimer));
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [logoutCallback]);
+};
+
+// Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  if (!isLoggedIn) {
+  const token = localStorage.getItem("token");
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -58,6 +105,9 @@ const App = () => (
         <Routes>
           {/* Public Route */}
           <Route path="/login" element={<Login />} />
+
+          {/* Redirect /admin to / */}
+          <Route path="/admin" element={<Navigate to="/" replace />} />
 
           {/* Protected Routes */}
           <Route
@@ -78,6 +128,17 @@ const AppShell = () => {
   const { data: settings } = useSettings();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("rememberMe");
+    navigate("/login");
+  };
+
+  useAutoLogout(handleLogout);
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -149,7 +210,7 @@ const AppShell = () => {
         <footer className="border-t border-slate-200 bg-white px-6 py-6 mt-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-                <div className="font-medium text-sm text-charcoal-600">{settings?.businessName || "Studio"}</div>
+              <div className="font-medium text-sm text-charcoal-600">{settings?.businessName || "Studio"}</div>
               <span className="text-xs text-slate-500">© {new Date().getFullYear()}</span>
             </div>
 

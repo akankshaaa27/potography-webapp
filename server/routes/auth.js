@@ -41,10 +41,19 @@ router.post("/login", async (req, res) => {
         if (!email || !password) return res.status(400).json({ error: "Missing fields" });
 
         const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ error: "Invalid credentials" });
+        if (!user) {
+            console.log(`Login failed: User '${email}' not found`);
+            return res.status(401).json({ error: "User not found" });
+        }
+
+        console.log(`[DEBUG_LOGIN] User found: ${email}`);
+        console.log(`[DEBUG_LOGIN] Stored hash: ${user.password}`);
 
         const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(401).json({ error: "Invalid credentials" });
+        if (!match) {
+            console.log(`Login failed: Password mismatch for '${email}'`);
+            return res.status(401).json({ error: "Incorrect password" });
+        }
 
         const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
             expiresIn: "7d",
@@ -54,6 +63,40 @@ router.post("/login", async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Emergency Reset Route (TEMPORARY)
+router.get("/reset-admin-emergency", async (req, res) => {
+    try {
+        const email = "admin@lumina.studio";
+        const password = "admin";
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+
+        let user = await User.findOne({ email });
+        if (user) {
+            user.password = hash;
+            await user.save();
+            return res.send(`
+                <h1>Password Reset Success</h1>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Password:</strong> ${password}</p>
+                <br>
+                <a href="http://localhost:5173/login">Click here to Login</a>
+            `);
+        } else {
+            await User.create({ name: 'Studio Admin', email, password: hash, role: 'admin' });
+            return res.send(`
+                <h1>Admin Created Success</h1>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Password:</strong> ${password}</p>
+                <br>
+                <a href="http://localhost:5173/login">Click here to Login</a>
+            `);
+        }
+    } catch (e) {
+        return res.status(500).send("Error: " + e.message);
     }
 });
 
