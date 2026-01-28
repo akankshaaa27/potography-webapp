@@ -36,7 +36,7 @@ const Login = () => {
                 if (rememberMe) {
                     localStorage.setItem("rememberMe", "true");
                 }
-                navigate("/dashboard");
+                navigate("/admin-dashboard");
             } else {
                 setError(data.error || "Login failed");
             }

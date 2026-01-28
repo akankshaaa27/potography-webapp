@@ -162,7 +162,7 @@ const AppShell = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <Navigation isMobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+      <Navigation isMobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} onLogout={handleLogout} />
       <div className="flex min-h-screen flex-1 flex-col">
         <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-sm lg:hidden">
           <button

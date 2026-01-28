@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useSettings } from "../hooks/useSettings";
+import { LogOut } from "lucide-react";
 
 const items = [
   { to: "/admin-dashboard", label: "Dashboard" },
@@ -24,7 +25,7 @@ const items = [
   { to: "/admin-settings", label: "Global Settings" },
 ];
 
-export default function Navigation({ isMobileOpen = false, onClose = () => { } }) {
+export default function Navigation({ isMobileOpen = false, onClose = () => { }, onLogout }) {
   return (
     <>
       <aside aria-label="Main navigation" className="hidden flex-shrink-0 lg:flex h-screen sticky top-0" style={{ width: 240 }}>
@@ -32,6 +33,16 @@ export default function Navigation({ isMobileOpen = false, onClose = () => { } }
           <BrandHeader />
           <div className="flex-1 overflow-y-auto overflow-x-hidden -mr-2 pr-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <NavList />
+          </div>
+          {/* Logout Section at the bottom */}
+          <div className="pt-4 mt-auto border-t border-gray-100 dark:border-charcoal-800">
+            <button
+              onClick={onLogout}
+              className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 transition rounded hover:bg-red-50 dark:hover:bg-red-900/10"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </button>
           </div>
         </div>
       </aside>
@@ -54,8 +65,20 @@ export default function Navigation({ isMobileOpen = false, onClose = () => { } }
               ✕
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col">
             <NavList onNavigate={onClose} />
+            <div className="pt-4 mt-auto border-t border-gray-100 dark:border-charcoal-800">
+              <button
+                onClick={() => {
+                  onClose();
+                  if (onLogout) onLogout();
+                }}
+                className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 transition rounded hover:bg-red-50 dark:hover:bg-red-900/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </aside>
