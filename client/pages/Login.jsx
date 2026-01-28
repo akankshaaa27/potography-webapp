@@ -12,19 +12,37 @@ const Login = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         setError(null);
 
-        if (username === "admin" && password === "admin") {
-            localStorage.setItem("isLoggedIn", "true");
-            localStorage.setItem("user", username);
-            if (rememberMe) {
-                localStorage.setItem("rememberMe", "true");
+        // Auto-handle "admin" shorthand
+        const emailToSend = username.toLowerCase() === "admin" ? "admin@lumina.studio" : username;
+
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: emailToSend, password }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("isLoggedIn", "true");
+
+                if (rememberMe) {
+                    localStorage.setItem("rememberMe", "true");
+                }
+                navigate("/admin-dashboard");
+            } else {
+                setError(data.error || "Login failed");
             }
-            navigate("/dashboard");
-        } else {
-            setError("Invalid username or password (use admin/admin)");
+        } catch (err) {
+            console.error(err);
+            setError("Something went wrong. Please try again.");
         }
     };
 
@@ -44,12 +62,13 @@ const Login = () => {
                         <form onSubmit={handleLogin} className="space-y-6">
                             {/* Username Field */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                                 <input
-                                    type="text"
+                                    type="email"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="admin"
+                                    placeholder="admin@studio.com"
+                                    autoComplete="username"
                                     className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:bg-white focus:border-gold-500 text-gray-700 placeholder-gray-500"
                                     required
                                 />
@@ -64,6 +83,7 @@ const Login = () => {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="•••••••"
+                                        autoComplete="current-password"
                                         className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:bg-white focus:border-gold-500 text-gray-700 placeholder-gray-500 pr-12"
                                         required
                                     />

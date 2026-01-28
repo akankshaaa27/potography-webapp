@@ -40,7 +40,10 @@ export const generatePDF = async (elementId, filename) => {
       heightLeft -= pageHeight - 20;
     }
 
-    pdf.save(filename);
+    // Generate Blob URL and open in new tab
+    const blobUrl = pdf.output("bloburl");
+    window.open(blobUrl, "_blank");
+    // pdf.save(filename); // Disabled auto-download
   } catch (error) {
     console.error("Error generating PDF:", error);
     alert("Error generating PDF");
@@ -164,7 +167,10 @@ export const generateQuotationPDF = (quotation, client, settings = {}) => {
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = content;
   tempDiv.id = "pdf-content";
-  tempDiv.style.display = "none";
+  // FIX: html2canvas requires visibility
+  tempDiv.style.position = "absolute";
+  tempDiv.style.left = "-9999px";
+  tempDiv.style.width = "794px"; // ~210mm @ 96dpi
   document.body.appendChild(tempDiv);
 
   setTimeout(async () => {
@@ -300,7 +306,10 @@ export const generateInvoicePDF = (invoice, client, settings = {}) => {
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = content;
   tempDiv.id = "pdf-content";
-  tempDiv.style.display = "none";
+  // FIX: html2canvas requires visibility
+  tempDiv.style.position = "absolute";
+  tempDiv.style.left = "-9999px";
+  tempDiv.style.width = "794px"; // ~210mm @ 96dpi
   document.body.appendChild(tempDiv);
 
   setTimeout(async () => {
