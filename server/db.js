@@ -15,6 +15,8 @@ const buildMongoUri = () => {
   const encodedPass = encodeURIComponent(password);
   return `mongodb+srv://${encodedUser}:${encodedPass}@${host}/?retryWrites=true&w=majority&appName=${process.env.MONGODB_APP_NAME || DEFAULT_APP_NAME}`;
 };
+// Manual Override for emergency
+// const buildMongoUri = () => "mongodb+srv://photograper:photograper@cluster0.sy94kcl.mongodb.net/?appName=Cluster0";
 
 export const connectDB = async () => {
   try {

@@ -1,7 +1,7 @@
 import express from "express";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { encrypt, decrypt } from "../utils/encryption.js";
 
 const router = express.Router();
 
@@ -18,10 +18,9 @@ router.post("/register", async (req, res) => {
         const existing = await User.findOne({ email });
         if (existing) return res.status(409).json({ error: "Email already in use" });
 
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
-
-        const user = await User.create({ name, email, password: hash });
+        const encryptedPassword = encrypt(password);
+        // Store encrypted password directly in 'password' field based on user request
+        const user = await User.create({ name, email, password: encryptedPassword });
 
         const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
             expiresIn: "7d",
@@ -46,11 +45,8 @@ router.post("/login", async (req, res) => {
             return res.status(401).json({ error: "User not found" });
         }
 
-        console.log(`[DEBUG_LOGIN] User found: ${email}`);
-        console.log(`[DEBUG_LOGIN] Stored hash: ${user.password}`);
-
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) {
+        const decryptedPassword = decrypt(user.password);
+        if (password !== decryptedPassword) {
             console.log(`Login failed: Password mismatch for '${email}'`);
             return res.status(401).json({ error: "Incorrect password" });
         }
@@ -71,12 +67,11 @@ router.get("/reset-admin-emergency", async (req, res) => {
     try {
         const email = "admin@lumina.studio";
         const password = "admin";
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
+        const encryptedPassword = encrypt(password);
 
         let user = await User.findOne({ email });
         if (user) {
-            user.password = hash;
+            user.password = encryptedPassword;
             await user.save();
             return res.send(`
                 <h1>Password Reset Success</h1>
@@ -86,7 +81,7 @@ router.get("/reset-admin-emergency", async (req, res) => {
                 <a href="http://localhost:5173/login">Click here to Login</a>
             `);
         } else {
-            await User.create({ name: 'Studio Admin', email, password: hash, role: 'admin' });
+            await User.create({ name: 'Studio Admin', email, password: encryptedPassword, role: 'admin' });
             return res.send(`
                 <h1>Admin Created Success</h1>
                 <p><strong>Email:</strong> ${email}</p>

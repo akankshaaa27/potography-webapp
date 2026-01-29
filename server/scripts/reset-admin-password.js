@@ -1,46 +1,50 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import User from '../models/User.js';
+import { encrypt } from '../utils/encryption.js';
 
-// Load env vars
+import { connectDB } from '../db.js';
+
+// Load env vars (Must be before db import effectively, but connectDB reads env at runtime)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, '../../.env') }); // Point to root .env
 
-// Simple User Schema definition if model import fails or to avoid dependency issues
-// but better to try dynamic import of the model if possible. 
-// Since we are in a module system, we can import the model relative to this script.
-import User from '../models/User.js';
-
 const resetAdmin = async () => {
     try {
-        if (!process.env.MONGODB_URI) {
-            throw new Error("MONGODB_URI is missing in .env");
-        }
-
         console.log('Connecting to MongoDB...');
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('Connected.');
+        // Force connection logic if connectDB fails to pick up env
+        if (!process.env.MONGODB_URI) {
+            console.log("⚠️ MONGODB_URI missing in process.env, attempting manual set from .env file content directly...");
+            // Manual fallback or just let connectDB try
+            process.env.MONGODB_URI = "mongodb+srv://photograper:photograper@cluster0.sy94kcl.mongodb.net/?appName=Cluster0";
+        }
+        process.env.MONGODB_URI = "mongodb+srv://photograper:photograper@cluster0.sy94kcl.mongodb.net/?appName=Cluster0";
+
+        await connectDB();
+        // console.log('Connected.'); // connectDB already logs this
+
 
         const email = 'admin@lumina.studio';
         const newPassword = 'admin'; // The requested password
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        const encryptedPassword = encrypt(newPassword);
 
         let user = await User.findOne({ email });
 
         if (user) {
-            user.password = hashedPassword;
+            user.password = encryptedPassword;
+            // Ensure encryptedPassword field is cleared if it exists (legacy)
+            user.encryptedPassword = undefined;
             await user.save();
-            console.log(`✅ Success! Password for '${email}' has been reset.`);
+            console.log(`✅ Success! Password for '${email}' has been reset to encrypted format.`);
         } else {
             user = await User.create({
                 name: 'Studio Admin',
                 email,
-                password: hashedPassword,
+                password: encryptedPassword,
                 role: 'admin',
                 status: 'Active'
             });
