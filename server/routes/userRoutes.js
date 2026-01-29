@@ -3,11 +3,14 @@ import {
     getAllUsers,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    revealPassword
 } from '../controllers/userController.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+router.post('/reveal', requireAuth, revealPassword);
 router.get('/', getAllUsers);
 router.post('/', createUser);
 router.put('/:id', updateUser);
