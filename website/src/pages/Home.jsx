@@ -8,6 +8,7 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import Skeleton from "../components/Skeleton";
+import TributeModal from "../components/TributeModal";
 
 const Home = () => {
   console.log("Home component rendering");
@@ -21,7 +22,17 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
   const [instagramPosts, setInstagramPosts] = useState([]);
-
+  const [showTribute, setShowTribute] = useState(false);
+  // Pop up
+  useEffect(() => {
+    // Show tribute popup automatically on home page load (ALWAYS for now)
+    const timer = setTimeout(() => {
+      setShowTribute(true);
+      // sessionStorage.setItem("hasSeenTributeWeb", "true"); // Disabled for testing
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+  // Pop up end 
   useEffect(() => {
     // Fetch Slider
     fetch("/api/slider")
@@ -160,7 +171,9 @@ const Home = () => {
   return (
     <>
       <Header />
-
+      {/* Pop up */}
+      <TributeModal isOpen={showTribute} onClose={() => setShowTribute(false)} />
+      {/* Pop up end */}
       <main className="main">
         {/* Hero Section */}
         <section id="hero" className="hero dark-background">
