@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+// import { X } from 'lucide-react'; // Removing to avoid build error
+
 
 const TributeModal = ({ isOpen, onClose }) => {
     const [show, setShow] = useState(false);
@@ -147,7 +148,21 @@ const TributeModal = ({ isOpen, onClose }) => {
         <div style={styles.overlay}>
             <div style={styles.container}>
                 <button onClick={onClose} style={styles.closeBtn}>
-                    <X size={24} color="#ccc" />
+                    {/* Inline SVG replacement for Lucide X */}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#ccc"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                    </svg>
                 </button>
 
                 <div>
