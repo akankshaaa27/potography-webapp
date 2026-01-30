@@ -4,9 +4,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import StoryModal from '../components/StoryModal';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation } from 'swiper/modules';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const Home = () => {
   console.log('Home component rendering');
@@ -188,34 +189,41 @@ const Home = () => {
         <section id="about" className="about section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             <div className="row align-items-center">
-
               <div className="col-lg-6 order-2 order-lg-1" data-aos="fade-right" data-aos-delay="200">
-                <div className="content section-title">
-                  <h2 className="section-heading mb-4 text-center section-title" data-aos="fade-up">
-                    Preserving Pure Emotion in Every Frame
+                <div className="content">
+                  <span className="accent-color fw-bold text-uppercase mb-2 d-block">Established Since 2015</span>
+                  <h2 className="section-heading mb-4">
+                    Preserving Pure Emotion <br /> in Every Frame
                   </h2>
-
-                  <p className="description-text my-3 text-left">
-                    Welcome to <span>The Patil Photography & Film's,</span> where every love story is transformed
-                    into an elegant visual masterpiece. We believe that every couple shares a unique bond, and our
-                    passion lies in capturing the emotions, details, and unspoken moments that define your journey.
+                  <p className="description-text mb-4">
+                    At <strong>The Patil Photography & Film's</strong>, we transform love stories into elegant visual masterpieces.
+                    We capture the unspoken moments, heartfelt smiles, and gentle glances that define your journey.
                   </p>
 
-                  <p className="description-text mb-3 text-left">
-                    With a refined blend of creativity and authenticity, we preserve heartfelt smiles, gentle glances,
-                    and the timeless charm that unfolds throughout your special day. From grand celebrations to intimate
-                    memories, our craft is dedicated to telling stories that reflect your love, connection, and personality.
-                  </p>
+                  <div className="row g-4 mb-5">
+                    <div className="col-6">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="bi bi-camera accent-color fs-3"></i>
+                        <div>
+                          <h5 className="mb-0">Artistic Vision</h5>
+                          <small className="text-muted">Creative Storytelling</small>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="bi bi-heart accent-color fs-3"></i>
+                        <div>
+                          <h5 className="mb-0">Real Emotions</h5>
+                          <small className="text-muted">Authentic Moments</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                  <p className="description-text mb-3 text-left">
-                    Explore our curated gallery — a world of emotions, artistry, and real moments captured with soul
-                    and sincerity. Let us narrate your story through our lens, where every frame becomes a cherished
-                    memory, preserved forever with elegance.
-                  </p>
-
-                  <div className="cta-section text-lg-start" data-aos="fade-up" data-aos-delay="450">
-                    <Link to="/portfolio" className="cta-link">
-                      Explore Our Services
+                  <div className="cta-section">
+                    <Link to="/portfolio" className="submit-btn" style={{ textDecoration: 'none', marginTop: '0' }}>
+                      <span>View Our Work</span>
                       <i className="bi bi-arrow-right ms-2"></i>
                     </Link>
                   </div>
@@ -223,13 +231,139 @@ const Home = () => {
               </div>
 
               <div className="col-lg-6 order-1 order-lg-2" data-aos="fade-left" data-aos-delay="200">
-                <div className="image-section mx-5 my-5">
-                  <div className="main-image">
-                    <img src="/assets/img/HomePage/7.webp" alt="showcase" />
+                <div className="image-section position-relative ps-lg-5">
+                  <img src="/assets/img/HomePage/7.webp" alt="showcase" className="img-fluid rounded-4 shadow-xl" />
+                  <div className="position-absolute bottom-0 start-0 bg-white p-4 m-3 rounded-3 shadow-sm d-none d-md-block">
+                    <h4 className="mb-0 accent-color">10+ Years</h4>
+                    <p className="mb-0 text-muted small">Experience in Photography</p>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
 
+        {/* Stats Section */}
+        <section className="stats section py-5 dark-background">
+          <div className="container">
+            <div className="row g-4">
+              <div className="col-lg-3 col-6" data-aos="fade-up" data-aos-delay="100">
+                <div className="stats-item">
+                  <i className="bi bi-emoji-smile"></i>
+                  <span className="count">500+</span>
+                  <span>Happy Couples</span>
+                </div>
+              </div>
+              <div className="col-lg-3 col-6" data-aos="fade-up" data-aos-delay="200">
+                <div className="stats-item">
+                  <i className="bi bi-journal-richtext"></i>
+                  <span className="count">1200+</span>
+                  <span>Moments Captured</span>
+                </div>
+              </div>
+              <div className="col-lg-3 col-6" data-aos="fade-up" data-aos-delay="300">
+                <div className="stats-item">
+                  <i className="bi bi-camera-reels"></i>
+                  <span className="count">300+</span>
+                  <span>Cinematic Films</span>
+                </div>
+              </div>
+              <div className="col-lg-3 col-6" data-aos="fade-up" data-aos-delay="400">
+                <div className="stats-item">
+                  <i className="bi bi-award"></i>
+                  <span className="count">25+</span>
+                  <span>Photography Awards</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Specialties Section */}
+        <section id="specialties" className="specialties section pb-0">
+          <div className="container section-title text-center" data-aos="fade-up">
+            <h2>Our Specialties</h2>
+            <p>Crafting timeless memories across diverse genres</p>
+          </div>
+
+          <div className="container">
+            <div className="row g-4">
+              <div className="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div className="specialties-card">
+                  <img src="/assets/img/HomePage/11.webp" alt="Wedding" />
+                  <div className="specialties-overlay">
+                    <h3>Wedding</h3>
+                    <p>Grand celebrations captured with elegance</p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div className="specialties-card">
+                  <img src="/assets/img/HomePage/16.webp" alt="Pre-Wedding" />
+                  <div className="specialties-overlay">
+                    <h3>Pre-Wedding</h3>
+                    <p>Candid chemistry in romantic settings</p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div className="specialties-card">
+                  <img src="/assets/img/HomePage/18.webp" alt="Cinematography" />
+                  <div className="specialties-overlay">
+                    <h3>Films</h3>
+                    <p>Cinematic storytelling of your love</p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div className="specialties-card">
+                  <img src="/assets/img/HomePage/128.webp" alt="Maternity" />
+                  <div className="specialties-overlay">
+                    <h3>Maternity</h3>
+                    <p>Celebrating new beginnings with soul</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Process Section */}
+        <section id="process" className="process section py-5">
+          <div className="container section-title text-center" data-aos="fade-up">
+            <h2>Our Creative Journey</h2>
+            <p>How we bring your vision to life</p>
+          </div>
+
+          <div className="container">
+            <div className="row g-4">
+              <div className="col-lg-4" data-aos="zoom-in" data-aos-delay="100">
+                <div className="process-step">
+                  <div className="process-icon">
+                    <i className="bi bi-chat-quote"></i>
+                  </div>
+                  <h4>Consultation</h4>
+                  <p>We sit down to understand your vision, theme, and priorities for the big day.</p>
+                </div>
+              </div>
+              <div className="col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+                <div className="process-step">
+                  <div className="process-icon">
+                    <i className="bi bi-camera"></i>
+                  </div>
+                  <h4>The Session</h4>
+                  <p>Our experts capture your moments using state-of-the-art gear and creative techniques.</p>
+                </div>
+              </div>
+              <div className="col-lg-4" data-aos="zoom-in" data-aos-delay="300">
+                <div className="process-step">
+                  <div className="process-icon">
+                    <i className="bi bi-magic"></i>
+                  </div>
+                  <h4>Curation</h4>
+                  <p>Professional editing and retouching to ensure every frame is a masterpiece.</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -241,54 +375,62 @@ const Home = () => {
           </div>
 
           <div className="container">
-            <div className="testimonial-masonry">
-              {testimonials.map((t, index) => (
-                <div key={t._id} className={`testimonial-item ${index === 1 ? 'highlight' : ''}`} data-aos="fade-up" data-aos-delay={index * 100}>
-                  <div className="testimonial-content">
-                    <div className="quote-pattern">
-                      <i className="bi bi-quote"></i>
-                    </div>
-                    <p>"{t.shortDescription}"</p>
+            {testimonials.length === 0 ? (
+              <div className="col-12 text-center p-5">
+                <p>Currently updating our wall of love. Check back soon!</p>
+              </div>
+            ) : (
+              <Swiper
+                modules={[Autoplay, Pagination]}
+                spaceBetween={30}
+                slidesPerView={1}
+                loop={testimonials.length >= 3}
+                autoplay={{ delay: 4000, disableOnInteraction: false }}
+                pagination={{ clickable: true }}
+                breakpoints={{
+                  640: { slidesPerView: 1 },
+                  768: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                }}
+                className="testimonials-slider"
+                style={{ paddingBottom: '40px' }}
+              >
+                {testimonials.map((t, index) => (
+                  <SwiperSlide key={t._id}>
+                    <div className="testimonial-item" style={{ height: '100%' }}>
+                      <div className="testimonial-content">
+                        <div className="quote-pattern">
+                          <i className="bi bi-quote"></i>
+                        </div>
+                        <p>"{t.shortDescription}"</p>
 
-                    {/* Star Rating */}
-                    <div className="stars" style={{ color: '#ffc107', marginBottom: '10px' }}>
-                      {[...Array(t.rating || 5)].map((_, i) => (
-                        <i key={i} className="bi bi-star-fill"></i>
-                      ))}
-                    </div>
+                        {/* Star Rating */}
+                        <div className="stars" style={{ color: '#ffc107', marginBottom: '10px' }}>
+                          {[...Array(t.rating || 5)].map((_, i) => (
+                            <i key={i} className="bi bi-star-fill"></i>
+                          ))}
+                        </div>
 
-                    <div className="client-info">
-                      <div className="client-image">
-                        <img
-                          src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
-                          alt={t.coupleName}
-                          style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
-                        />
+                        <div className="client-info">
+                          <div className="client-image">
+                            <img
+                              src={t.thumbnail || "https://placehold.co/250x250?text=Couple"}
+                              alt={t.coupleName}
+                              style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }}
+                            />
+                          </div>
+                          <div className="client-details">
+                            <h3>{t.coupleName}</h3>
+                            <span className="position">{t.location}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="client-details">
-                        <h3>{t.coupleName}</h3>
-                        <span className="position">{t.location}</span>
-                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-
-              {testimonials.length === 0 && (
-                <div className="col-12 text-center p-5">
-                  <p>Currently updating our wall of love. Check back soon!</p>
-                </div>
-              )}
-            </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
           </div>
-        </section>
-
-        {/* Quote Section */}
-        <section className="container px-5 pt-4" data-aos="fade-up" data-aos-delay="200">
-          <h2 className="text-center Quite py-2">
-            "Love's journey is written in small moments — the smiles, the glances, the warmth —
-            each deserving to be held forever."
-          </h2>
         </section>
 
         {/* Projects Section */}

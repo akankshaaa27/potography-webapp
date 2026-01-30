@@ -1855,6 +1855,10 @@ section,
   position: relative;
 }
 
+.testimonials-slider .testimonial-item {
+  margin-top: 0 !important;
+}
+
 .testimonials .testimonial-masonry::before {
   content: "";
   position: absolute;
@@ -4455,23 +4459,8 @@ section,
   }
 }
 
-/*--------------------------------------------------------------
-# Starter Section Section
---------------------------------------------------------------*/
-.starter-section {
-  /* Add your styles here */
-}
+/* Starter Section Section */
 
-
-.cta-section .cta-link {
-  display: inline-flex;
-  align-items: center;
-  color: var(--accent-color);
-  font-weight: 600;
-  font-size: .9rem;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
 
 .cta-section .cta-link {
   display: inline-flex;
@@ -4496,26 +4485,27 @@ section,
   transform: translateX(5px);
 }
 
- .submit-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--accent-color);
-    color: var(--contrast-color);
-    padding: 12px 32px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 50px;
-}
- .submit-btn:hover {
-    color: var(--contrast-color);
+.submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--accent-color);
+  color: var(--contrast-color);
+  padding: 12px 32px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 50px;
 }
 
-.btn-close{
+.submit-btn:hover {
+  color: var(--contrast-color);
+}
+
+.btn-close {
   color: white !important;
   z-index: 1000;
   border: none !important;
@@ -4523,10 +4513,137 @@ section,
   padding: 8px;
   border-radius: 50% !important;
 }
-.modal-body{
-   background-color: var(--background-color);
+
+.modal-body {
+  background-color: var(--background-color);
 }
 
-.accent-color{
+.accent-color {
   color: var(--accent-color) !important;
+}
+
+/*--------------------------------------------------------------
+# New Home Page Sections
+--------------------------------------------------------------*/
+
+/* Specialties Section */
+.specialties-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  height: 400px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease;
+}
+
+.specialties-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.specialties-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.specialties-card:hover img {
+  transform: scale(1.1);
+}
+
+.specialties-overlay h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.specialties-overlay p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+/* Stats Section */
+.stats-item {
+  text-align: center;
+  padding: 30px;
+}
+
+.stats-item i {
+  font-size: 2.5rem;
+  color: var(--accent-color);
+  margin-bottom: 15px;
+}
+
+.stats-item .count {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 5px;
+}
+
+.stats-item span {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: color-mix(in srgb, var(--default-color), transparent 40%);
+}
+
+/* Process Section */
+.process-step {
+  text-align: center;
+  position: relative;
+  padding: 20px;
+}
+
+.process-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--surface-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  transition: 0.3s;
+}
+
+.process-step:hover .process-icon {
+  background: var(--accent-color);
+  color: #fff;
+}
+
+.process-step h4 {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.process-step p {
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+}
+
+@media (min-width: 992px) {
+  .process-step:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    top: 40px;
+    right: -15px;
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    opacity: 0.3;
+  }
 }
