@@ -841,7 +841,7 @@ const Home = () => {
           <div className="container" data-aos="zoom-in">
             <h2>Ready to Create Magic?</h2>
             <p className="mb-4" style={{ fontSize: '1.2rem', opacity: 0.9 }}>Let's turn your fleeting moments into timeless memories.</p>
-            <Link to="/contact" className="cta-button-light">
+            <Link to="/quote" className="cta-button-light">
               Book Your Date
             </Link>
           </div>
