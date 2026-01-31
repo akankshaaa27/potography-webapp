@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import { encrypt, decrypt } from "../utils/encryption.js";
+import { hashPassword, comparePassword, decrypt } from "../utils/encryption.js";
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -21,15 +21,15 @@ export const createUser = async (req, res) => {
         const existing = await User.findOne({ email });
         if (existing) return res.status(400).json({ message: "Email already exists" });
 
-        const encryptedPassword = encrypt(password);
-        if (!encryptedPassword) {
-            return res.status(500).json({ message: "Encryption failed" });
+        const hashedPassword = await hashPassword(password);
+        if (!hashedPassword) {
+            return res.status(500).json({ message: "Hashing failed" });
         }
 
         const user = new User({
             name,
             email,
-            password: encryptedPassword,
+            password: hashedPassword,
             role,
             phone,
             status
@@ -50,7 +50,7 @@ export const updateUser = async (req, res) => {
         const updateData = { ...rest };
 
         if (password && password.trim() !== "") {
-            updateData.password = encrypt(password);
+            updateData.password = await hashPassword(password);
         }
 
         const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true }).select("-password");
@@ -74,7 +74,7 @@ export const deleteUser = async (req, res) => {
 export const revealPassword = async (req, res) => {
     try {
         const { adminPassword, targetUserId } = req.body;
-        const adminId = req.user.id; // From auth middleware
+        const adminId = req.user.id;
 
         if (!adminPassword || !targetUserId) {
             return res.status(400).json({ message: "Missing required fields" });
@@ -86,16 +86,9 @@ export const revealPassword = async (req, res) => {
             return res.status(403).json({ message: "Unauthorized" });
         }
 
-        // Decrypt stored admin password to compare with input
-        const decryptedAdminPassword = decrypt(admin.password);
-
-        // Debugging logs (Remove in strict production, helpful here)
-        if (!decryptedAdminPassword) {
-            console.error(`[Reveal] Decryption failed for admin: ${admin.email}. Stored len: ${admin.password?.length}`);
-            return res.status(500).json({ message: "Server encryption error (Admin)" });
-        }
-
-        if (adminPassword !== decryptedAdminPassword) {
+        // Verify admin password
+        const isMatch = await comparePassword(adminPassword, admin.password);
+        if (!isMatch) {
             console.warn(`[Reveal] Password mismatch for admin: ${admin.email}`);
             return res.status(401).json({ message: "Incorrect admin password" });
         }
@@ -106,18 +99,8 @@ export const revealPassword = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (targetUser.password) {
-            if (targetUser.password.startsWith('$2')) {
-                return res.json({ password: "Legacy Encrypted (Cannot Reveal)" });
-            }
-            const revealed = decrypt(targetUser.password);
-            if (!revealed) {
-                return res.json({ password: "Error: Could not decrypt" });
-            }
-            return res.json({ password: revealed });
-        } else {
-            return res.json({ password: "Not available" });
-        }
+        // Bcrypt hashes cannot be reversed
+        return res.json({ password: "Encrypted (Cannot Reveal)" });
 
     } catch (error) {
         console.error("Reveal Error:", error);
