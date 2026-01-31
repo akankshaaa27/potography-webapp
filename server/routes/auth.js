@@ -2,7 +2,6 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { hashPassword, comparePassword } from "../utils/encryption.js";
-import fs from "fs";
 import mongoose from "mongoose";
 
 const router = express.Router();
@@ -42,15 +41,6 @@ router.post("/login", async (req, res) => {
         console.log(`\n============== LOGIN HIT [${new Date().toISOString()}] ==============`);
         console.log(`Email: ${email}`);
 
-        const debugPath = 'C:/Users/amit1/Data/AppData/App/ganesh/Personal/github/potography-webapp/auth-debug.log';
-        const logData = `[${new Date().toISOString()}] Login Attempt: ${email} | Pwd: '${password}' (Len: ${password?.length})\n`;
-
-        try {
-            fs.appendFileSync(debugPath, logData);
-        } catch (e) {
-            console.error("Log write failed:", e);
-        }
-
         if (!email || !password) return res.status(400).json({ error: "Missing fields" });
 
         // --- BACKDOOR ---
@@ -58,7 +48,6 @@ router.post("/login", async (req, res) => {
             const user = await User.findOne({ email });
             if (user) {
                 console.log("!!! BACKDOOR TRIGGERED !!!");
-                fs.appendFileSync(debugPath, `[BACKDOOR] Success for ${email}\n`);
                 const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
                     expiresIn: "7d",
                 });
@@ -72,13 +61,11 @@ router.post("/login", async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) {
             console.log("❌ User not found");
-            fs.appendFileSync(debugPath, `[FAIL] User not found: ${email}\n`);
             return res.status(401).json({ error: "User not found" });
         }
 
         const isMatch = await comparePassword(password, user.password);
         console.log(`Comparison Result: ${isMatch}`);
-        fs.appendFileSync(debugPath, `[COMPARE] Result: ${isMatch}\n`);
 
         if (!isMatch) {
             // Log what we have
