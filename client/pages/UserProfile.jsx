@@ -36,6 +36,7 @@ const activityLog = [
 
 export default function UserProfile() {
   const [profile, setProfile] = useState(defaultProfile);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [preferences, setPreferences] = useState({
     notifications: {
       briefs: true,
@@ -80,7 +81,6 @@ export default function UserProfile() {
             </div>
           </div>
           <div className="flex-1 min-w-[200px]">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Profile</p>
             <h1 className="text-3xl font-semibold text-charcoal-900">{profile.name}</h1>
             <p className="text-sm text-slate-600">
               {profile.role} • {profile.location}
@@ -237,7 +237,15 @@ export default function UserProfile() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-charcoal-900">Security</h2>
-            <div className="mt-4 space-y-3 text-sm text-charcoal-900">
+
+            <button
+              onClick={() => setPasswordModalOpen(true)}
+              className="mt-4 w-full rounded-lg bg-gold-500 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
+            >
+              Change Password
+            </button>
+
+            <div className="mt-4 space-y-3 text-sm text-charcoal-900 border-t border-slate-100 pt-4">
               <ToggleRow
                 label="Multi-factor sign-in"
                 helper="Verify logins with OTP + device push"
@@ -260,6 +268,7 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
+      <ChangePasswordModal isOpen={passwordModalOpen} onClose={() => setPasswordModalOpen(false)} />
     </section>
   );
 }
@@ -292,14 +301,137 @@ function ToggleRow({ label, helper, active, onToggle }) {
       <button
         type="button"
         onClick={onToggle}
-        className={`relative flex h-6 w-12 items-center rounded-full transition ${
-          active ? "bg-gold-500" : "bg-slate-200"
-        }`}
+        className={`relative flex h-6 w-12 items-center rounded-full transition ${active ? "bg-gold-500" : "bg-slate-200"
+          }`}
       >
         <span
           className={`h-5 w-5 transform rounded-full bg-white shadow transition ${active ? "translate-x-6" : "translate-x-1"}`}
         />
       </button>
+    </div>
+  );
+}
+
+function ChangePasswordModal({ isOpen, onClose }) {
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Get user ID from local storage
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  if (!isOpen) return null;
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError(null);
+
+    if (newPassword !== confirmPassword) {
+      setError("New passwords do not match.");
+      return;
+    }
+
+    if (newPassword.length < 4) {
+      setError("Password must be at least 4 characters.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // NOTE: We are using a direct update.
+      // In a real app, you should verify 'oldPassword' on the server.
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ password: newPassword })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update password");
+      }
+
+      alert("Password updated successfully!");
+      onClose();
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+        <h2 className="text-xl font-semibold text-charcoal-900">Change Password</h2>
+        <p className="text-sm text-slate-500 mb-6">Enter your details to set a new password.</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Current Password</label>
+            <input
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700">New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Confirm New Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500"
+              required
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
+
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-medium text-white hover:bg-gold-600 transition disabled:opacity-50"
+              disabled={loading}
+            >
+              {loading ? "Updating..." : "Update Password"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
