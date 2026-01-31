@@ -31,8 +31,9 @@ const validatePhone = (phone) => {
 
 const validateMobileNumber = (mobile) => {
     if (!mobile) return true; // Optional field
-    const digitsOnly = mobile.replace(/\D/g, '');
-    return MOBILE_REGEX.test(digitsOnly) && digitsOnly.length === 10;
+    // Allow + at start, then digits, spaces, dashes. Minimal length 10.
+    const clean = mobile.replace(/[^0-9+]/g, '');
+    return clean.length >= 10 && clean.length <= 15;
 };
 
 export default function AdminSettings() {
@@ -135,7 +136,7 @@ export default function AdminSettings() {
         }
 
         if (formData.secondaryMobileNumber && !validateMobileNumber(formData.secondaryMobileNumber)) {
-            newErrors.secondaryMobileNumber = "Please enter a valid 10-digit mobile number";
+            newErrors.secondaryMobileNumber = "Please enter a valid mobile number (10-15 digits)";
         }
 
         // Validate social links URLs
@@ -150,12 +151,12 @@ export default function AdminSettings() {
     };
 
     const handleMobileNumberInput = (field, value) => {
-        // Only allow numbers
-        const digitsOnly = value.replace(/\D/g, '');
-        setFormData(prev => ({ ...prev, [field]: digitsOnly }));
+        // Allow +, numbers, space, dash
+        const cleanValue = value.replace(/[^0-9+\s-]/g, '');
+        setFormData(prev => ({ ...prev, [field]: cleanValue }));
 
-        // Clear error on valid input
-        if (digitsOnly.length === 10 || digitsOnly.length === 0) {
+        // Simple length check for error clearing
+        if (cleanValue.replace(/\D/g, '').length >= 10) {
             setErrors(prev => ({ ...prev, [field]: "" }));
         }
     };
@@ -291,38 +292,6 @@ export default function AdminSettings() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Primary Mobile Number</label>
-                                    <div className="relative">
-                                        <Phone className="absolute left-3 top-2.5 text-gray-400 h-4 w-4" />
-                                        <input
-                                            type="tel"
-                                            value={formData.primaryMobileNumber}
-                                            onChange={(e) => handleMobileNumberInput('primaryMobileNumber', e.target.value)}
-                                            className={`w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none transition-all ${errors.primaryMobileNumber ? 'border-red-500' : 'border-gray-200'}`}
-                                            placeholder="9876543210"
-                                            maxLength="10"
-                                        />
-                                    </div>
-                                    {errors.primaryMobileNumber && <p className="text-red-500 text-xs mt-1">{errors.primaryMobileNumber}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Secondary Mobile Number</label>
-                                    <div className="relative">
-                                        <Phone className="absolute left-3 top-2.5 text-gray-400 h-4 w-4" />
-                                        <input
-                                            type="tel"
-                                            value={formData.secondaryMobileNumber}
-                                            onChange={(e) => handleMobileNumberInput('secondaryMobileNumber', e.target.value)}
-                                            className={`w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none transition-all ${errors.secondaryMobileNumber ? 'border-red-500' : 'border-gray-200'}`}
-                                            placeholder="9876543210"
-                                            maxLength="10"
-                                        />
-                                    </div>
-                                    {errors.secondaryMobileNumber && <p className="text-red-500 text-xs mt-1">{errors.secondaryMobileNumber}</p>}
-                                </div>
-                            </div>
 
 
 

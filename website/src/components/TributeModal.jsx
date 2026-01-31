@@ -30,12 +30,11 @@ const TributeModal = ({ isOpen, onClose }) => {
         }
     }, [isOpen]);
 
-    // Don't render if not open, loading, no data, or inactive
+    // Don't render if not open
     if (!isOpen) return null;
-    if (!loading && (!data || !data.isActive)) return null;
 
-    // Wait for data before showing content (but keeping overlay if loading? maybe just return null till data)
-    if (!data) return null;
+    // Don't render while loading or if inactive
+    if (loading || !data || !data.isActive) return null;
 
     // Styles
     const styles = {

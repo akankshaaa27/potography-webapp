@@ -31,6 +31,15 @@ const Footer = () => {
               </Link>
               <p className="tagline">Preserving Pure Emotion in Every Frame.</p>
 
+              <div className="contact-info mt-3 text-sm text-gray-400">
+                {settings?.primaryMobileNumber && (
+                  <div className="mb-1"><i className="bi bi-telephone me-2"></i> {settings.primaryMobileNumber}</div>
+                )}
+                {settings?.contactEmail && (
+                  <div><i className="bi bi-envelope me-2"></i> {settings.contactEmail}</div>
+                )}
+              </div>
+
               <div className="social-links mt-4">
                 {settings?.socialLinks?.filter(l => l.active).map((link, index) => (
                   <a key={index} href={link.url} target="_blank" rel="noopener noreferrer" aria-label={link.platform}>
