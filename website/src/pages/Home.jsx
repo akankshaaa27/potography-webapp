@@ -202,7 +202,7 @@ const Home = () => {
                 <div className="row justify-content-center text-center">
                   <div className="col-lg-8">
                     <div className="hero-content">
-                      <h1 data-aos="fade-up" data-aos-delay="200">
+                      <h1 data-aos="fade-up" data-aos-delay="200" className="gold-text-gradient">
                         Capture the Moment
                       </h1>
                       <p data-aos="fade-up" data-aos-delay="300">
@@ -238,7 +238,7 @@ const Home = () => {
                     <div className="row justify-content-center text-center">
                       <div className="col-lg-8">
                         <div className="hero-content">
-                          <h1 data-aos="fade-up" data-aos-delay="200">
+                          <h1 data-aos="fade-up" data-aos-delay="200" className="gold-text-gradient">
                             {slide.title}
                           </h1>
                           <p data-aos="fade-up" data-aos-delay="300">
@@ -272,27 +272,11 @@ const Home = () => {
                   </h2>
 
                   <p className="description-text my-3 text-left">
-                    Welcome to <span>The Patil Photography & Film's,</span>{" "}
-                    where every love story is transformed into an elegant visual
-                    masterpiece. We believe that every couple shares a unique
-                    bond, and our passion lies in capturing the emotions,
-                    details, and unspoken moments that define your journey.
+                    Welcome to <span>The Patil Photography & Film's</span>. We believe that every love story is a masterpiece waiting to be unveiled. Our passion lies in capturing the fleeting, unscripted moments—the quiet glances, the joyful tears, and the timeless elegance of your celebration.
                   </p>
 
-                  <p className="description-text mb-3 text-left">
-                    With a refined blend of creativity and authenticity, we
-                    preserve heartfelt smiles, gentle glances, and the timeless
-                    charm that unfolds throughout your special day. From grand
-                    celebrations to intimate memories, our craft is dedicated to
-                    telling stories that reflect your love, connection, and
-                    personality.
-                  </p>
-
-                  <p className="description-text mb-3 text-left">
-                    Explore our curated gallery — a world of emotions, artistry,
-                    and real moments captured with soul and sincerity. Let us
-                    narrate your story through our lens, where every frame
-                    becomes a cherished memory, preserved forever with elegance.
+                  <p className="description-text mb-4 text-left">
+                    With a cinematic approach and an eye for fine art, we transform your special day into a visual legacy, preserving the purity of your emotions for generations to come.
                   </p>
 
                   <div
@@ -417,7 +401,7 @@ const Home = () => {
             className="container section-title text-center"
             data-aos="fade-up"
           >
-            <h2>Our Photography Services</h2>
+            <h2 className="gold-text-gradient">Our Signature Services</h2>
             <div className="d-flex justify-content-center">
               <p className="w-50 d-block text-center">
                 We offer a complete range of photography and videography
@@ -765,6 +749,69 @@ const Home = () => {
                 <i className="bi bi-arrow-right ms-2"></i>
               </Link>
             </div>
+          </div>
+        </section>
+
+        {/* Process/Experience Section */}
+        <section id="experience" className="section light-background">
+          <div className="container" data-aos="fade-up">
+            <div className="section-title text-center">
+              <h2 className="gold-text-gradient">The Experience</h2>
+              <p>From our first conversation to the final delivery, we ensure a seamless and enjoyable journey.</p>
+            </div>
+            <div className="row g-4">
+              {[
+                { icon: "bi-chat-heart", title: "1. Connect", desc: "We start with a consultation to understand your vision, style, and unique story." },
+                { icon: "bi-camera", title: "2. Create", desc: "On the big day, we blend into the background to capture candid, authentic moments artfully." },
+                { icon: "bi-magic", title: "3. Curate", desc: "We hand-edit every image, enhancing colors and emotions to create a cinematic look." },
+                { icon: "bi-box2-heart", title: "4. Cherish", desc: "Receive your memories in a beautiful online gallery and premium handcrafted albums." }
+              ].map((step, idx) => (
+                <div key={idx} className="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay={idx * 100}>
+                  <div className="process-step">
+                    <div className="icon-box">
+                      <i className={`bi ${step.icon}`}></i>
+                    </div>
+                    <h3>{step.title}</h3>
+                    <p>{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" className="section">
+          <div className="container" data-aos="fade-up">
+            <div className="section-title text-center">
+              <h2 className="gold-text-gradient">Common Questions</h2>
+            </div>
+            <div className="row justify-content-center">
+              <div className="col-lg-8">
+                {[
+                  { q: "Do you travel for weddings?", a: "Absolutely! We love destination weddings and are available to travel worldwide to capture your special day." },
+                  { q: "How many photos will we receive?", a: "For a full-day wedding, you can expect 500+ hand-edited, high-resolution images." },
+                  { q: "Do you provide video services as well?", a: "Yes, we specialize in cinematic wedding films that beautifully complement our photography." },
+                  { q: "How long until we see our photos?", a: "We provide a sneak peek within 1 week, and the full gallery is typically ready within 4-6 weeks." }
+                ].map((item, idx) => (
+                  <div key={idx} className="faq-item" data-aos="fade-up" data-aos-delay={idx * 100}>
+                    <h3>{item.q} <i className="bi bi-plus-circle-dotted" style={{ fontSize: '1rem' }}></i></h3>
+                    <p>{item.a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Call to Action Banner */}
+        <section className="cta-banner">
+          <div className="container" data-aos="zoom-in">
+            <h2>Ready to Create Magic?</h2>
+            <p className="mb-4" style={{ fontSize: '1.2rem', opacity: 0.9 }}>Let's turn your fleeting moments into timeless memories.</p>
+            <Link to="/contact" className="cta-button-light">
+              Book Your Date
+            </Link>
           </div>
         </section>
 

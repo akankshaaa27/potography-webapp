@@ -102,3 +102,212 @@ html {
     left: 15px;
   }
 }
+
+/* --- Premium UI Overrides --- */
+
+/* Elegant Typography */
+h1, h2, h3, .section-title h2 {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -0.5px;
+}
+
+/* Hero Enhancements */
+.hero .hero-content h1 {
+  font-size: 4rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  animation: fadeInUp 1s ease-out;
+}
+
+.hero .hero-content p {
+  font-size: 1.3rem;
+  font-weight: 300;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  opacity: 0.9;
+}
+
+/* Gold Gradient Text */
+.gold-text-gradient {
+  background: -webkit-linear-gradient(45deg, #d4a574, #ffeebb, #c49561);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Premium Section Spacing */
+.section {
+  padding: 100px 0;
+}
+
+/* Glassmorphism Cards */
+.service-card, .stat-card, .project-card, .testimonial-item {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  transition: all 0.4s ease;
+  border-radius: 12px;
+}
+
+.service-card:hover, .project-card:hover, .testimonial-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(212, 165, 116, 0.15);
+  border-color: #d4a574;
+}
+
+/* Button Elegance */
+.submit-btn, .cta-link, .btn-getstarted {
+  background: linear-gradient(135deg, #d4a574, #c49561);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.submit-btn:hover, .cta-link:hover, .btn-getstarted:hover {
+  color: white;
+  box-shadow: 0 5px 15px rgba(196, 149, 97, 0.4);
+  transform: translateY(-2px);
+}
+
+.submit-btn::before, .cta-link::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #c49561, #d4a574);
+  z-index: -1;
+  transition: opacity 0.3s;
+  opacity: 0;
+}
+
+.submit-btn:hover::before, .cta-link:hover::before {
+  opacity: 1;
+}
+
+/* Quote Section Parallax */
+.quote-section-parallax {
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .hero .hero-content h1 { font-size: 2.5rem; }
+  .section { padding: 60px 0; }
+  .whatsapp-float { width: 50px; height: 50px; bottom: 15px; left: 15px; font-size: 24px; }
+}
+
+
+/* --- Additional Premium Sections --- */
+
+/* Process Section */
+.process-step {
+  text-align: center;
+  padding: 30px;
+  position: relative;
+}
+
+.process-step .icon-box {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #d4a574, #c49561);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  box-shadow: 0 10px 20px rgba(196, 149, 97, 0.3);
+  transition: all 0.3s ease;
+}
+
+.process-step:hover .icon-box {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.process-step h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #2c2421;
+}
+
+.process-step p {
+  color: #666;
+  font-weight: 300;
+}
+
+/* FAQ Section */
+.faq-item {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.05);
+  margin-bottom: 15px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+}
+
+.faq-item h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #d4a574;
+}
+
+.faq-item p {
+  margin: 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* CTA Banner */
+.cta-banner {
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/assets/img/slider/hero6.jpg') center/cover fixed;
+  color: white;
+  padding: 100px 0;
+  text-align: center;
+}
+
+.cta-banner h2 {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.cta-button-light {
+  background: white;
+  color: #2c2421;
+  padding: 15px 40px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-block;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.cta-button-light:hover {
+  background: #d4a574;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
