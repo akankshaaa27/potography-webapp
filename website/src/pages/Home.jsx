@@ -226,7 +226,7 @@ const Home = () => {
               {slides.map((slide, index) => (
                 <SwiperSlide key={index}>
                   <div className="hero-video-container">
-                    <img src={slide.image} className="img-fluid " alt="" />
+                    <img src={slide.image} className="img-fluid ken-burns" alt="" />
                     <div className="hero-overlay"></div>
                   </div>
 
@@ -238,10 +238,10 @@ const Home = () => {
                     <div className="row justify-content-center text-center">
                       <div className="col-lg-8">
                         <div className="hero-content">
-                          <h1 data-aos="fade-up" data-aos-delay="200" className="gold-text-gradient">
+                          <h1 className="gold-text-gradient animate-reveal" style={{ animationDelay: '0.2s' }}>
                             {slide.title}
                           </h1>
-                          <p data-aos="fade-up" data-aos-delay="300">
+                          <p className="animate-reveal" style={{ animationDelay: '0.4s' }}>
                             {slide.subtitle}
                           </p>
                         </div>
@@ -767,7 +767,7 @@ const Home = () => {
                 { icon: "bi-box2-heart", title: "4. Cherish", desc: "Receive your memories in a beautiful online gallery and premium handcrafted albums." }
               ].map((step, idx) => (
                 <div key={idx} className="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay={idx * 100}>
-                  <div className="process-step">
+                  <div className="process-step card-glow">
                     <div className="icon-box">
                       <i className={`bi ${step.icon}`}></i>
                     </div>
@@ -776,6 +776,38 @@ const Home = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Connect / Meet the Artist Section */}
+        <section className="connect-section">
+          <div className="container">
+            <div className="row justify-content-center align-items-center">
+              <div className="col-lg-6" data-aos="fade-right">
+                <div className="connect-card card-glow">
+                  <div className="text-center">
+                    <img src="/assets/img/slider/hero6.jpg" className="connect-avatar" alt="Photographer" />
+                    <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>Let's Create Magic</h2>
+                    <p className="text-muted">Lead Photographer & Visual Storyteller</p>
+                    <p className="mt-3">
+                      "My goal is not just to take photos, but to create a visual legacy of your love. Let's chat about your big day and see if we are the perfect match."
+                    </p>
+                    <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer" className="connect-btn">
+                      <i className="bi bi-whatsapp"></i> Chat with Me Directly
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-5 offset-lg-1" data-aos="fade-left">
+                <h2 className="gold-text-gradient mb-4">Why Connect With Us?</h2>
+                <ul className="list-unstyled" style={{ fontSize: '1.1rem', lineHeight: '2' }}>
+                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> personalized Consultation</li>
+                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> Custom-Tailored Packages</li>
+                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> Clear & Transparent Pricing</li>
+                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> A Friend, Not Just a Vendor</li>
+                </ul>
+              </div>
             </div>
           </div>
         </section>

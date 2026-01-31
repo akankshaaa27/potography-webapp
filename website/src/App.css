@@ -311,3 +311,90 @@ h1, h2, h3, .section-title h2 {
   box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
+
+/* --- Cinematic Animations --- */
+@keyframes zoomInEffect {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+.ken-burns {
+  animation: zoomInEffect 15s infinite alternate linear;
+}
+
+/* Smooth Text Reveal */
+@keyframes textReveal {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-reveal {
+  animation: textReveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Card Hover Glow */
+.card-glow:hover {
+  box-shadow: 0 0 20px rgba(212, 165, 116, 0.3) !important;
+}
+
+/* --- Connect Section --- */
+.connect-section {
+  background: #f9f9f9;
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.connect-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  border-top: 5px solid #d4a574;
+  position: relative;
+  z-index: 1;
+}
+
+.connect-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 100px;
+  height: 100px;
+  background: url('/assets/img/pattern.png') no-repeat top right;
+  opacity: 0.1;
+}
+
+.connect-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #d4a574;
+  margin-bottom: 20px;
+}
+
+.connect-btn {
+  background: #25d366;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.connect-btn:hover {
+  background: #128c7e;
+  transform: translateY(-2px);
+  color: white;
+}
+
+.connect-btn i {
+  font-size: 1.2rem;
+}
+
