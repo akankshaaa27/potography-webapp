@@ -4,6 +4,7 @@ import './App.css'
 import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 import { useSettings } from './hooks/useSettings'
+import WhatsAppButton from './components/WhatsAppButton'
 
 // Lazy load components
 const About = lazy(() => import('./pages/About'))
@@ -103,6 +104,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
+        <WhatsAppButton />
       </ErrorBoundary>
     </div>
   )
