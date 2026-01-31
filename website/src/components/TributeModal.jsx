@@ -1,20 +1,43 @@
 import React, { useEffect, useState } from 'react';
-// import { X } from 'lucide-react'; // Removing to avoid build error
-
 
 const TributeModal = ({ isOpen, onClose }) => {
     const [show, setShow] = useState(false);
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
+    // Fetch the popup data
     useEffect(() => {
+        const fetchPopup = async () => {
+            try {
+                const res = await fetch('/api/popup');
+                if (res.ok) {
+                    const popupData = await res.json();
+                    setData(popupData);
+                }
+            } catch (error) {
+                console.error("Failed to fetch popup:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (isOpen) {
+            fetchPopup();
+            // Animation timing
             setTimeout(() => setShow(true), 100);
         } else {
             setShow(false);
         }
     }, [isOpen]);
 
+    // Don't render if not open, loading, no data, or inactive
     if (!isOpen) return null;
+    if (!loading && (!data || !data.isActive)) return null;
 
+    // Wait for data before showing content (but keeping overlay if loading? maybe just return null till data)
+    if (!data) return null;
+
+    // Styles
     const styles = {
         overlay: {
             position: 'fixed',
@@ -42,105 +65,69 @@ const TributeModal = ({ isOpen, onClose }) => {
             transform: show ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
             transition: 'all 0.5s ease',
             fontFamily: "'Playfair Display', serif",
+            display: 'flex',
+            flexDirection: 'column',
         },
         closeBtn: {
             position: 'absolute',
             right: '16px',
             top: '16px',
             zIndex: 10,
-            background: 'rgba(255, 255, 255, 0.2)',
+            background: 'rgba(255, 255, 255, 0.5)',
             border: 'none',
             borderRadius: '50%',
             padding: '8px',
             cursor: 'pointer',
-            color: '#fff',
+            color: '#333',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         },
         headerBg: {
             height: '140px',
             background: 'linear-gradient(to right, #0f172a, #334155)',
+            display: data.image && (data.title || data.description) ? 'block' : 'none', // Only if we have both image AND text
         },
         imageWrapper: {
-            marginTop: '-70px',
+            marginTop: data.image && (data.title || data.description) ? '-70px' : '0',
             display: 'flex',
             justifyContent: 'center',
+            padding: !data.title && !data.description ? '0' : undefined, // Full bleed if image only?
         },
         imageContainer: {
-            width: '180px', // Slightly larger for better impact
-            height: '180px',
-            borderRadius: '50%',
-            border: '5px solid white',
+            width: data.title || data.description ? '180px' : '100%',
+            height: data.title || data.description ? '180px' : 'auto',
+            borderRadius: data.title || data.description ? '50%' : '0',
+            border: data.title || data.description ? '5px solid white' : 'none',
             overflow: 'hidden',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            boxShadow: data.title || data.description ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none',
             backgroundColor: '#e2e8f0',
+            maxHeight: !data.title && !data.description ? '80vh' : undefined, // Max height for image-only
         },
         image: {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
+            display: 'block',
         },
         content: {
             padding: '24px 32px 32px',
             textAlign: 'center',
-        },
-        badge: {
-            display: 'inline-block',
-            backgroundColor: '#f1f5f9',
-            padding: '6px 16px',
-            borderRadius: '9999px',
-            fontSize: '13px',
-            fontWeight: '700',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            color: '#475569',
-            marginBottom: '16px',
-            fontFamily: 'sans-serif',
+            display: (data.title || data.description) ? 'block' : 'none',
         },
         title: {
-            margin: '0 0 4px',
-            fontSize: '32px',
+            margin: '0 0 12px',
+            fontSize: '28px',
             fontWeight: 'bold',
             color: '#0f172a',
         },
-        dates: {
-            margin: '0 0 20px',
-            fontSize: '15px',
-            fontWeight: '500',
-            color: '#64748b',
-            fontFamily: 'sans-serif',
-        },
         message: {
             margin: '0 0 20px',
-            fontSize: '17px',
+            fontSize: '16px',
             lineHeight: '1.6',
             color: '#334155',
-            fontStyle: 'italic',
-        },
-        subMessage: {
-            margin: '0 0 28px',
-            fontSize: '15px',
-            lineHeight: '1.5',
-            color: '#64748b',
-            fontFamily: 'sans-serif',
-        },
-        divider: {
-            width: '64px',
-            height: '4px',
-            backgroundColor: '#cbd5e1',
-            borderRadius: '9999px',
-            margin: '0 auto',
-        },
-        footer: {
-            marginTop: '24px',
-            fontSize: '12px',
-            color: '#94a3b8',
-            fontFamily: 'sans-serif',
-        },
-        footerStrong: {
-            fontWeight: '600',
-            color: '#475569',
+            whiteSpace: 'pre-wrap', // Preserve line breaks
         },
     };
 
@@ -148,14 +135,13 @@ const TributeModal = ({ isOpen, onClose }) => {
         <div style={styles.overlay}>
             <div style={styles.container}>
                 <button onClick={onClose} style={styles.closeBtn}>
-                    {/* Inline SVG replacement for Lucide X */}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke="#ccc"
+                        stroke="currentColor"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -165,49 +151,31 @@ const TributeModal = ({ isOpen, onClose }) => {
                     </svg>
                 </button>
 
-                <div>
-                    <div style={styles.headerBg}></div>
+                {/* Render Logic */}
 
+                {/* 1. Header BG (only for mixed content) */}
+                <div style={styles.headerBg}></div>
+
+                {/* 2. Image */}
+                {data.image && (
                     <div style={styles.imageWrapper}>
                         <div style={styles.imageContainer}>
                             <img
-                                src="/ajit-dada-tribute.png"
-                                alt="Ajit Dada Pawar"
+                                src={data.image}
+                                alt={data.title || "Popup"}
                                 style={styles.image}
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = "https://placehold.co/400x400?text=Ajit+Dada";
-                                }}
                             />
                         </div>
                     </div>
-                </div>
+                )}
 
-                <div style={styles.content}>
-                    <div style={styles.badge}>
-                        Lokneta & Guardian
+                {/* 3. Text Content */}
+                {(data.title || data.description) && (
+                    <div style={styles.content}>
+                        {data.title && <h2 style={styles.title}>{data.title}</h2>}
+                        {data.description && <p style={styles.message}>{data.description}</p>}
                     </div>
-
-                    <h2 style={styles.title}>
-                        Ajit Dada Pawar
-                    </h2>
-                    <p style={styles.dates}>1959 - 2026</p>
-
-                    <p style={styles.message}>
-                        "A true 'Jan Nayak' and ground-level leader who tirelessly championed the development of Pune and Pimpri-Chinchwad. His vision transformed our cities and touched countless lives."
-                    </p>
-
-                    <p style={styles.subMessage}>
-                        He was a pillar of strength for the common man and a driving force behind modern infrastructure. We deeply mourn the loss of a leader who was always there for the people.
-                    </p>
-
-                    <div style={styles.divider}></div>
-
-                    <div style={styles.footer}>
-                        <p style={{ marginBottom: '4px' }}>Tribute by</p>
-                        <p style={styles.footerStrong}>Pixel Pro IT Solutions</p>
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );

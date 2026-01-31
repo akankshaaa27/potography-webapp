@@ -21,6 +21,7 @@ import testimonialRoutes from "./routes/testimonialRoutes.js";
 import eventTypeRoutes from "./routes/eventTypeRoutes.js";
 import systemSettingsRoutes from "./routes/systemSettingsRoutes.js";
 import teamRoutes from "./routes/teamManagement.js";
+import popupRoutes from "./routes/popupRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 
@@ -137,7 +138,9 @@ export function createServer(config = {}) {
   app.use("/api/event-types", eventTypeRoutes);
   app.use("/api/settings", systemSettingsRoutes);
   app.use("/api/team", teamRoutes);
-  console.log("✅ Contact, Dashboard & Testimonial routes registered " + Date.now() + " - Dashboard Pending Actions Added");
+  console.log("Registering popup routes...", popupRoutes);
+  app.use("/api/popup", popupRoutes);
+  console.log("✅ Contact, Dashboard, Testimonial & Popup routes registered " + Date.now());
 
   // Root route - Only for production/standalone
   if (!config.middlewareMode) {

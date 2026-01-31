@@ -22,6 +22,7 @@ const items = [
   { to: "/admin-common-types", label: "Common Types" },
   { to: "/admin-register", label: "Admin Register" },
   { to: "/admin-profile", label: "Profile" },
+  { to: "/admin-popup", label: "Popup Manager" },
   { to: "/admin-settings", label: "Global Settings" },
 ];
 

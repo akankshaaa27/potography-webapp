@@ -45,6 +45,7 @@ import UserProfile from "./pages/UserProfile";
 import AdminCommonTypes from "./pages/AdminCommonTypes";
 import AdminSettings from "./pages/AdminSettings";
 import AdminTeam from "./pages/AdminTeam";
+import AdminPopup from "./pages/AdminPopup";
 
 
 const queryClient = new QueryClient();
@@ -294,6 +295,7 @@ const AppShell = () => {
             <Route path="/admin-profile" element={<UserProfile />} />
             <Route path="/admin-settings" element={<AdminSettings />} />
             <Route path="/admin-team" element={<AdminTeam />} />
+            <Route path="/admin-popup" element={<AdminPopup />} />
 
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
