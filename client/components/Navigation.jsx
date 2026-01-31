@@ -25,10 +25,14 @@ const items = [
   { to: "/admin-settings", label: "Global Settings" },
 ];
 
-export default function Navigation({ isMobileOpen = false, onClose = () => { }, onLogout }) {
+export default function Navigation({ isMobileOpen = false, isOpen = true, onClose = () => { }, onLogout }) {
   return (
     <>
-      <aside aria-label="Main navigation" className="hidden flex-shrink-0 lg:flex h-screen sticky top-0" style={{ width: 240 }}>
+      <aside
+        aria-label="Main navigation"
+        className="hidden flex-shrink-0 lg:flex h-screen sticky top-0 transition-all duration-300 ease-in-out"
+        style={{ width: isOpen ? 240 : 0, opacity: isOpen ? 1 : 0 }}
+      >
         <div className="flex flex-col h-full border-r border-gold-200 bg-white p-4 dark:border-charcoal-800 dark:bg-charcoal-900 overflow-hidden">
           <BrandHeader />
           <div className="flex-1 overflow-y-auto overflow-x-hidden -mr-2 pr-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>

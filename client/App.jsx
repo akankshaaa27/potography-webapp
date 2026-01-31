@@ -1,7 +1,7 @@
 import "./global.css";
 import "./lib/apiFetch";
 import React, { useEffect, useState } from "react";
-import { Menu, Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon, User, Key, LogOut, Radio, RefreshCcw, Mail } from "lucide-react";
+import { Menu, Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon, User, Key, LogOut, Radio, RefreshCcw, Mail, PanelLeft } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -137,6 +137,7 @@ const AppShell = () => {
   const { data: settings } = useSettings();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -178,7 +179,7 @@ const AppShell = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <Navigation isMobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} onLogout={handleLogout} />
+      <Navigation isMobileOpen={mobileNavOpen} isOpen={isSidebarOpen} onClose={() => setMobileNavOpen(false)} onLogout={handleLogout} />
       <div className="flex min-h-screen flex-1 flex-col">
         <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-sm lg:hidden">
           <button
@@ -213,6 +214,12 @@ const AppShell = () => {
         {/* Desktop Header */}
         <header className="hidden lg:flex sticky top-0 z-40 items-center justify-between border-b border-slate-200/60 bg-white/80 backdrop-blur-md px-4 py-4 sm:px-6 lg:px-10 transition-all duration-200">
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(!isSidebarOpen)}
+              className="rounded p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+            >
+              <PanelLeft className="h-5 w-5" />
+            </button>
             <h2 className="text-xl font-bold text-charcoal-900 tracking-tight capitalize font-playfair">
               {location.pathname === "/" || location.pathname === "/admin-dashboard" ? "Studio Oversight" : location.pathname.replace("/admin-", "").replace("-", " ")}
             </h2>
