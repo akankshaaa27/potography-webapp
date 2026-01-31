@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -9,6 +9,45 @@ import "swiper/css";
 import "swiper/css/navigation";
 import Skeleton from "../components/Skeleton";
 import TributeModal from "../components/TributeModal";
+
+// Simple CountUp Component
+const Counter = ({ end, duration = 2000, suffix = "" }) => {
+  const [count, setCount] = useState(0);
+  const countRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (countRef.current) observer.observe(countRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+    let start = 0;
+    const increment = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.ceil(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [isVisible, end, duration]);
+
+  return <span ref={countRef}>{count}{suffix}</span>;
+};
 
 const Home = () => {
   console.log("Home component rendering");
@@ -316,10 +355,10 @@ const Home = () => {
                 className="container pb-0 section-title text-center"
                 data-aos="fade-up"
               >
-                <h2 className="mb-5">Capturing Love Stories with Excellence</h2>
+                <h2 className="mb-5 gradient-animated">Capturing Love Stories with Excellence</h2>
                 <div className="d-flex justify-content-center">
                   <p className="w-75 d-block text-center para">
-                    At The Patil Photography & Films, we don't just install
+                    At The Patil Photography & Films, we don't just capture
                     moments — we create experiences. Each photograph is a
                     testament to our commitment to luxury, artistry, and
                     unparalleled craftsmanship.
@@ -336,8 +375,8 @@ const Home = () => {
                 data-aos="fade-up"
                 data-aos-delay="100"
               >
-                <div className="stat-card">
-                  <h3 className="stat-number">500+</h3>
+                <div className="stat-card card-glow">
+                  <h3 className="stat-number"><Counter end={500} suffix="+" /></h3>
                   <p className="stat-label">Elite Clients</p>
                   <p className="stat-description">Worldwide</p>
                 </div>
@@ -349,8 +388,8 @@ const Home = () => {
                 data-aos="fade-up"
                 data-aos-delay="200"
               >
-                <div className="stat-card">
-                  <h3 className="stat-number">10+</h3>
+                <div className="stat-card card-glow">
+                  <h3 className="stat-number"><Counter end={10} suffix="+" /></h3>
                   <p className="stat-label">Years Excellence</p>
                   <p className="stat-description">Industry Leader</p>
                 </div>
@@ -362,8 +401,8 @@ const Home = () => {
                 data-aos="fade-up"
                 data-aos-delay="300"
               >
-                <div className="stat-card">
-                  <h3 className="stat-number">10+</h3>
+                <div className="stat-card card-glow">
+                  <h3 className="stat-number"><Counter end={15} suffix="+" /></h3>
                   <p className="stat-label">Expert Team</p>
                   <p className="stat-description">Certified Professionals</p>
                 </div>
@@ -375,7 +414,7 @@ const Home = () => {
                 data-aos="fade-up"
                 data-aos-delay="400"
               >
-                <div className="stat-card">
+                <div className="stat-card card-glow">
                   <h3 className="stat-number">24/7</h3>
                   <p className="stat-label">Concierge Service</p>
                   <p className="stat-description">Always Available</p>
@@ -787,7 +826,7 @@ const Home = () => {
               <div className="col-lg-6" data-aos="fade-right">
                 <div className="connect-card card-glow">
                   <div className="text-center">
-                    <img src="/assets/img/slider/hero6.jpg" className="connect-avatar" alt="Photographer" />
+                    <img src="/assets/img/slider/hero6.jpg" className="connect-avatar float-anim" alt="Photographer" />
                     <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>Let's Create Magic</h2>
                     <p className="text-muted">Lead Photographer & Visual Storyteller</p>
                     <p className="mt-3">
