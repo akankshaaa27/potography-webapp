@@ -1,7 +1,16 @@
 import "./global.css";
 import "./lib/apiFetch";
 import React, { useEffect, useState } from "react";
-import { Menu, Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon } from "lucide-react";
+import { Menu, Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon, User, Key, LogOut, Radio, RefreshCcw, Mail } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSettings } from "./hooks/useSettings";
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
@@ -130,6 +139,12 @@ const AppShell = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Get User Info
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const getInitials = (name) => {
+    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'A';
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -174,7 +189,78 @@ const AppShell = () => {
             Menu
           </button>
           <span className="text-sm font-semibold text-charcoal-900">{settings?.businessName || "Studio Console"}</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="outline-none">
+              <Avatar className="h-8 w-8 cursor-pointer">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-gold-500 text-white text-xs">{getInitials(user.name)}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/admin-profile')}>
+                <User className="mr-2 h-4 w-4" /> Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <LogOut className="mr-2 h-4 w-4" /> Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+
+        {/* Desktop Header */}
+        <header className="hidden lg:flex items-center justify-between border-b border-slate-200 bg-white px-10 py-4 shadow-sm">
+          <div className="flex items-center gap-4">
+            <h2 className="text-lg font-semibold text-gray-700 capitalize">
+              {location.pathname === "/" || location.pathname === "/admin-dashboard" ? "Dashboard" : location.pathname.replace("/admin-", "").replace("-", " ")}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none flex items-center gap-3 hover:bg-slate-50 p-2 rounded-full transition-colors">
+                <div className="text-right hidden md:block">
+                  <p className="text-sm font-medium text-gray-900">{user.name || "WC Admin"}</p>
+                  <p className="text-xs text-gray-500 capitalize">{user.role || "Admin"}</p>
+                </div>
+                <Avatar className="h-10 w-10 border border-slate-200">
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-gradient-to-br from-gold-500 to-gold-600 text-white font-medium">
+                    {getInitials(user.name)}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 p-2">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem onClick={() => navigate('/admin-profile')} className="cursor-pointer p-3 focus:bg-gold-50">
+                  <User className="mr-3 h-4 w-4 text-blue-500" />
+                  <span className="font-medium text-gray-700">My Profile</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => navigate('/admin-profile')} className="cursor-pointer p-3 focus:bg-gold-50">
+                  <Key className="mr-3 h-4 w-4 text-blue-500" />
+                  <span className="font-medium text-gray-700">Change Password</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="my-2" />
+
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer p-3 focus:bg-red-50">
+                  <LogOut className="mr-3 h-4 w-4 text-blue-500" />
+                  <span className="font-medium text-gray-700">Signout</span>
+                </DropdownMenuItem>
+
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
         <main className="flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-10">
           <Routes>
             <Route path="/" element={<Dashboard />} />
