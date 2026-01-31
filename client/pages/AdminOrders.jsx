@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import jsPDF from "jspdf";
+import { generatePDF } from "../utils/pdfGenerator";
 import { Eye, FileText, Edit, Trash2, Download, Plus } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 
@@ -166,7 +166,6 @@ export default function AdminOrders() {
 
   function handleChange(e) {
     const { name, value } = e.target;
-    // Removed name-specific client logic from here to handleSelectClient
     setForm((f) => {
       const updated = { ...f, [name]: value };
       if (name === "amount" || name === "amount_paid") {
@@ -174,7 +173,6 @@ export default function AdminOrders() {
         const paid = parseFloat(updated.amount_paid) || 0;
         updated.remaining_amount = total - paid;
       }
-      // Auto-calculate delivery date if "Deliverables" is a number (days)
       if (name === "deliverables") {
         const days = parseInt(value, 10);
         const baseDate = updated.event_end_date || updated.event_date;
@@ -191,7 +189,7 @@ export default function AdminOrders() {
   function handleClientSearchChange(e) {
     const value = e.target.value;
     setClientSearch(value);
-    setForm(f => ({ ...f, name: value })); // Allow manual typing
+    setForm(f => ({ ...f, name: value }));
     setShowClientDropdown(true);
   }
 
@@ -209,7 +207,6 @@ export default function AdminOrders() {
   async function saveOrder() {
     if (isSaving) return;
 
-    // basic validation
     if (!form.name || !form.whatsapp_no) {
       alert("Please provide name and WhatsApp number");
       return;
@@ -219,15 +216,12 @@ export default function AdminOrders() {
       const method = editingOrder ? "PUT" : "POST";
       const url = editingOrder ? `/api/orders/${editingOrder._id}` : "/api/orders";
 
-      // Sanitize payload: convert empty strings to null for specific types
       const payload = { ...form };
 
-      // BACKWARD COMPATIBILITY: Map new fields to legacy fields so the server accepts them 
       if (payload.name) payload.customerName = payload.name;
       if (payload.whatsapp_no) payload.customerPhone = payload.whatsapp_no;
       if (payload.event_date) payload.date = payload.event_date;
 
-      // Status Mapping
       const legacyStatusMap = {
         "In Progress": "Pending",
         "Delivered": "Completed"
@@ -237,8 +231,6 @@ export default function AdminOrders() {
       }
       if (payload.amount_paid) payload.paidAmount = payload.amount_paid;
 
-      // CRITICAL: Pack all new fields into 'serviceConfig' (Mixed type in old schema)
-      // This ensures they are saved to the DB even if the server schema is stale and strips top-level fields.
       payload.serviceConfig = {
         email: form.email,
         event_name: form.event_name,
@@ -253,7 +245,6 @@ export default function AdminOrders() {
         notes: form.notes,
         deliverables: form.deliverables,
         delivery_date: form.delivery_date,
-        // Also stash core fields just in case
         name: form.name,
         whatsapp_no: form.whatsapp_no,
         order_status: form.order_status,
@@ -264,7 +255,6 @@ export default function AdminOrders() {
       if (payload.photography_type) payload.photographyType = payload.photography_type;
       if (payload.album_pages) payload.albumPages = payload.album_pages;
 
-      // New schema uses 'service' string, old used 'services' array
       if (payload.service) payload.services = payload.service.split(',').map(s => s.trim());
 
       ['amount', 'amount_paid', 'remaining_amount', 'event_date', 'event_end_date', 'delivery_date', 'date', 'paidAmount'].forEach(field => {
@@ -314,111 +304,109 @@ export default function AdminOrders() {
     }
   }
 
-  // ... inside AdminOrders component ...
-
   function openView(order) {
     setViewOrder(order);
     setShowView(true);
   }
 
-  function downloadReceipt(order) {
-    const doc = new jsPDF();
+  async function downloadReceipt(order) {
+    const businessName = "The Patil Photography";
+    const logoHtml = `<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 20px;">P</span></div>`;
 
-    // Helper to add text
-    const addText = (text, x, y, size = 12, font = "helvetica", style = "normal", align = "left", color = [0, 0, 0]) => {
-      doc.setFont(font, style);
-      doc.setFontSize(size);
-      doc.setTextColor(...color);
-      doc.text(text, x, y, { align });
-    };
-
-    // Header Background
-    doc.setFillColor(20, 20, 20); // Dark background
-    doc.rect(0, 0, 210, 50, 'F');
-
-    // Shop Name & Logo (Text placeholder for logo if no image)
-    addText("POTOGRAPHY", 20, 20, 22, "helvetica", "bold", "left", [218, 165, 32]);
-    addText("Capturing Moments, Creating Memories", 20, 28, 10, "helvetica", "italic", "left", [255, 255, 255]);
-
-    // Social Media
-    const socialY = 40;
-    const socialSize = 8;
-    const socialColor = [200, 200, 200];
-    const socialText = "WhatsApp: +91 XXXXX XXXXX | IG: @potography | FB: Potography | YT: Potography Films";
-    addText(socialText, 20, socialY, socialSize, "helvetica", "normal", "left", socialColor);
-
-    // Title
-    addText("PAYMENT RECEIPT", 190, 30, 24, "helvetica", "bold", "right", [255, 255, 255]);
-
-    // Reset Color
-    doc.setTextColor(0, 0, 0);
-
-    const total = parseFloat(order.amount) || 0;
     const paid = parseFloat(order.amount_paid) || parseFloat(order.paidAmount) || 0;
+    const total = parseFloat(order.amount) || 0;
     const remaining = total - paid;
-    const dateStr = new Date().toLocaleDateString();
-
-    let y = 70;
-
-    // Order Info Box
-    doc.setFontSize(10);
-    doc.text(`Receipt Date: ${dateStr}`, 150, 60);
-    doc.text(`Order ID: #${order._id.slice(-6).toUpperCase()}`, 150, 65);
-
-    doc.setFontSize(14);
-    doc.text(`Client: ${order.name || order.customerName}`, 20, y);
-    y += 10;
-    doc.setFontSize(12);
-    doc.text(`Event: ${order.event_name}`, 20, y);
-    y += 10;
     const eventDate = order.event_date || order.date ? new Date(order.event_date || order.date).toLocaleDateString() : "N/A";
-    doc.text(`Event Date: ${eventDate}`, 20, y);
-    y += 10;
-    doc.text(`Service: ${order.photography_type || order.photographyType || order.service || "-"}`, 20, y);
 
-    y += 20;
+    const content = `
+      <div style="font-family: 'Playfair Display', serif; padding: 40px; background: white; color: #1a1a1a;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #d4a574; padding-bottom: 20px;">
+          <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
+            ${logoHtml}
+            <div>
+              <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #1a1a1a;">${businessName}</h1>
+            </div>
+          </div>
+          <h2 style="font-size: 24px; font-weight: bold; margin: 20px 0 0 0; color: #1a1a1a;">PAYMENT RECEIPT</h2>
+        </div>
 
-    // Financial Table Look
-    doc.setDrawColor(200);
-    doc.line(20, y, 190, y); // Top line
-    y += 10;
-    doc.setFont("helvetica", "bold");
-    doc.text("Description", 25, y);
-    doc.text("Amount", 160, y, { align: "right" });
-    y += 5;
-    doc.line(20, y, 190, y); // Header bottom line
+        <!-- Receipt Details -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+          <div>
+            <h3 style="color: #d4a574; font-size: 12px; font-weight: bold; margin-bottom: 10px;">CLIENT DETAILS</h3>
+            <p style="margin: 0; font-size: 16px; font-weight: bold;">${order.name || order.customerName}</p>
+            <p style="margin: 5px 0; font-size: 12px;">${order.email || ""}</p>
+            <p style="margin: 5px 0; font-size: 12px;">${order.whatsapp_no || order.customerPhone || ""}</p>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 5px 0; font-size: 12px;"><strong>Order ID:</strong> #${order._id.slice(-6).toUpperCase()}</p>
+            <p style="margin: 5px 0; font-size: 12px;"><strong>Receipt Date:</strong> ${new Date().toLocaleDateString()}</p>
+            <p style="margin: 5px 0; font-size: 12px;"><strong>Event:</strong> ${order.event_name || "-"}</p>
+            <p style="margin: 5px 0; font-size: 12px;"><strong>Event Date:</strong> ${eventDate}</p>
+          </div>
+        </div>
 
-    y += 15;
-    doc.setFont("helvetica", "normal");
-    doc.text("Total Project Value", 25, y);
-    doc.text(`Rs. ${total.toLocaleString()}`, 160, y, { align: "right" });
+        <!-- Financial Summary Table -->
+         <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+          <thead>
+            <tr style="background: #2d2d2d; color: white;">
+              <th style="padding: 12px; text-align: left; border: 1px solid #d4a574;">Description</th>
+              <th style="padding: 12px; text-align: right; border: 1px solid #d4a574;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border: 1px solid #e5e5e5;">
+              <td style="padding: 12px; border: 1px solid #e5e5e5;">Total Project Value (${order.photography_type || "Service"})</td>
+              <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5;">₹${total.toLocaleString()}</td>
+            </tr>
+             <tr style="border: 1px solid #e5e5e5;">
+              <td style="padding: 12px; border: 1px solid #e5e5e5;">Amount Received</td>
+              <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5; font-weight: bold; color: green;">₹${paid.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
 
-    y += 10;
-    doc.text("Amount Received", 25, y);
-    doc.text(`Rs. ${paid.toLocaleString()}`, 160, y, { align: "right" });
+         <!-- Summary / Balance -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
+          <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; width: 300px;">
+             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+              <span>Total Amount:</span>
+              <span>₹${total.toLocaleString()}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+              <span>Paid Amount:</span>
+              <span>₹${paid.toLocaleString()}</span>
+            </div>
+             <div style="border-top: 2px solid #d4a574; padding-top: 8px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #d4a574;">
+              <span>Balance Due:</span>
+              <span>₹${remaining > 0 ? remaining.toLocaleString() : "0 (Fully Paid)"}</span>
+            </div>
+          </div>
+        </div>
 
-    y += 5;
-    doc.line(20, y, 190, y); // Bottom line
+        <!-- Footer -->
+         <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px;">
+          <p style="margin: 0; font-size: 12px; line-height: 1.6; font-style: italic;">Thank you for trusting us with your memories!</p>
+        </div>
+      </div>
+    `;
 
-    y += 15;
-    doc.setFont("helvetica", "bold");
-    if (remaining > 0) {
-      doc.text("Balance Due", 25, y);
-      doc.text(`Rs. ${remaining.toLocaleString()}`, 160, y, { align: "right" });
-    } else {
-      doc.setTextColor(0, 150, 0);
-      doc.text("Fully Paid", 25, y);
-      doc.text("Rs. 0", 160, y, { align: "right" });
-      doc.setTextColor(0, 0, 0);
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = content;
+    tempDiv.id = "pdf-content";
+    tempDiv.style.position = "absolute";
+    tempDiv.style.left = "-9999px";
+    tempDiv.style.width = "794px";
+    document.body.appendChild(tempDiv);
+
+    try {
+      await generatePDF("pdf-content", `Receipt_${(order.name || "Order").replace(/\s+/g, '_')}.pdf`);
+    } finally {
+      document.body.removeChild(tempDiv);
     }
-
-    // Footer
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "italic");
-    doc.text("Thank you for choosing us to capture your memories!", 105, 270, { align: "center" });
-
-    doc.save(`Receipt_${(order.name || "Order").replace(/\s+/g, '_')}_${dateStr}.pdf`);
   }
+
   const [photographyTypes, setPhotographyTypes] = useState(() => {
     const saved = localStorage.getItem("photographyTypes");
     return saved ? JSON.parse(saved) : ["Wedding", "Pre-Wedding", "Baby Shower", "Birthday", "Corporate"];
@@ -463,7 +451,6 @@ export default function AdminOrders() {
 
   function handleServiceChange(e) {
     const { value, checked } = e.target;
-    // Current services as array
     let current = form.service ? form.service.split(",").map(s => s.trim()).filter(Boolean) : [];
 
     if (checked) {
@@ -492,7 +479,6 @@ export default function AdminOrders() {
         }
       />
 
-      {/* ... (keep existing summary cards and table) ... */}
       <div className="grid gap-4 md:grid-cols-4 mb-4">
         <SummaryCard label="Total" value={stats.total} accent="from-amber-100 to-white" />
         <SummaryCard label="In Progress" value={stats.inProgress} accent="from-blue-100 to-white" />
@@ -500,7 +486,6 @@ export default function AdminOrders() {
         <SummaryCard label="Delivered" value={stats.delivered} accent="from-emerald-100 to-white" />
       </div>
 
-      {/* Responsive View Switcher */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
           <h2 className="text-lg font-semibold text-charcoal-900">Manage Orders</h2>
@@ -690,7 +675,7 @@ export default function AdminOrders() {
                       value={clientSearch}
                       onChange={handleClientSearchChange}
                       onFocus={() => setShowClientDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowClientDropdown(false), 200)} // Delay to allow click
+                      onBlur={() => setTimeout(() => setShowClientDropdown(false), 200)}
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none"
                       placeholder="Search for a client..."
                       autoComplete="off"
@@ -703,7 +688,7 @@ export default function AdminOrders() {
                             <div
                               key={client._id}
                               className="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50 text-slate-700"
-                              onMouseDown={(e) => { e.preventDefault(); selectClient(client); }} // onMouseDown fires before Blur
+                              onMouseDown={(e) => { e.preventDefault(); selectClient(client); }}
                             >
                               <div className="font-medium">{client.name}</div>
                               <div className="text-xs text-slate-500">{client.email}</div>
