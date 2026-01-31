@@ -142,6 +142,60 @@ export const getDashboardStats = async (req, res) => {
             total: await User.countDocuments(),
         };
 
+        // 11. Charts Data
+        // Monthly Revenue (Last 6 Months)
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+        sixMonthsAgo.setDate(1);
+
+        const monthlyRevenue = await Invoice.aggregate([
+            {
+                $match: {
+                    invoiceDate: { $gte: sixMonthsAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$invoiceDate" },
+                        year: { $year: "$invoiceDate" }
+                    },
+                    total: { $sum: "$grandTotal" }, // Using grandTotal as revenue
+                    collected: { $sum: "$amountPaid" }
+                }
+            },
+            { $sort: { "_id.year": 1, "_id.month": 1 } }
+        ]);
+
+        const monthlyOrders = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: sixMonthsAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$createdAt" },
+                        year: { $year: "$createdAt" }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { "_id.year": 1, "_id.month": 1 } }
+        ]);
+
+        // Invoice Status Distribution
+        const invoiceStatus = await Invoice.aggregate([
+            {
+                $group: {
+                    _id: "$paymentStatus",
+                    count: { $sum: 1 },
+                    value: { $sum: "$grandTotal" }
+                }
+            }
+        ]);
+
         res.status(200).json({
             kpi: {
                 newEnquiriesToday,
@@ -178,7 +232,12 @@ export const getDashboardStats = async (req, res) => {
                 testimonialsPublished
             },
             galleryStats,
-            userStats
+            userStats,
+            charts: {
+                monthlyRevenue,
+                monthlyOrders,
+                invoiceStatus
+            }
         });
 
     } catch (error) {

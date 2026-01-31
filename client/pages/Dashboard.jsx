@@ -15,8 +15,26 @@ import {
   TrendingUp,
   Clock,
   X,
-  Star
+  Star,
+  PieChart as PieIcon,
+  BarChart as BarChartIcon,
+  Activity
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from 'recharts';
 import { format } from "date-fns";
 import PageHeader from "../components/PageHeader";
 
@@ -145,6 +163,146 @@ export default function Dashboard() {
           <KpiCard label="Testimonials" value={kpi.pendingTestimonials} sub="Pending review" icon={CheckCircle} />
         </Link>
       </div>
+
+      {/* Analytics Charts */}
+      {data.charts && (
+        <div className="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+          {/* Revenue Trend */}
+          <div className="md:col-span-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-charcoal-900">Revenue Performance</h2>
+                <p className="text-sm text-slate-500">Billed vs Collected (Last 6 Months)</p>
+              </div>
+              <div className="rounded-lg bg-emerald-50 p-2 text-emerald-600">
+                <BarChartIcon className="h-5 w-5" />
+              </div>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={formatMonthlyData(data.charts.monthlyRevenue)}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
+                    tickFormatter={(value) => `₹${value / 1000}k`}
+                  />
+                  <Tooltip
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    cursor={{ fill: '#f1f5f9' }}
+                    formatter={(value) => [`₹${value.toLocaleString()}`, undefined]}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                  <Bar
+                    name="Billed"
+                    dataKey="total"
+                    fill="#1e293b"
+                    radius={[4, 4, 0, 0]}
+                    barSize={20}
+                  />
+                  <Bar
+                    name="Collected"
+                    dataKey="collected"
+                    fill="#10b981"
+                    radius={[4, 4, 0, 0]}
+                    barSize={20}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Order Trend & Invoice Status */}
+          <div className="space-y-8">
+            {/* Orders Trend */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-charcoal-900">Order Growth</h2>
+                  <p className="text-sm text-slate-500">New bookings per month</p>
+                </div>
+                <div className="rounded-lg bg-indigo-50 p-2 text-indigo-600">
+                  <Activity className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={formatMonthlyData(data.charts.monthlyOrders)}>
+                    <defs>
+                      <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      stroke="#6366f1"
+                      strokeWidth={3}
+                      fillOpacity={1}
+                      fill="url(#colorOrders)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Invoice Status */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-charcoal-900">Invoice Status</h2>
+                  <p className="text-sm text-slate-500">By value</p>
+                </div>
+                <div className="rounded-lg bg-rose-50 p-2 text-rose-600">
+                  <PieIcon className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="h-[200px] w-full flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data.charts.invoiceStatus}
+                      dataKey="value"
+                      nameKey="_id"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                    >
+                      {data.charts.invoiceStatus.map((entry, index) => {
+                        const colors = {
+                          'Paid': '#10b981', // Emerald
+                          'Pending': '#f59e0b', // Amber
+                          'Overdue': '#ef4444', // Rose
+                          'Draft': '#94a3b8'  // Slate
+                        };
+                        return <Cell key={`cell-${index}`} fill={colors[entry._id] || '#cbd5e1'} />;
+                      })}
+                    </Pie>
+                    <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
+                    <Legend verticalAlign="bottom" height={36} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '12px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[2fr,1fr]">
 
@@ -412,4 +570,33 @@ function HealthRow({ label, value }) {
       <span className="font-bold text-charcoal-900">{value}</span>
     </div>
   );
+}
+
+function formatMonthlyData(data) {
+  if (!data) return [];
+
+  // Create a map of existing data
+  const dataMap = {};
+  data.forEach(item => {
+    const key = `${item._id.year}-${item._id.month}`;
+    dataMap[key] = item;
+  });
+
+  // Generate last 6 months to ensure continuity
+  const result = [];
+  const today = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
+    const item = dataMap[key] || {};
+
+    result.push({
+      name: format(d, 'MMM'),
+      fullDate: key,
+      total: item.total || 0,
+      collected: item.collected || 0,
+      count: item.count || 0
+    });
+  }
+  return result;
 }
