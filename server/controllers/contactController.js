@@ -10,25 +10,27 @@ export const createContact = async (req, res) => {
 
         // Send Email Notification
         const adminEmail = "pixelproitsolutions@gmail.com";
-        if (adminEmail) {
-            const htmlContent = `
-                <h2>New Contact Message Received</h2>
-                <p><strong>Name:</strong> ${contact.name}</p>
-                <p><strong>Email:</strong> ${contact.email}</p>
-                <p><strong>Subject:</strong> ${contact.subject}</p>
-                <p><strong>Message:</strong></p>
-                <p>${contact.message}</p>
-                <br>
-                <a href="${process.env.CLIENT_URL || 'http://localhost:8080'}/contact-messages">View in Admin Panel</a>
-            `;
 
-            await sendEmail({
-                to: adminEmail,
-                subject: `New Message: ${contact.subject}`,
-                html: htmlContent,
-                replyTo: contact.email,
-            });
-        }
+        const { name, email, subject, message } = req.body;
+
+        const htmlContent = `
+            <h2>Message Received</h2>
+            <p>Hello ${name},</p>
+            <p>Thank you for contacting The Patil Photography. We have received your message.</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message}</p>
+            <br>
+            <p>We will get back to you shortly.</p>
+        `;
+
+        await sendEmail({
+            to: adminEmail,
+            // cc: "pixelproitsolutions@gmail.com",
+            subject: `Message Received: ${subject}`,
+            html: htmlContent,
+            replyTo: email,
+        });
 
         res.status(201).json(contact);
     } catch (error) {

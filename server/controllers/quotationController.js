@@ -1,5 +1,6 @@
 import Quotation from '../models/Quotation.js';
 import Client from '../models/Client.js';
+import { sendEmail } from '../utils/emailService.js';
 
 // Generate unique quotation number
 const generateQuotationNumber = async () => {
@@ -40,7 +41,7 @@ export const createQuotation = async (req, res) => {
   try {
     // Only use provided clientId if it exists, otherwise leave it null
     // We do NOT automatically create or lookup clients here anymore per user request
-    const { clientId, clientName, client } = req.body;
+    const { clientId, clientName, client, email } = req.body;
     const nameToSearch = clientName || client;
 
     const quotationNumber = await generateQuotationNumber();
@@ -57,6 +58,26 @@ export const createQuotation = async (req, res) => {
     // Try populating if we have an ID
     if (savedQuotation.clientId) {
       await savedQuotation.populate('clientId');
+    }
+
+    // Send Email to Client
+    if (email) {
+      const htmlContent = `
+         <h2>Quotation Received</h2>
+         <p>Hello ${nameToSearch || 'Valued Customer'},</p>
+         <p>You have received a new quotation from The Patil Photography.</p>
+         <p><strong>Quotation No:</strong> ${quotationNumber}</p>
+         <p><strong>Total Amount:</strong> ${req.body.grandTotal || 'N/A'}</p>
+         <br>
+         <p>Please contact us for more details.</p>
+      `;
+
+      await sendEmail({
+        to: email,
+        cc: "pixelproitsolutions@gmail.com",
+        subject: `Quotation ${quotationNumber}`,
+        html: htmlContent
+      });
     }
 
     res.status(201).json(savedQuotation);
