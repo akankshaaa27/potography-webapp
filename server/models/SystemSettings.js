@@ -33,6 +33,10 @@ const systemSettingsSchema = new mongoose.Schema({
         type: String, // URL to the image (e.g., for dark mode or footer)
         default: ""
     },
+    backgroundImage: {
+        type: String, // URL or base64 background image (for login/hero)
+        default: ""
+    },
     socialLinks: [socialLinkSchema],
     websiteUrl: {
         type: String,

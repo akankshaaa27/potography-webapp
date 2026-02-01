@@ -44,6 +44,7 @@ export default function AdminSettings() {
         businessName: "",
         primaryLogo: "",
         secondaryLogo: "",
+        backgroundImage: "",
         websiteUrl: "",
         contactEmail: "",
         primaryMobileNumber: "",
@@ -60,6 +61,7 @@ export default function AdminSettings() {
                 businessName: settings.businessName || "",
                 primaryLogo: settings.primaryLogo || "",
                 secondaryLogo: settings.secondaryLogo || "",
+                backgroundImage: settings.backgroundImage || "",
                 websiteUrl: settings.websiteUrl || "",
                 contactEmail: settings.contactEmail || "",
                 primaryMobileNumber: settings.primaryMobileNumber || "",
@@ -378,6 +380,39 @@ export default function AdminSettings() {
                                 <p className="text-xs text-gray-500 text-center">Used in Footer & Dark backgrounds</p>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Login / Hero Background */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                            <Upload size={18} className="text-gold-500" /> Login / Hero Background
+                        </h2>
+
+                        <div className="relative group border-2 border-dashed border-gray-200 rounded-xl p-4 flex items-center justify-center bg-gray-50 min-h-[160px]">
+                            {formData.backgroundImage ? (
+                                <div className="relative w-full h-40 flex items-center justify-center">
+                                    <img src={formData.backgroundImage} alt="Background preview" className="w-full h-full object-cover rounded-md" />
+                                    <button
+                                        onClick={() => setFormData(prev => ({ ...prev, backgroundImage: "" }))}
+                                        className="absolute -top-2 -right-2 bg-white text-red-500 p-1.5 rounded-full shadow-md border hover:bg-red-50"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="text-center text-gray-400">
+                                    <Upload className="mx-auto h-8 w-8 mb-2 opacity-50" />
+                                    <span className="text-xs">Click to upload (recommended 1200x800)</span>
+                                </div>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleImageUpload('backgroundImage', e)}
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                            />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">Used on the login/hero panel for branding.</p>
                     </div>
                 </div>
 
