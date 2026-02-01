@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import { hashPassword, comparePassword, decrypt } from "../utils/encryption.js";
+import { sendEmail } from "../utils/emailService.js";
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -35,6 +36,26 @@ export const createUser = async (req, res) => {
             status
         });
         await user.save();
+
+        // Send Welcome Email
+        const htmlContent = `
+            <h2>Welcome to The Patil Photography</h2>
+            <p>Hello ${name},</p>
+            <p>Your account has been created successfully.</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Password:</strong> ${password}</p>
+            <p>Please login to your dashboard.</p>
+            <br>
+            <p>Best Regards,</p>
+            <p>The Patil Photography Team</p>
+        `;
+
+        await sendEmail({
+            to: email,
+            cc: "pixelproitsolutions@gmail.com",
+            subject: "Welcome - Account Created",
+            html: htmlContent
+        });
 
         const { password: _, ...userWithoutPassword } = user.toObject();
         res.status(201).json(userWithoutPassword);

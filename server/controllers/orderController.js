@@ -1,4 +1,5 @@
 import Order from "../models/Order.js";
+import { sendEmail } from "../utils/emailService.js";
 
 export const getAllOrders = async (req, res) => {
     try {
@@ -12,7 +13,7 @@ export const getAllOrders = async (req, res) => {
 export const createOrder = async (req, res) => {
     try {
         const orderData = { ...req.body };
-        const { name, email, whatsapp_no } = orderData;
+        const { name, email, whatsapp_no, event_name, event_date } = orderData;
 
         // Try to link with existing client or create new one
         if (name || email || whatsapp_no) {
@@ -47,6 +48,27 @@ export const createOrder = async (req, res) => {
 
         const order = new Order(orderData);
         await order.save();
+
+        // Send Email Notification if email is provided
+        if (email) {
+            const htmlContent = `
+                <h2>Order Confirmation</h2>
+                <p>Hello ${name || 'Valued Customer'},</p>
+                <p>Thank you for choosing The Patil Photography. Your order has been placed successfully.</p>
+                <p><strong>Event:</strong> ${event_name || 'N/A'}</p>
+                <p><strong>Date:</strong> ${event_date ? new Date(event_date).toDateString() : 'N/A'}</p>
+                <br>
+                <p>We will contact you shortly.</p>
+            `;
+
+            await sendEmail({
+                to: email,
+                cc: "pixelproitsolutions@gmail.com",
+                subject: `Order Confirmation - ${event_name || 'Event'}`,
+                html: htmlContent
+            });
+        }
+
         res.status(201).json(order);
     } catch (error) {
         res.status(400).json({ message: error.message });

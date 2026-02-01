@@ -8,11 +8,12 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendEmail = async ({ to, subject, html, replyTo }) => {
+export const sendEmail = async ({ to, subject, html, replyTo, cc }) => {
     try {
         const info = await transporter.sendMail({
             from: `"${process.env.EMAIL_FROM_NAME || 'Potography Webapp'}" <${process.env.EMAIL_USER}>`,
             to,
+            cc,
             replyTo,
             subject,
             html,
