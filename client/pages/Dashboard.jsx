@@ -35,7 +35,10 @@ import {
   Cell,
   Legend
 } from 'recharts';
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import "../Calendar.css"; // Reuse gold/charcoal theme
 import PageHeader from "../components/PageHeader";
 
 export default function Dashboard() {
@@ -43,6 +46,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -309,37 +313,80 @@ export default function Dashboard() {
         {/* Main Content Column */}
         <div className="space-y-8">
 
-          {/* Upcoming Schedule */}
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-charcoal-900">Upcoming Schedule</h2>
-              <Link to="/orders" className="flex items-center text-sm font-medium text-gold-600 hover:text-gold-700">
-                View Calendar <ArrowRight className="ml-1 h-4 w-4" />
+          {/* Upcoming Schedule & Mini Calendar */}
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col h-[500px]">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-charcoal-900">Schedule</h2>
+              <Link to="/admin-calendar" className="flex items-center text-sm font-medium text-gold-600 hover:text-gold-700">
+                Full Calendar <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </div>
-            <div className="space-y-3">
-              {schedule.length === 0 ? (
-                <p className="py-4 text-center text-sm text-slate-500">No upcoming shoots scheduled.</p>
-              ) : (
-                schedule.map((evt) => (
-                  <div key={evt._id} className="flex items-center gap-4 rounded-2xl border border-slate-100 p-4 transition hover:bg-slate-50">
-                    <div className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-slate-100 text-slate-500">
-                      <span className="text-xs font-bold uppercase">{format(new Date(evt.event_date), 'dd MMM')}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="truncate font-medium text-charcoal-900">{evt.name}</h4>
-                      <div className="flex items-center gap-3 text-xs text-slate-500">
-                        <span>{evt.event_name || 'Event'}</span>
-                        <span>•</span>
-                        <span>{evt.location || 'Location TBD'}</span>
+
+            <div className="flex flex-col xl:flex-row gap-6 h-full overflow-hidden">
+              {/* Mini Calendar Widget */}
+              <div className="shrink-0 flex justify-center xl:justify-start">
+                <DayPicker
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  modifiers={{
+                    booked: (date) => schedule.some(evt => isSameDay(new Date(evt.event_date), date)),
+                  }}
+                  modifiersClassNames={{
+                    booked: "bg-gold-100 text-gold-700 font-bold rounded-full",
+                  }}
+                  className="border border-slate-100 rounded-xl p-4 shadow-sm"
+                />
+              </div>
+
+              {/* Events List for Selected Date or Upcoming */}
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">
+                  {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Upcoming"}
+                </h3>
+
+                {(() => {
+                  // Filter events for selected date
+                  const dayEvents = selectedDate
+                    ? schedule.filter(evt => isSameDay(new Date(evt.event_date), selectedDate))
+                    : schedule;
+
+                  if (dayEvents.length === 0) {
+                    return (
+                      <div className="flex flex-col items-center justify-center h-40 text-slate-400">
+                        <Calendar className="h-8 w-8 mb-2 opacity-50" />
+                        <p className="text-sm">No shoots on this day.</p>
                       </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-3">
+                      {dayEvents.map((evt) => (
+                        <div key={evt._id} className="flex items-center gap-3 rounded-xl border border-slate-100 p-3 transition hover:bg-slate-50 hover:border-gold-200">
+                          <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-gold-50 text-gold-600">
+                            <span className="text-xs font-bold uppercase">{format(new Date(evt.event_date), 'dd')}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="truncate font-medium text-charcoal-900 text-sm">{evt.name}</h4>
+                            <div className="flex items-center gap-2 text-xs text-slate-500">
+                              <span>{evt.event_name || 'Event'}</span>
+                              {evt.location && <span>• {evt.location}</span>}
+                            </div>
+                          </div>
+                          <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide
+                                  ${evt.order_status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' :
+                              evt.order_status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                                evt.order_status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+                                  'bg-amber-100 text-amber-700'}`}>
+                            {evt.order_status || 'Pending'}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                    <span className="hidden sm:inline-flex rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
-                      {evt.order_status}
-                    </span>
-                  </div>
-                ))
-              )}
+                  );
+                })()}
+              </div>
             </div>
           </section>
 
