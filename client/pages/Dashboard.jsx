@@ -116,7 +116,7 @@ export default function Dashboard() {
     <div className="relative min-h-screen bg-slate-50 text-charcoal-900 pb-20">
 
       {/* Header & Quick Actions */}
-      <header className="mb-8 space-y-6">
+      <header className="mb-8 space-y-6 mt-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-charcoal-900">Studio Oversight</h1>
@@ -170,10 +170,10 @@ export default function Dashboard() {
 
       {/* Analytics Charts */}
       {data.charts && (
-        <div className="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
           {/* Revenue Trend */}
-          <div className="md:col-span-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="h-max md:col-span-2 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-charcoal-900">Revenue Performance</h2>

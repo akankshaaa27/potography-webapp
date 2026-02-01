@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
-import { useSettings } from "../hooks/useSettings";
+import { useSettings } from "../hooks/useSettings"; 
 
 const Login = () => {
     const { data: settings } = useSettings();
@@ -50,7 +51,7 @@ const Login = () => {
         <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
             <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-0 bg-white rounded-3xl shadow-2xl overflow-hidden">
                 {/* Left Section - Login Form */}
-                <div className="p-8 lg:p-12 flex flex-col justify-center bg-white">
+                <div className="p-8 lg:p-12 flex flex-col justify-center bg-white order-last lg:order-last">
                     <div className="space-y-8">
                         {/* Heading */}
                         <div className="text-center lg:text-left">
@@ -90,19 +91,11 @@ const Login = () => {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition p-1"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                        title={showPassword ? "Hide password" : "Show password"}
                                     >
-                                        {showPassword ? (
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                        ) : (
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-4.803m5.596-3.856a3.375 3.375 0 11-4.753 4.753m7.538-1.15a3.375 3.375 0 01-5.577 5.577m0 0a3 3 0 10-4.24 4.24" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        )}
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
                             </div>
@@ -149,49 +142,31 @@ const Login = () => {
                     </div>
                 </div>
 
-                {/* Right Section - Image/Illustration */}
-                <div className="hidden lg:flex relative bg-gradient-to-br from-purple-600 via-pink-500 to-blue-600 p-8 items-end justify-center overflow-hidden">
-                    {/* Background gradients */}
-                    <div className="absolute inset-0 opacity-40">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50" />
-                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50" />
-                        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50" />
-                    </div>
+                {/* Right Section - Left-side Hero (Image/Illustration) */}
+                <div
+                    className="hidden lg:flex relative p-8 items-center justify-center overflow-hidden order-first lg:order-first bg-cover bg-center"
+                    style={{ backgroundImage: `url(${settings?.backgroundImage || '/assets/img/slider/hero6.jpg'})` }}
+                >
+                    <div className="absolute inset-0 bg-black opacity-40" />
 
-                    {/* Camera Icon and Content */}
-                    <div className="relative z-10 flex flex-col items-center justify-center text-center text-white h-full w-full">
+                    {/* Hero Content */}
+                    <div className="relative z-10 flex flex-col items-center justify-center text-center text-white h-full w-full px-8">
                         {/* App Logo Image */}
-                        <div className="mb-12 flex items-center justify-center">
+                        <div className="mb-8">
                             {settings?.primaryLogo ? (
-                                <img
-                                    src={settings.primaryLogo}
-                                    alt="Logo"
-                                    className="w-48 h-48 object-contain drop-shadow-lg"
-                                />
+                                <img src={settings.primaryLogo} alt={`${settings.businessName || 'Logo'}`} className="w-40 h-40 object-contain drop-shadow-xl rounded-md bg-white/10 p-2" />
                             ) : (
-                                <img
-                                    src="/assets/img/logo.PNG"
-                                    alt="Logo"
-                                    className="w-48 h-48 object-contain drop-shadow-lg"
-                                />
+                                <img src="/assets/img/logo.PNG" alt="Logo" className="w-40 h-40 object-contain drop-shadow-xl rounded-md bg-white/10 p-2" />
                             )}
                         </div>
 
-                        {/* Text Content */}
-                        <h2 className="text-4xl font-bold leading-tight mb-2">
-                            Be a Part of Something
-                        </h2>
-                        <h2 className="text-4xl font-bold mb-4">
-                            Beautiful
+                        <h2 className="text-3xl font-bold leading-tight mb-2">
+                            Capture moments, create memories
                         </h2>
                         <p className="text-lg opacity-90 max-w-xs">
-                            Capture moments, create memories, manage your photography studio with ease
+                            Manage your photography studio with ease
                         </p>
                     </div>
-
-                    {/* Decorative circles */}
-                    <div className="absolute top-8 right-8 w-16 h-16 bg-white rounded-full opacity-20" />
-                    <div className="absolute bottom-8 left-8 w-24 h-24 border-2 border-white rounded-full opacity-20" />
                 </div>
             </div>
         </div>

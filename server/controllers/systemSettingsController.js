@@ -28,6 +28,7 @@ export const updateSettings = async (req, res) => {
             businessName,
             primaryLogo,
             secondaryLogo,
+            backgroundImage,
             socialLinks,
             websiteUrl,
             contactEmail,
@@ -40,6 +41,7 @@ export const updateSettings = async (req, res) => {
         if (businessName !== undefined) settings.businessName = businessName;
         if (primaryLogo !== undefined) settings.primaryLogo = primaryLogo;
         if (secondaryLogo !== undefined) settings.secondaryLogo = secondaryLogo;
+        if (backgroundImage !== undefined) settings.backgroundImage = backgroundImage;
         if (socialLinks !== undefined) settings.socialLinks = socialLinks;
         if (websiteUrl !== undefined) settings.websiteUrl = websiteUrl;
         if (contactEmail !== undefined) settings.contactEmail = contactEmail;
