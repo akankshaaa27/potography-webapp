@@ -3,28 +3,34 @@ import { useSettings } from "../hooks/useSettings";
 import { LogOut } from "lucide-react";
 
 const items = [
+  // Operations & Management
   { to: "/admin-dashboard", label: "Dashboard" },
-  // { to: "/admin-quotations", label: "Quotations" },
-  { to: "/admin-orders", label: "Orders" },
   { to: "/admin-calendar", label: "Calendar" },
+  { to: "/admin-quotations", label: "Quotations" },
+  { to: "/admin-orders", label: "Orders" },
+  { to: "/admin-invoices", label: "Invoices" },
+  { to: "/admin-clients", label: "Clients" },
+
+  // Website Content
   { to: "/admin-gallery", label: "Portfolio" },
   { to: "/admin-films", label: "Films" },
-  { to: "/admin-users", label: "Users" },
-  { to: "/admin-slider", label: "Slider" },
   { to: "/admin-love-stories", label: "Love Stories" },
+  { to: "/admin-slider", label: "Slider" },
+  { to: "/admin-popup", label: "Popup Manager" },
   { to: "/admin-testimonials", label: "Testimonials" },
-  { to: "/admin-clients", label: "Clients" },
+  { to: "/admin-team", label: "Team Management" },
+
+  // Incoming Interactions
   { to: "/admin-enquiries", label: "Enquiries" },
   { to: "/admin-contact-messages", label: "Contact Messages" },
-  { to: "/admin-invoices", label: "Invoices" },
-  { to: "/admin-team", label: "Team Management" },
-  { to: "/admin-quotations", label: "Quotations" },
+
+  // System Administration
+  { to: "/admin-users", label: "Users" },
   { to: "/admin-accessories", label: "Accessories" },
   { to: "/admin-common-types", label: "Common Types" },
-  { to: "/admin-register", label: "Admin Register" },
-  { to: "/admin-profile", label: "Profile" },
-  { to: "/admin-popup", label: "Popup Manager" },
   { to: "/admin-settings", label: "Global Settings" },
+  // { to: "/admin-profile", label: "Profile" },
+  // { to: "/admin-register", label: "Admin Register" },
 ];
 
 export default function Navigation({ isMobileOpen = false, isOpen = true, onClose = () => { }, onLogout }) {
