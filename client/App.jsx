@@ -47,6 +47,7 @@ import AdminCommonTypes from "./pages/AdminCommonTypes";
 import AdminSettings from "./pages/AdminSettings";
 import AdminTeam from "./pages/AdminTeam";
 import AdminPopup from "./pages/AdminPopup";
+import AdminCalendar from "./pages/AdminCalendar";
 
 
 const queryClient = new QueryClient();
@@ -280,6 +281,7 @@ const AppShell = () => {
             <Route path="/admin-quotations" element={<Quotations />} />
 
             <Route path="/admin-orders" element={<AdminOrders />} />
+            <Route path="/admin-calendar" element={<AdminCalendar />} />
             <Route path="/admin-gallery" element={<AdminGallery />} />
             <Route path="/admin-films" element={<AdminFilms />} />
             <Route path="/admin-users" element={<AdminUsers />} />
