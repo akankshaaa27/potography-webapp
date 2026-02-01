@@ -6,6 +6,7 @@ const items = [
   { to: "/admin-dashboard", label: "Dashboard" },
   // { to: "/admin-quotations", label: "Quotations" },
   { to: "/admin-orders", label: "Orders" },
+  { to: "/admin-calendar", label: "Calendar" },
   { to: "/admin-gallery", label: "Portfolio" },
   { to: "/admin-films", label: "Films" },
   { to: "/admin-users", label: "Users" },
