@@ -2,7 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.png" />
+    <link id="favicon" rel="icon" type="image/png" href="/assets/img/logo.png" />
+    <script>
+      // Expose a helper to update the favicon dynamically from any JS/React code.
+      // Usage: window.setFavicon('/path/to/icon.png')
+      (function () {
+        function setFavicon(url, type = 'image/png') {
+          var link = document.getElementById('favicon');
+          if (!link) {
+            link = document.createElement('link');
+            link.id = 'favicon';
+            link.rel = 'icon';
+            document.head.appendChild(link);
+          }
+          link.type = type;
+          link.href = url;
+        }
+        // make available globally
+        window.setFavicon = setFavicon;
+        // Initialize to default logo (falls back to original if missing)
+        try {
+          setFavicon('/assets/img/logo.png');
+        } catch (e) {
+          /* ignore */
+        }
+      })();
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Patil Photography & Film's</title>
     

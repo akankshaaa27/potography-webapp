@@ -175,3 +175,11 @@
     border-left: 3px solid #10b981 !important;
     color: #065f46 !important;
 }
+
+/* Mobile-specific tweaks */
+@media (max-width: 640px) {
+    .rbc-toolbar { display: none !important; }
+    .rbc-calendar { min-height: unset !important; }
+    .rbc-header { padding: 8px 6px !important; font-size: 0.75rem !important; }
+    .rbc-event { font-size: 0.7rem !important; padding: 2px 4px !important; }
+}

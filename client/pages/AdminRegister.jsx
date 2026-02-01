@@ -46,8 +46,8 @@ export default function AdminRegister() {
     <section className="page-shell mt-4">
       <header className="rounded-4xl border border-[#e6eaf2] bg-gradient-to-br from-white via-[#fdfefe] to-[#f5f7fb] p-6 text-charcoal-900 shadow-[0_25px_80px_rgba(15,23,42,0.08)]">
         <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Onboard</p>
-        <h1 className="mt-2 text-3xl font-semibold text-charcoal-900">Invite a Core Admin</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-charcoal-900">Invite a Core Admin</h1>
+        <p className="hidden sm:block mt-2 text-sm text-slate-600">
           Add producers, post managers, finance partners, or co-founders with tailored permissions.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">

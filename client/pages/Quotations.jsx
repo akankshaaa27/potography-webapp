@@ -148,18 +148,18 @@ export default function Quotations() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto p-0 sm:px-6 lg:px-0 pb-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="luxury-text-title mb-2">Quotations</h1>
-            <p className="font-montserrat text-charcoal-600 dark:text-charcoal-300">
+            <p className="hidden sm:block font-montserrat text-charcoal-600 dark:text-charcoal-300">
               Manage and track all your quotations
             </p>
           </div>
           <button
             onClick={handleAddNew}
-            className="flex items-center gap-2 px-6 py-3 bg-gold-500 hover:bg-gold-600 text-white font-montserrat font-medium rounded transition-colors"
+             className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all"
           >
             <Plus className="w-5 h-5" />
             New Quotation
@@ -225,7 +225,7 @@ export default function Quotations() {
           <div className="grid grid-cols-1 gap-4">
             {filteredQuotations.map((quotation) => (
               <div key={quotation._id} className="luxury-card">
-                <div className="flex justify-between items-start">
+                <div className="sm-flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-playfair text-lg font-semibold text-charcoal-900 dark:text-white">
@@ -290,40 +290,40 @@ export default function Quotations() {
                       onClick={() =>
                         generateQuotationPDF(quotation, quotation.clientId)
                       }
-                      className="p-2 hover:bg-purple-100 dark:hover:bg-charcoal-700 rounded transition-colors"
+                      className="p-2 text-slate-500 hover:bg-purple-100 dark:hover:bg-charcoal-700 rounded transition-colors hover:text-purple-600"
                       title="Download PDF"
                     >
-                      <Download className="w-5 h-5 text-purple-600" />
+                      <Download className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleEdit(quotation)}
-                      className="p-2 hover:bg-gold-100 dark:hover:bg-charcoal-700 rounded transition-colors"
+                      className="p-2 text-slate-500 hover:bg-gold-100 dark:hover:bg-charcoal-700 rounded transition-colors hover:text-gold-600"
                       title="Edit"
                     >
-                      <Edit2 className="w-5 h-5 text-gold-600" />
+                      <Edit2 className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleDuplicate(quotation)}
-                      className="p-2 hover:bg-blue-100 dark:hover:bg-charcoal-700 rounded transition-colors"
+                      className="p-2 text-slate-500 hover:bg-blue-100 dark:hover:bg-charcoal-700 rounded transition-colors hover:text-blue-600"
                       title="Duplicate"
                     >
-                      <Copy className="w-5 h-5 text-blue-600" />
+                      <Copy className="w-5 h-5" />
                     </button>
                     {!quotation.convertedToInvoice && (
                       <button
                         onClick={() => handleConvertToInvoice(quotation)}
-                        className="p-2 hover:bg-green-100 dark:hover:bg-charcoal-700 rounded transition-colors"
+                        className="p-2 text-slate-500 hover:bg-green-100 dark:hover:bg-charcoal-700 rounded transition-colors hover:text-green-600"
                         title="Convert to Invoice"
                       >
-                        <FileText className="w-5 h-5 text-green-600" />
+                        <FileText className="w-5 h-5" />
                       </button>
                     )}
                     <button
                       onClick={() => handleDelete(quotation._id)}
-                      className="p-2 hover:bg-red-100 dark:hover:bg-charcoal-700 rounded transition-colors"
+                      className="p-2 text-slate-500 hover:bg-red-100 dark:hover:bg-charcoal-700 rounded transition-colors hover:text-red-600"
                       title="Delete"
                     >
-                      <Trash2 className="w-5 h-5 text-red-600" />
+                      <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
                 </div>

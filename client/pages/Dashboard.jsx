@@ -116,10 +116,10 @@ export default function Dashboard() {
     <div className="relative min-h-screen bg-slate-50 text-charcoal-900 pb-20">
 
       {/* Header & Quick Actions */}
-      <header className="mb-8 space-y-6 mt-6">
+      <header className="mb-8 space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-charcoal-900">Studio Oversight</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-charcoal-900">Studio Oversight</h1>
             <p className="text-slate-500">Welcome back. Here's what's happening today.</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -590,7 +590,7 @@ function KpiCard({ label, value, sub, icon: Icon, accent }) {
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold text-charcoal-900">{value}</p>
+          <p className="mt-2 text-2xl sm:text-3xl font-bold text-charcoal-900">{value}</p>
         </div>
         <div className={`rounded-xl p-2.5 ${accent ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-500'}`}>
           <Icon className="h-5 w-5" />

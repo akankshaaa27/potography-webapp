@@ -55,7 +55,7 @@ export default function AdminEnquiries() {
 
     return (
          <>
-        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+        <div className="mt-0 container mx-auto px-0 pt-0 pb-6 animate-in fade-in duration-500">
             <PageHeader
                 title="Book Us Enquiries"
                 description="Manage enquiry requests and track customer interest"
@@ -155,7 +155,7 @@ export default function AdminEnquiries() {
                             <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100">
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs font-semibold text-slate-400 uppercase">Budget</span>
-                                    <span className="text-sm font-bold text-charcoal-900 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-100">
+                                    <span className="text-sm font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-100">
                                         ₹{enquiry.budget ? enquiry.budget.toLocaleString() : "N/A"}
                                     </span>
                                 </div>

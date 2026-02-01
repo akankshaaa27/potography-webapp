@@ -73,7 +73,7 @@ export default function UserProfile() {
       <header className="rounded-4xl border border-[#e6eaf2] bg-gradient-to-br from-white via-[#fdfefe] to-[#f5f7fb] p-6 text-charcoal-900 shadow-[0_25px_80px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-center gap-6">
           <div className="h-20 w-20 rounded-2xl bg-amber-50 p-1">
-            <div className="flex h-full items-center justify-center rounded-2xl bg-white text-3xl font-semibold text-amber-700">
+            <div className="flex h-full items-center justify-center rounded-2xl bg-white text-2xl sm:text-3xl font-semibold text-amber-700">
               {profile.name
                 .split(" ")
                 .map((part) => part[0])
@@ -81,7 +81,7 @@ export default function UserProfile() {
             </div>
           </div>
           <div className="flex-1 min-w-[200px]">
-            <h1 className="text-3xl font-semibold text-charcoal-900">{profile.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-charcoal-900">{profile.name}</h1>
             <p className="text-sm text-slate-600">
               {profile.role} • {profile.location}
             </p>

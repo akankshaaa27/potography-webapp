@@ -105,7 +105,7 @@ export default function AdminCommonTypes() {
 
 
     return (
-        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500 space-y-6">
+        <div className="mt-0 container mx-auto px-0 pt-0 pb-6 animate-in fade-in duration-500 space-y-6">
             <PageHeader
                 title="Common Types Management"
                 description="Manage Event Types and Service Categories"

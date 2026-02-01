@@ -85,7 +85,7 @@ export default function Clients() {
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="luxury-text-title mb-1">Clients</h1>
-          <p className="text-sm text-charcoal-600">Manage your client database.</p>
+          <p className="hidden sm:block text-sm text-charcoal-600">Manage your client database.</p>
         </div>
       </div>
 

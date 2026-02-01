@@ -82,7 +82,7 @@ export default function AdminFilms() {
     };
 
     return (
-        <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+        <div className="container mx-auto mt-0 px-0 pt-0 pb-6 animate-in fade-in duration-500">
             {/* Header */}
             <PageHeader
                 title="Films"

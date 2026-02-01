@@ -62,6 +62,9 @@ const Home = () => {
   const [selectedStory, setSelectedStory] = useState(null);
   const [instagramPosts, setInstagramPosts] = useState([]);
   const [showTribute, setShowTribute] = useState(false);
+  const [portfolioPreview, setPortfolioPreview] = useState([]);
+  const [loadingPortfolio, setLoadingPortfolio] = useState(true);
+
   // Pop up
   useEffect(() => {
     // Show tribute popup automatically on home page load (ALWAYS for now)
@@ -112,6 +115,16 @@ const Home = () => {
       })
       .catch((err) => console.error("Error fetching testimonials:", err))
       .finally(() => setLoadingTestimonials(false));
+
+    // Fetch Portfolio preview (first 4 active images)
+    fetch("/api/gallery")
+      .then((res) => res.json())
+      .then((data) => {
+        const items = Array.isArray(data) ? data.filter(i => i.status === "Active") : [];
+        setPortfolioPreview(items.slice(0, 4));
+      })
+      .catch((err) => console.error("Error fetching portfolio:", err))
+      .finally(() => setLoadingPortfolio(false));
   }, []);
   useEffect(() => {
     let preloaderTimeout;
@@ -346,6 +359,47 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Portfolio Preview Section */}
+        <section id="portfolio-preview" className="portfolio-preview section">
+          <div className="container section-title text-center" data-aos="fade-up" data-aos-delay="100">
+            <h2>Our Portfolio</h2>
+            <p className="mb-4" style={{ maxWidth: 800, margin: '0 auto' }}>
+              A curated selection of recent works — a glimpse into our craft. Click through to view the full gallery.
+            </p>
+          </div>
+
+          <div className="container" data-aos="fade-up" data-aos-delay="200">
+            <div className="row g-3 justify-content-center">
+              {loadingPortfolio ? (
+                [1,2,3,4].map((_, i) => (
+                  <div key={i} className="col-6 col-md-3">
+                    <Skeleton width="100%" style={{ paddingBottom: '70%', borderRadius: '12px' }} />
+                  </div>
+                ))
+              ) : portfolioPreview.length ? (
+                portfolioPreview.map((item, idx) => (
+                  <div key={idx} className="col-6 col-md-3">
+                    <Link to="/portfolio" className="d-block overflow-hidden project-card" style={{ paddingBottom: '70%', position: 'relative', backgroundImage: `url(${item.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                      <div style={{ position: 'absolute', left: 12, bottom: 12, color: '#fff', background: 'rgba(0,0,0,0.45)', padding: '6px 10px', borderRadius: 6, fontSize: '0.9rem' }}>
+                        {item.title || item.category || 'Project'}
+                      </div>
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <div className="col-12 text-center py-5">
+                  <p>No portfolio images available.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="text-center mt-4">
+              <Link to="/portfolio" className="cta-link" style={{ borderRadius: 30, padding: '10px 28px' }}>
+                View All Projects
+              </Link>
+            </div>
+          </div>
+        </section>
 
         {/* Statistics Section */}
         <section className="about statistics-section">

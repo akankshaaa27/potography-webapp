@@ -166,6 +166,12 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
       if (match) {
         updatedServices[index].ratePerDay = match.ratePerDay || updatedServices[index].ratePerDay;
       }
+
+      // If service name auto-fills the rate, recalculate the row total immediately
+      const qty = parseInt(updatedServices[index].quantity) || 0;
+      const days = parseInt(updatedServices[index].days) || 0;
+      const rate = parseFloat(updatedServices[index].ratePerDay) || 0;
+      updatedServices[index].total = qty * days * rate;
     }
 
     if (["quantity", "days", "ratePerDay"].includes(field)) {
