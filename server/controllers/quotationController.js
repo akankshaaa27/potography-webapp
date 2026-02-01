@@ -1,6 +1,7 @@
 import Quotation from '../models/Quotation.js';
 import Client from '../models/Client.js';
 import { sendEmail } from '../utils/emailService.js';
+import { generateEmailHtml } from "../utils/emailTemplates.js";
 
 // Generate unique quotation number
 const generateQuotationNumber = async () => {
@@ -62,20 +63,28 @@ export const createQuotation = async (req, res) => {
 
     // Send Email to Client
     if (email) {
-      const htmlContent = `
-         <h2>Quotation Received</h2>
-         <p>Hello ${nameToSearch || 'Valued Customer'},</p>
-         <p>You have received a new quotation from The Patil Photography.</p>
-         <p><strong>Quotation No:</strong> ${quotationNumber}</p>
-         <p><strong>Total Amount:</strong> ${req.body.grandTotal || 'N/A'}</p>
-         <br>
-         <p>Please contact us for more details.</p>
-      `;
+      const htmlContent = generateEmailHtml({
+        title: "Quotation Received",
+        greeting: `Hello ${nameToSearch || 'Valued Customer'},`,
+        intro: "You have received a new quotation from The Patil Photography. We look forward to capturing your special moments.",
+        details: {
+          "Quotation No": quotationNumber,
+          "Event Type": req.body.eventType || 'N/A',
+          "Event Date": req.body.eventDate ? new Date(req.body.eventDate).toDateString() : 'N/A',
+          "Location": req.body.location || 'N/A',
+          "Services": Array.isArray(req.body.services) ? req.body.services.map(s => s.name).join(", ") : (req.body.services || 'N/A'),
+          "Total Amount": req.body.grandTotal ? `₹${Number(req.body.grandTotal).toLocaleString('en-IN')}` : 'N/A',
+          "Terms & Conditions": req.body.termsAndConditions || 'As per standard policy',
+          "Valid Until": req.body.validityDate ? new Date(req.body.validityDate).toDateString() : 'N/A'
+        },
+        actionText: "Contact Us to Book",
+        actionUrl: process.env.CLIENT_URL || "#"
+      });
 
       await sendEmail({
         to: email,
         cc: "pixelproitsolutions@gmail.com",
-        subject: `Quotation ${quotationNumber}`,
+        subject: `Quotation ${quotationNumber} - The Patil Photography`,
         html: htmlContent
       });
     }

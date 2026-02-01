@@ -1,6 +1,7 @@
 import Enquiry from "../models/Enquiry.js";
 
 import { sendEmail } from "../utils/emailService.js";
+import { generateEmailHtml } from "../utils/emailTemplates.js";
 
 // Create a new enquiry (Public)
 export const createEnquiry = async (req, res) => {
@@ -11,23 +12,30 @@ export const createEnquiry = async (req, res) => {
         // Send Email Notification
         const adminEmail = "pixelproitsolutions@gmail.com";
         if (adminEmail) {
-            const htmlContent = `
-                <h2>New "Book Us" Enquiry Received</h2>
-                <p><strong>Couple:</strong> ${enquiry.groomName} & ${enquiry.brideName}</p>
-                <p><strong>Phone:</strong> ${enquiry.phoneNumber}</p>
-                <p><strong>Date:</strong> ${new Date(enquiry.eventStartDate).toDateString()} - ${new Date(enquiry.eventEndDate).toDateString()}</p>
-                <p><strong>Location:</strong> ${enquiry.location}</p>
-                <p><strong>Budget:</strong> ${enquiry.budget}</p>
-                <p><strong>Message:</strong> ${enquiry.message}</p>
-                <br>
-                <a href="${process.env.CLIENT_URL || 'http://localhost:8080'}/enquiries">View in Admin Panel</a>
-            `;
+            const htmlContent = generateEmailHtml({
+                title: "New Booking Enquiry",
+                greeting: "Hello Admin,",
+                intro: `You have received a new "Book Us" enquiry from ${enquiry.groomName} & ${enquiry.brideName}.`,
+                details: {
+                    "Groom's Name": enquiry.groomName || 'N/A',
+                    "Bride's Name": enquiry.brideName || 'N/A',
+                    "Phone Number": enquiry.phoneNumber || 'N/A',
+                    "Email": enquiry.email || 'N/A',
+                    "Event Dates": `${new Date(enquiry.eventStartDate).toDateString()} - ${new Date(enquiry.eventEndDate).toDateString()}`,
+                    "Location": enquiry.location || 'N/A',
+                    "Budget": enquiry.budget ? `₹${enquiry.budget}` : 'N/A',
+                    "Message": enquiry.message || 'No additional message',
+                    "Submission Date": new Date().toLocaleString()
+                },
+                actionText: "View in Admin Panel",
+                actionUrl: `${process.env.CLIENT_URL || 'http://localhost:8080'}/enquiries`
+            });
 
             await sendEmail({
                 to: adminEmail,
                 subject: `New Enquiry: ${enquiry.groomName} & ${enquiry.brideName}`,
                 html: htmlContent,
-                replyTo: "",
+                replyTo: enquiry.email || "",
             });
         }
 

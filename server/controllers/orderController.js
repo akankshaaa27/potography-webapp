@@ -1,5 +1,6 @@
 import Order from "../models/Order.js";
 import { sendEmail } from "../utils/emailService.js";
+import { generateEmailHtml } from "../utils/emailTemplates.js";
 
 export const getAllOrders = async (req, res) => {
     try {
@@ -50,16 +51,30 @@ export const createOrder = async (req, res) => {
         await order.save();
 
         // Send Email Notification if email is provided
+        // Send Email Notification if email is provided
         if (email) {
-            const htmlContent = `
-                <h2>Order Confirmation</h2>
-                <p>Hello ${name || 'Valued Customer'},</p>
-                <p>Thank you for choosing The Patil Photography. Your order has been placed successfully.</p>
-                <p><strong>Event:</strong> ${event_name || 'N/A'}</p>
-                <p><strong>Date:</strong> ${event_date ? new Date(event_date).toDateString() : 'N/A'}</p>
-                <br>
-                <p>We will contact you shortly.</p>
-            `;
+            const htmlContent = generateEmailHtml({
+                title: "Order Confirmation",
+                greeting: `Hello ${name || 'Valued Customer'},`,
+                intro: "Thank you for choosing The Patil Photography. Your order has been placed successfully. Below are the details of your booking.",
+                details: {
+                    "Order ID": order._id.toString().slice(-6).toUpperCase(),
+                    "Event Name": event_name || 'N/A',
+                    "Event Date": event_date ? new Date(event_date).toDateString() : 'N/A',
+                    "Location": orderData.location || 'N/A',
+                    "Service Type": orderData.photography_type || 'N/A',
+                    "Services": Array.isArray(orderData.service) ? orderData.service.join(", ") : (orderData.service || 'N/A'),
+                    "Package": orderData.package || 'N/A',
+                    "Album Pages": orderData.album_pages || 'N/A',
+                    "Total Amount": orderData.amount ? `₹${Number(orderData.amount).toLocaleString('en-IN')}` : 'N/A',
+                    "Paid Amount": orderData.amount_paid ? `₹${Number(orderData.amount_paid).toLocaleString('en-IN')}` : '0',
+                    "Balance Due": orderData.remaining_amount ? `₹${Number(orderData.remaining_amount).toLocaleString('en-IN')}` : 'N/A',
+                    "Deliverables": orderData.deliverables || 'N/A',
+                    "Delivery Date": orderData.delivery_date ? new Date(orderData.delivery_date).toDateString() : 'TBD'
+                },
+                actionText: "Contact Us",
+                actionUrl: process.env.CLIENT_URL || "#"
+            });
 
             await sendEmail({
                 to: email,

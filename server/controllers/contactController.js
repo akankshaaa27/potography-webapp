@@ -1,6 +1,7 @@
 import Contact from "../models/Contact.js";
 
 import { sendEmail } from "../utils/emailService.js";
+import { generateEmailHtml } from "../utils/emailTemplates.js";
 
 // Create a new contact message (Public)
 export const createContact = async (req, res) => {
@@ -13,16 +14,20 @@ export const createContact = async (req, res) => {
 
         const { name, email, subject, message } = req.body;
 
-        const htmlContent = `
-            <h2>Message Received</h2>
-            <p>Hello ${name},</p>
-            <p>Thank you for contacting The Patil Photography. We have received your message.</p>
-            <p><strong>Subject:</strong> ${subject}</p>
-            <p><strong>Message:</strong></p>
-            <p>${message}</p>
-            <br>
-            <p>We will get back to you shortly.</p>
-        `;
+        const htmlContent = generateEmailHtml({
+            title: "New Contact Message",
+            greeting: "Hello Admin,",
+            intro: `You have received a new contact message from ${name} via the website contact form.`,
+            details: {
+                "Sender Name": name,
+                "Sender Email": email,
+                "Subject": subject,
+                "Message Content": message,
+                "Received At": new Date().toLocaleString()
+            },
+            actionText: "Reply Now",
+            actionUrl: `mailto:${email}?subject=Re: ${subject}`
+        });
 
         await sendEmail({
             to: adminEmail,
