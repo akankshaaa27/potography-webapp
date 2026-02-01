@@ -55,6 +55,8 @@ const Testimonials = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return; // Prevent multiple submissions
+
     setSubmitting(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -244,13 +246,22 @@ const Testimonials = () => {
                       type="submit"
                       className="btn-form-submit"
                       disabled={submitting}
+                      style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
                     >
-                      {submitting ? "Submitting..." : "Submit Testimonial"}
+                      {submitting ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Submitting...
+                        </>
+                      ) : (
+                        "Submit Testimonial"
+                      )}
                     </button>
                     <button
                       type="button"
                       className="btn-form-cancel"
                       onClick={() => setShowForm(false)}
+                      disabled={submitting}
                     >
                       Cancel
                     </button>

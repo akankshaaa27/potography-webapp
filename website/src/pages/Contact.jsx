@@ -27,8 +27,13 @@ const Contact = () => {
     });
   };
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+
+    setSubmitting(true);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -45,6 +50,8 @@ const Contact = () => {
     } catch (error) {
       console.error("Contact Form Error:", error);
       alert("Error sending message. Please try again later.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -170,7 +177,21 @@ const Contact = () => {
                     </div>
 
                     <div className="form-submit">
-                      <button type="submit" class="submit-btn mt-3" >Send Message</button>
+                      <button
+                        type="submit"
+                        class="submit-btn mt-3"
+                        disabled={submitting}
+                        style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+                      >
+                        {submitting ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Sending...
+                          </>
+                        ) : (
+                          "Send Message"
+                        )}
+                      </button>
                     </div>
                   </form>
                 </div>

@@ -45,8 +45,13 @@ const Quote = () => {
     }));
   };
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+
+    setSubmitting(true);
     try {
       const res = await fetch("/api/enquiries", {
         method: "POST",
@@ -74,6 +79,8 @@ const Quote = () => {
     } catch (error) {
       console.error("Submission error:", error);
       alert("Error submitting. Please try again later.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -330,7 +337,21 @@ const Quote = () => {
                                   onChange={handleInputChange}
                                 ></textarea>
                               </div>
-                              <button type="submit" className="submit-btn d-flex  mt-0 w-100 justify-center">Submit Enquiry</button>
+                              <button
+                                type="submit"
+                                className="submit-btn d-flex mt-0 w-100 justify-content-center align-items-center"
+                                disabled={submitting}
+                                style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+                              >
+                                {submitting ? (
+                                  <>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Sending Enquiry...
+                                  </>
+                                ) : (
+                                  "Submit Enquiry"
+                                )}
+                              </button>
                             </form>
                           </div>
                         </div>
