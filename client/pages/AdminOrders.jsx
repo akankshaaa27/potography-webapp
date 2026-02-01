@@ -906,10 +906,16 @@ export default function AdminOrders() {
                 Cancel
               </button>
               <button
-                className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition-colors shadow-sm"
+                className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition-colors shadow-sm flex items-center gap-2"
                 onClick={saveOrder}
+                disabled={isSaving}
               >
-                {isSaving ? "Saving..." : "Save Order"}
+                {isSaving ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : "Save Order"}
               </button>
             </div>
           </div>

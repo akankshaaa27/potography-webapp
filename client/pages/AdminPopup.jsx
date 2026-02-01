@@ -113,8 +113,8 @@ export default function AdminPopup() {
                                     type="button"
                                     onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${formData.isActive
-                                            ? "bg-green-50 border-green-200 text-green-700 font-medium"
-                                            : "bg-slate-50 border-slate-200 text-slate-600"
+                                        ? "bg-green-50 border-green-200 text-green-700 font-medium"
+                                        : "bg-slate-50 border-slate-200 text-slate-600"
                                         }`}
                                 >
                                     {formData.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}

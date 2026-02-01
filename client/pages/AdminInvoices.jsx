@@ -666,8 +666,19 @@ export default function AdminInvoices() {
               <button className="rounded-md border border-slate-200 px-4 py-2 text-sm" onClick={() => setModalOpen(false)}>
                 Cancel
               </button>
-              <button className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white" onClick={saveInvoice}>
-                {editingId ? "Update" : "Save"}
+              <button
+                className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white flex items-center gap-2"
+                onClick={saveInvoice}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  editingId ? "Update" : "Save"
+                )}
               </button>
             </div>
           </div>

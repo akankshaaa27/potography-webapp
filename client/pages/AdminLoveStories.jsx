@@ -276,9 +276,17 @@ export default function AdminLoveStories() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 rounded-lg bg-gold-500 text-white hover:bg-gold-600 font-medium shadow-sm"
+                                    disabled={isSaving}
+                                    className="px-6 py-2 rounded-lg bg-gold-500 text-white hover:bg-gold-600 font-medium shadow-sm flex items-center gap-2"
                                 >
-                                    {isSaving ? "Saving..." : (editingId ? "Update Story" : "Create Story")}
+                                    {isSaving ? (
+                                        <>
+                                            <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        editingId ? "Update Story" : "Create Story"
+                                    )}
                                 </button>
                             </div>
                         </form>

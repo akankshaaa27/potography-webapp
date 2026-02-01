@@ -120,8 +120,8 @@ export default function AdminCommonTypes() {
             <div className="flex border-b border-gray-200 dark:border-gray-700">
                 <button
                     className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === "event-types"
-                            ? "border-gold-500 text-gold-600"
-                            : "border-transparent text-gray-500 hover:text-gray-700"
+                        ? "border-gold-500 text-gold-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
                         }`}
                     onClick={() => setActiveTab("event-types")}
                 >
@@ -129,8 +129,8 @@ export default function AdminCommonTypes() {
                 </button>
                 <button
                     className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${activeTab === "services"
-                            ? "border-gold-500 text-gold-600"
-                            : "border-transparent text-gray-500 hover:text-gray-700"
+                        ? "border-gold-500 text-gold-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
                         }`}
                     onClick={() => setActiveTab("services")}
                 >
@@ -251,6 +251,6 @@ export default function AdminCommonTypes() {
                     </form>
                 </DialogContent>
             </Dialog>
-            </div>
+        </div>
     );
 }

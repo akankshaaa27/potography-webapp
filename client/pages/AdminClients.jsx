@@ -420,8 +420,19 @@ export default function AdminClients() {
               <button className="rounded-md border border-slate-200 px-4 py-2 text-sm" onClick={closeModal}>
                 Cancel
               </button>
-              <button className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white" onClick={saveClient}>
-                {form.id ? "Update" : "Save"}
+              <button
+                className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white flex items-center gap-2"
+                onClick={saveClient}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  form.id ? "Update" : "Save"
+                )}
               </button>
             </div>
           </div>

@@ -58,6 +58,8 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     }
   }, [settings, quotation]);
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const [predefinedServices, setPredefinedServices] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -212,6 +214,7 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
 
     if (!formData.eventDate) { alert("Event Date is required"); return; }
 
+    setIsSaving(true);
     try {
       const method = quotation ? "PUT" : "POST";
       const url = quotation
@@ -233,6 +236,8 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
     } catch (error) {
       console.error("Error saving quotation:", error);
       alert(error.message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -529,8 +534,19 @@ export default function QuotationForm({ quotation, onSave, onCancel }) {
 
           {/* Actions */}
           <div className="flex gap-4 pt-4 border-t border-gray-100">
-            <Button type="submit" className="flex-1 bg-gold-500 hover:bg-gold-600 text-white h-12 text-lg">
-              {quotation ? "Update Quotation" : "Create Quotation"}
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className="flex-1 bg-gold-500 hover:bg-gold-600 text-white h-12 text-lg flex items-center justify-center gap-2"
+            >
+              {isSaving ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                quotation ? "Update Quotation" : "Create Quotation"
+              )}
             </Button>
             <Button type="button" onClick={onCancel} variant="outline" className="flex-1 h-12 text-lg">
               Cancel

@@ -93,6 +93,7 @@ export default function AccessoriesManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(emptyAccessory);
   const [editingId, setEditingId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const stats = useMemo(() => {
     const total = accessories.reduce((sum, acc) => sum + Number(acc.stock || 0), 0);
@@ -138,8 +139,11 @@ export default function AccessoriesManagement() {
     setModalOpen(true);
   }
 
-  function saveAccessory() {
+  async function saveAccessory() {
     if (!form.name.trim()) return;
+
+    setIsSaving(true);
+
     const payload = {
       ...form,
       stock: Number(form.stock) || 0,
@@ -150,13 +154,23 @@ export default function AccessoriesManagement() {
         .filter(Boolean),
       updatedAt: new Date().toISOString().slice(0, 10),
     };
-    if (editingId) {
-      setAccessories((prev) => prev.map((acc) => (acc.id === editingId ? { ...acc, ...payload } : acc)));
-    } else {
-      const id = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `ACC-${Date.now()}`;
-      setAccessories((prev) => [{ ...payload, id }, ...prev]);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      if (editingId) {
+        setAccessories((prev) => prev.map((acc) => (acc.id === editingId ? { ...acc, ...payload } : acc)));
+      } else {
+        const id = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `ACC-${Date.now()}`;
+        setAccessories((prev) => [{ ...payload, id }, ...prev]);
+      }
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Failed to save accessory", error);
+    } finally {
+      setIsSaving(false);
     }
-    setModalOpen(false);
   }
 
   function toggleServiceFlag(id) {
@@ -519,8 +533,19 @@ export default function AccessoriesManagement() {
               <button className="rounded-md border border-slate-200 px-4 py-2 text-sm" onClick={() => setModalOpen(false)}>
                 Cancel
               </button>
-              <button className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white" onClick={saveAccessory}>
-                {editingId ? "Update" : "Save"}
+              <button
+                className="rounded-md bg-gold-500 px-4 py-2 text-sm font-semibold text-white flex items-center gap-2"
+                onClick={saveAccessory}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  editingId ? "Update" : "Save"
+                )}
               </button>
             </div>
           </div>
