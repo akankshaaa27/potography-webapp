@@ -1,54 +1,34 @@
-import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useSettings } from "../hooks/useSettings";
-import { LogOut, ChevronDown, ChevronRight, LayoutDashboard, Globe, MessageSquare, Settings } from "lucide-react";
+import { LogOut } from "lucide-react";
 
-const navSections = [
-  {
-    title: "Operations & Management",
-    icon: LayoutDashboard,
-    items: [
-      { to: "/admin-dashboard", label: "Dashboard" },
-      { to: "/admin-calendar", label: "Calendar" },
-      { to: "/admin-quotations", label: "Quotations" },
-      { to: "/admin-orders", label: "Orders" },
-      { to: "/admin-invoices", label: "Invoices" },
-      { to: "/admin-clients", label: "Clients" },
-    ]
-  },
-  {
-    title: "Website Content",
-    icon: Globe,
-    items: [
-      { to: "/admin-gallery", label: "Portfolio" },
-      { to: "/admin-films", label: "Films" },
-      { to: "/admin-love-stories", label: "Love Stories" },
-      { to: "/admin-slider", label: "Slider" },
-      { to: "/admin-popup", label: "Popup Manager" },
-      { to: "/admin-testimonials", label: "Testimonials" },
-      { to: "/admin-team", label: "Team Management" },
-    ]
-  },
-  {
-    title: "Incoming Interactions",
-    icon: MessageSquare,
-    items: [
-      { to: "/admin-enquiries", label: "Enquiries" },
-      { to: "/admin-contact-messages", label: "Contact Messages" },
-    ]
-  },
-  {
-    title: "System Administration",
-    icon: Settings,
-    items: [
-      { to: "/admin-users", label: "Users" },
-      { to: "/admin-accessories", label: "Accessories" },
-      { to: "/admin-common-types", label: "Common Types" },
-      { to: "/admin-settings", label: "Global Settings" },
-      // { to: "/admin-profile", label: "Profile" },
-      // { to: "/admin-register", label: "Admin Register" },
-    ]
-  }
+const items = [
+  // Operations & Management
+  { to: "/admin-dashboard", label: "Dashboard" },
+  { to: "/admin-calendar", label: "Calendar" },
+  { to: "/admin-quotations", label: "Quotations" },
+  { to: "/admin-orders", label: "Orders" },
+  { to: "/admin-invoices", label: "Invoices" },
+  { to: "/admin-clients", label: "Clients" },
+
+  // Website Content
+  { to: "/admin-gallery", label: "Portfolio" },
+  { to: "/admin-films", label: "Films" },
+  { to: "/admin-love-stories", label: "Love Stories" },
+  { to: "/admin-slider", label: "Slider" },
+  { to: "/admin-popup", label: "Popup Manager" },
+  { to: "/admin-testimonials", label: "Testimonials" },
+  { to: "/admin-team", label: "Team Management" },
+
+  // Incoming Interactions
+  { to: "/admin-enquiries", label: "Enquiries" },
+  { to: "/admin-contact-messages", label: "Contact Messages" },
+
+  // System Administration
+  { to: "/admin-users", label: "Users" },
+  { to: "/admin-accessories", label: "Accessories" },
+  { to: "/admin-common-types", label: "Common Types" },
+  { to: "/admin-settings", label: "Global Settings" },
 ];
 
 export default function Navigation({ isMobileOpen = false, isOpen = true, onClose = () => { }, onLogout }) {
@@ -57,15 +37,15 @@ export default function Navigation({ isMobileOpen = false, isOpen = true, onClos
       <aside
         aria-label="Main navigation"
         className="hidden flex-shrink-0 lg:flex h-screen sticky top-0 transition-all duration-300 ease-in-out"
-        style={{ width: isOpen ? 260 : 0, opacity: isOpen ? 1 : 0 }}
+        style={{ width: isOpen ? 240 : 0, opacity: isOpen ? 1 : 0 }}
       >
-        <div className="flex flex-col h-full border-r border-gold-200 bg-white dark:border-charcoal-800 dark:bg-charcoal-900 overflow-hidden">
-          <div className="p-4"><BrandHeader /></div>
-          <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar px-3 pb-4">
+        <div className="flex flex-col h-full border-r border-gold-200 bg-white p-4 dark:border-charcoal-800 dark:bg-charcoal-900 overflow-hidden">
+          <BrandHeader />
+          <div className="flex-1 overflow-y-auto overflow-x-hidden -mr-2 pr-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <NavList />
           </div>
           {/* Logout Section at the bottom */}
-          <div className="p-4 border-t border-gray-100 dark:border-charcoal-800">
+          <div className="pt-4 mt-auto border-t border-gray-100 dark:border-charcoal-800">
             <button
               onClick={onLogout}
               className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 transition rounded hover:bg-red-50 dark:hover:bg-red-900/10"
@@ -95,7 +75,7 @@ export default function Navigation({ isMobileOpen = false, isOpen = true, onClos
               ✕
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-3 py-4 flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col">
             <NavList onNavigate={onClose} />
             <div className="pt-4 mt-auto border-t border-gray-100 dark:border-charcoal-800">
               <button
@@ -121,7 +101,7 @@ function BrandHeader({ compact = false }) {
   const businessName = settings?.businessName || "The Patil Photography";
 
   return (
-    <div className={`flex items-center gap-2 ${compact ? "" : "mb-2"}`}>
+    <div className={`flex items-center gap-2 ${compact ? "" : "mb-4"}`}>
       {settings?.primaryLogo ? (
         <img src={settings.primaryLogo} alt="Logo" className="h-10 w-10 object-contain rounded-lg bg-gradient-to-br from-gold-500 to-gold-600 p-1" />
       ) : (
@@ -137,66 +117,24 @@ function BrandHeader({ compact = false }) {
 }
 
 function NavList({ onNavigate }) {
+  const handleClick = onNavigate ? () => onNavigate() : undefined;
   return (
-    <nav className="space-y-1">
-      {navSections.map((section, idx) => (
-        <NavGroup key={section.title} section={section} onNavigate={onNavigate} defaultOpen={idx === 0} />
-      ))}
-    </nav>
-  );
-}
-
-function NavGroup({ section, onNavigate, defaultOpen }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const location = useLocation();
-  const isActiveGroup = section.items.some(item => location.pathname.startsWith(item.to));
-
-  // Auto-open if a child is active
-  useEffect(() => {
-    if (isActiveGroup) {
-      setIsOpen(true);
-    }
-  }, [isActiveGroup]);
-
-  return (
-    <div className="mb-2">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-bold rounded-lg transition-colors duration-200
-          ${isActiveGroup ? 'bg-gold-50 text-gold-700 dark:bg-charcoal-800 dark:text-gold-400' : 'text-charcoal-600 hover:bg-slate-50 dark:text-charcoal-300 dark:hover:bg-charcoal-800'}
-        `}
-      >
-        <div className="flex items-center gap-2.5">
-          <section.icon className={`w-4 h-4 ${isActiveGroup ? 'text-gold-600' : 'text-slate-400'}`} />
-          <span>{section.title}</span>
-        </div>
-        {isOpen ? (
-          <ChevronDown className="w-4 h-4 opacity-50" />
-        ) : (
-          <ChevronRight className="w-4 h-4 opacity-50" />
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="mt-1 ml-4 border-l border-slate-200 dark:border-charcoal-700 space-y-0.5">
-          {section.items.map((item) => (
+    <nav className="flex-1">
+      <ul className="space-y-2">
+        {items.map((it) => (
+          <li key={it.to}>
             <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={onNavigate}
+              to={it.to}
+              onClick={handleClick}
               className={({ isActive }) =>
-                `block pl-4 pr-3 py-2 text-sm font-medium border-l-2 -ml-[1px] transition-all
-                ${isActive
-                  ? "border-gold-500 text-gold-600 bg-gradient-to-r from-gold-50/50 to-transparent dark:from-gold-900/10"
-                  : "border-transparent text-slate-600 hover:text-charcoal-900 hover:border-slate-300 dark:text-charcoal-400 dark:hover:text-charcoal-200"
-                }`
+                `block rounded px-3 py-2 text-sm font-medium transition ${isActive ? "bg-gold-500 text-white" : "text-charcoal-700 hover:bg-gold-50 dark:text-charcoal-200"}`
               }
             >
-              {item.label}
+              {it.label}
             </NavLink>
-          ))}
-        </div>
-      )}
-    </div>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
