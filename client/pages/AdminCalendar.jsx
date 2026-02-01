@@ -4,6 +4,7 @@ import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import '../Calendar.css'; // Import custom styles
 import PageHeader from "../components/PageHeader";
 
 // Setup the localizer
@@ -80,49 +81,13 @@ export default function AdminCalendar() {
     }, [orders]);
 
     const eventStyleGetter = (event, start, end, isSelected) => {
-        let backgroundColor = '#3b82f6'; // blue default
-        let borderColor = '#2563eb';
-        let color = 'white';
-
+        let className = '';
         if (event.type === 'holiday') {
-            backgroundColor = '#ef4444'; // red for holidays
-            borderColor = '#b91c1c';
+            className = 'type-holiday';
         } else if (event.type === 'order') {
-            switch (event.status) {
-                case 'Pending':
-                    backgroundColor = '#f59e0b'; // amber
-                    borderColor = '#d97706';
-                    break;
-                case 'In Progress':
-                    backgroundColor = '#3b82f6'; // blue
-                    borderColor = '#2563eb';
-                    break;
-                case 'Delivered':
-                    backgroundColor = '#10b981'; // emerald
-                    borderColor = '#059669';
-                    break;
-                case 'Cancelled':
-                    backgroundColor = '#64748b'; // slate
-                    borderColor = '#475569';
-                    break;
-                default:
-                    break;
-            }
+            className = `type-order-${event.status.replace(/\s+/g, '')}`;
         }
-
-        return {
-            style: {
-                backgroundColor,
-                borderColor,
-                color,
-                borderRadius: '4px',
-                opacity: 0.9,
-                display: 'block',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                padding: '2px 4px'
-            }
-        };
+        return { className };
     };
 
     return (
