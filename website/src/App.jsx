@@ -1,30 +1,47 @@
-import React, { useEffect, Suspense, lazy } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import './App.css'
 import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 import { useSettings } from './hooks/useSettings'
 import WhatsAppButton from './components/WhatsAppButton'
+import Stories from './pages/Stories'
 
 // Lazy load components
-const About = lazy(() => import('./pages/About'))
-const Portfolio = lazy(() => import('./pages/Portfolio'))
-const Stories = lazy(() => import('./pages/Stories'))
-const Contact = lazy(() => import('./pages/Contact'))
-const Films = lazy(() => import('./pages/Films'))
-const Gallery = lazy(() => import('./pages/Gallery'))
-const Quote = lazy(() => import('./pages/Quote'))
-const Testimonials = lazy(() => import('./pages/Testimonials'))
-const ServiceDetails = lazy(() => import('./pages/ServiceDetails'))
-const ProjectDetails = lazy(() => import('./pages/ProjectDetails'))
-const Privacy = lazy(() => import('./pages/Privacy'))
-const Terms = lazy(() => import('./pages/Terms'))
-const NotFound = lazy(() => import('./pages/NotFound'))
-const Team = lazy(() => import('./pages/Team'))
+// const About = lazy(() => import('./pages/About'))
+// const Portfolio = lazy(() => import('./pages/Portfolio'))
+// // const Stories = lazy(() => import('./pages/Stories')) // Changed to direct import
+// const Contact = lazy(() => import('./pages/Contact'))
+// const Films = lazy(() => import('./pages/Films'))
+// const Gallery = lazy(() => import('./pages/Gallery'))
+// const Quote = lazy(() => import('./pages/Quote'))
+// const Testimonials = lazy(() => import('./pages/Testimonials'))
+// const ServiceDetails = lazy(() => import('./pages/ServiceDetails'))
+// const ProjectDetails = lazy(() => import('./pages/ProjectDetails'))
+// const Privacy = lazy(() => import('./pages/Privacy'))
+// const Terms = lazy(() => import('./pages/Terms'))
+// const NotFound = lazy(() => import('./pages/NotFound'))
+// const Team = lazy(() => import('./pages/Team'))
+
+import About from './pages/About'
+import Portfolio from './pages/Portfolio'
+// import Stories from './pages/Stories' // Already imported above
+import Contact from './pages/Contact'
+import Films from './pages/Films'
+import Gallery from './pages/Gallery'
+import Quote from './pages/Quote'
+import Testimonials from './pages/Testimonials'
+import ServiceDetails from './pages/ServiceDetails'
+import ProjectDetails from './pages/ProjectDetails'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
+import NotFound from './pages/NotFound'
+import Team from './pages/Team'
 
 function App() {
   console.log('App component rendering');
   const { settings } = useSettings();
+  const location = useLocation();
 
   useEffect(() => {
     if (settings) {
@@ -57,8 +74,11 @@ function App() {
     const toggleScrolled = () => {
       const selectBody = document.querySelector('body');
       const selectHeader = document.querySelector('#header');
-      if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
-      window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
+      if (!selectHeader && !selectBody) return; // Guard clause
+      if (selectHeader && !selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
+      if (selectBody) {
+        window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
+      }
     };
 
     document.addEventListener('scroll', toggleScrolled);
@@ -85,25 +105,23 @@ function App() {
   return (
     <div className="App">
       <ErrorBoundary>
-        <Suspense fallback={<div style={{ padding: '50px', textAlign: 'center', fontSize: '20px' }}>Loading page...</div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/service-details" element={<ServiceDetails />} />
-            <Route path="/stories" element={<Stories />} />
-            <Route path="/project-details" element={<ProjectDetails />} />
-            <Route path="/films" element={<Films />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/webtestimonials" element={<Testimonials />} />
-            <Route path="/quote" element={<Quote />} />
-            <Route path="/team" element={<Team />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/service-details" element={<ServiceDetails />} />
+          <Route path="/stories" element={<Stories />} />
+          <Route path="/project-details" element={<ProjectDetails />} />
+          <Route path="/films" element={<Films />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/webtestimonials" element={<Testimonials />} />
+          <Route path="/quote" element={<Quote />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
         <WhatsAppButton />
       </ErrorBoundary>
     </div>
