@@ -28,7 +28,7 @@ export default function Invoices() {
     <div className="mt-4">
       <div>
         <h1 className="luxury-text-title">Invoices</h1>
-        <p className="text-sm text-charcoal-600">Track and manage invoices.</p>
+        <p className="hidden sm:block text-sm text-charcoal-600">Track and manage invoices.</p>
       </div>
 
       {loading ? (

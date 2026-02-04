@@ -191,7 +191,7 @@ export default function AdminSettings() {
     if (isLoading) return <div className="p-8 text-center text-slate-500">Loading settings...</div>;
 
     return (
-        <div className="container mx-auto p-4 mt-4 animate-in fade-in duration-500">
+        <div className="container mt-0 mx-auto  px-0 pt-0 pb-6 animate-in fade-in duration-500">
             <PageHeader
                 title="Global Settings"
                 description="Manage branding, logos, and connections"

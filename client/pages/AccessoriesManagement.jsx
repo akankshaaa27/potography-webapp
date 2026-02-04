@@ -184,7 +184,7 @@ export default function AccessoriesManagement() {
   }
 
   return (
-    <section className="mt-4 container mx-auto p-4 animate-in fade-in duration-500 space-y-6">
+    <section className="mt-0 container mx-auto px-0 pt-0 pb-6 animate-in fade-in duration-500 space-y-6">
       <PageHeader
         title="Accessories Control Room"
         description="Track modifiers, lighting, motion rigs, and on-location essentials in one board."

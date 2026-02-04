@@ -158,3 +158,9 @@
     margin: 8px !important;
     text-align: center !important;
 }
+.loginBG{
+  background: url(../public/assets/img/slider/hero6.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

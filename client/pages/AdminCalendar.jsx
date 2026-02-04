@@ -72,6 +72,18 @@ export default function AdminCalendar() {
     const [filterStatus, setFilterStatus] = useState('All');
     const [filterType, setFilterType] = useState('All');
     const [viewDate, setViewDate] = useState(new Date());
+    const [currentView, setCurrentView] = useState(Views.MONTH);
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+    // Adapt default view based on screen width (compact agenda for small screens)
+    useEffect(() => {
+        const updateView = () => {
+            setCurrentView(window.innerWidth < 640 ? Views.AGENDA : Views.MONTH);
+        };
+        updateView();
+        window.addEventListener('resize', updateView);
+        return () => window.removeEventListener('resize', updateView);
+    }, []);
 
     useEffect(() => {
         fetchOrders();
@@ -149,7 +161,7 @@ export default function AdminCalendar() {
     }, [orders]);
 
     return (
-        <section className="container mx-auto p-4 pb-20 space-y-6">
+        <section className="container mx-auto p-0 pb-6 space-y-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <PageHeader
                     title="Calendar"
@@ -157,7 +169,7 @@ export default function AdminCalendar() {
                 />
 
                 {/* Stats Summary */}
-                <div className="flex gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <div className="flex gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-sm w-max sm:w-auto">
                     <div className="px-3 py-1 text-center border-r border-slate-100">
                         <span className="block text-xs text-slate-400 uppercase tracking-wider">Events</span>
                         <span className="text-lg font-bold text-charcoal-900">{stats.total}</span>
@@ -173,14 +185,15 @@ export default function AdminCalendar() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-3xl border border-gold-200/50 shadow-xl overflow-hidden">
+            <div className="bg-white rounded-3xl border border-gold-200/50 shadow-sm overflow-hidden">
                 {/* Toolbar / Filters */}
-                <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center gap-4 justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1">
+                <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 justify-between">
+                    <div className="flex items-start sm:items-center gap-2 w-full sm:w-auto">
+                        <div className="flex flex-wrap items-center gap-2 bg-white border border-slate-200 rounded-lg p-1 w-full sm:w-auto">
                             <span className="text-xs font-bold px-2 text-slate-400 uppercase">View:</span>
-                            {/* Date Navigation Controls */}
-                            <div className="flex items-center gap-1">
+
+                            {/* Desktop month/year selects */}
+                            <div className="hidden sm:flex items-center gap-1">
                                 <select
                                     className="bg-transparent text-sm font-bold text-charcoal-900 outline-none cursor-pointer py-1"
                                     value={viewDate.getMonth()}
@@ -208,41 +221,114 @@ export default function AdminCalendar() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="w-px h-4 bg-slate-200"></div>
 
-                            <span className="text-xs font-bold px-2 text-slate-400 uppercase">Filter:</span>
-                            <select
-                                value={filterStatus}
-                                onChange={(e) => setFilterStatus(e.target.value)}
-                                className="bg-transparent text-sm font-medium text-charcoal-800 outline-none cursor-pointer"
-                            >
-                                <option value="All">All Statuses</option>
-                                <option value="Pending">Pending</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Delivered">Delivered</option>
-                                <option value="Cancelled">Cancelled</option>
-                            </select>
-                            <div className="w-px h-4 bg-slate-200"></div>
-                            <select
-                                value={filterType}
-                                onChange={(e) => setFilterType(e.target.value)}
-                                className="bg-transparent text-sm font-medium text-charcoal-800 outline-none cursor-pointer"
-                            >
-                                {uniqueTypes.map(t => <option key={t} value={t}>{t === 'All' ? 'All Types' : t}</option>)}
-                            </select>
+                            {/* Mobile compact nav */}
+                            <div className="sm:hidden flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => { const d = new Date(viewDate); d.setMonth(d.getMonth() - 1); setViewDate(d); }}
+                                    className="px-2 py-1 rounded border text-sm"
+                                    aria-label="Previous month"
+                                >
+                                    ‹
+                                </button>
+                                <div className="text-sm font-medium">{format(viewDate, 'MMMM yyyy')}</div>
+                                <button
+                                    type="button"
+                                    onClick={() => { const d = new Date(viewDate); d.setMonth(d.getMonth() + 1); setViewDate(d); }}
+                                    className="px-2 py-1 rounded border text-sm"
+                                    aria-label="Next month"
+                                >
+                                    ›
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setViewDate(new Date())}
+                                    className="ml-2 px-2 py-1 rounded border text-sm"
+                                >
+                                    Today
+                                </button>
+                            </div>
+
+                            <div className="w-px h-4 bg-slate-200 hidden sm:block"></div>
+
+                            {/* Mobile view toggles */}
+                            <div className="sm:hidden flex items-center gap-2 ml-2 overflow-x-auto">
+                                <button type="button" onClick={() => setCurrentView(Views.MONTH)} className={`px-2 py-1 rounded ${currentView === Views.MONTH ? 'bg-gold-500 text-white' : 'bg-white border'}`}>Month</button>
+                                <button type="button" onClick={() => setCurrentView(Views.WEEK)} className={`px-2 py-1 rounded ${currentView === Views.WEEK ? 'bg-gold-500 text-white' : 'bg-white border'}`}>Week</button>
+                                <button type="button" onClick={() => setCurrentView(Views.DAY)} className={`px-2 py-1 rounded ${currentView === Views.DAY ? 'bg-gold-500 text-white' : 'bg-white border'}`}>Day</button>
+                                <button type="button" onClick={() => setCurrentView(Views.AGENDA)} className={`px-2 py-1 rounded ${currentView === Views.AGENDA ? 'bg-gold-500 text-white' : 'bg-white border'}`}>Agenda</button>
+                            </div>
+
+                            <div className="flex items-center gap-2 ml-auto sm:ml-2">
+                                {/* Show filters toggle on mobile */}
+                                <button className="sm:hidden px-3 py-1 rounded border text-sm" onClick={() => setShowMobileFilters(s => !s)}>
+                                    Filters
+                                </button>
+
+                                {/* Desktop filters */}
+                                <div className="hidden sm:flex items-center gap-2">
+                                    <span className="text-xs font-bold px-2 text-slate-400 uppercase">Filter:</span>
+                                    <select
+                                        value={filterStatus}
+                                        onChange={(e) => setFilterStatus(e.target.value)}
+                                        className="bg-transparent text-sm font-medium text-charcoal-800 outline-none cursor-pointer"
+                                    >
+                                        <option value="All">All Statuses</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                    <div className="w-px h-4 bg-slate-200"></div>
+                                    <select
+                                        value={filterType}
+                                        onChange={(e) => setFilterType(e.target.value)}
+                                        className="bg-transparent text-sm font-medium text-charcoal-800 outline-none cursor-pointer"
+                                    >
+                                        {uniqueTypes.map(t => <option key={t} value={t}>{t === 'All' ? 'All Types' : t}</option>)}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Legend (Compact) */}
-                    <div className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                    <div className="hidden sm:flex items-center gap-3 text-[10px] font-medium uppercase tracking-wider text-slate-500">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400"></span> Holiday</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400"></span> Pending</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400"></span> Active</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400"></span> Done</span>
                     </div>
+
+                    {/* Mobile filter panel */}
+                    {showMobileFilters && (
+                        <div className="sm:hidden mt-3 w-full">
+                            <div className="bg-white p-3 rounded border flex flex-col gap-3">
+                                <select
+                                    value={filterStatus}
+                                    onChange={(e) => setFilterStatus(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded text-sm"
+                                >
+                                    <option value="All">All Statuses</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                                <select
+                                    value={filterType}
+                                    onChange={(e) => setFilterType(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded text-sm"
+                                >
+                                    {uniqueTypes.map(t => <option key={t} value={t}>{t === 'All' ? 'All Types' : t}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                <div className="h-[750px] bg-white p-2">
+                <div className="h-[55vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] bg-white p-2">
                     <Calendar
                         localizer={localizer}
                         events={events}
@@ -254,7 +340,8 @@ export default function AdminCalendar() {
                             event: CustomEvent
                         }}
                         views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
-                        defaultView={Views.MONTH}
+                        view={currentView}
+                        onView={(v) => setCurrentView(v)}
                         date={viewDate}
                         onNavigate={setViewDate}
                         popup

@@ -4650,4 +4650,9 @@ section,
   background: red;
   border: 1px solid var(--accent-color);
 } */
+.loginBG{
+  background: url(../img/LoginBG.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }

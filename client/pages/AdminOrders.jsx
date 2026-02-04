@@ -463,7 +463,7 @@ export default function AdminOrders() {
   }
 
   return (
-    <section className="mt-4 container mx-auto p-4">
+    <section className="mt-0 container mx-auto p-0">
       <PageHeader
         title="Orders"
         description="Monitor bookings, payment progress, and delivery milestones."
@@ -927,7 +927,7 @@ export default function AdminOrders() {
         showDelete && (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowDelete(false)}>
             <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-3xl text-rose-500">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-2xl sm:text-3xl text-rose-500">
                 !
               </div>
               <h3 className="mt-4 text-lg font-semibold text-charcoal-900">Delete this order?</h3>
@@ -1148,7 +1148,7 @@ function SummaryCard({ label, value, accent }) {
   return (
     <div className={`rounded-2xl bg-gradient-to-br ${accent} p-4 shadow-inner`}>
       <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-charcoal-900">{value}</p>
+      <p className="mt-2 text-2xl sm:text-3xl font-bold text-charcoal-900">{value}</p>
     </div>
   );
 }

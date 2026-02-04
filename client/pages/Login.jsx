@@ -143,10 +143,10 @@ const Login = () => {
                 </div>
 
                 {/* Right Section - Left-side Hero (Image/Illustration) */}
-                <div
-                    className="hidden lg:flex relative p-8 items-center justify-center overflow-hidden order-first lg:order-first bg-cover bg-center"
-                    style={{ backgroundImage: `url(${settings?.backgroundImage || '/assets/img/slider/hero6.jpg'})` }}
-                >
+              <div
+  className="hidden lg:flex relative p-8 items-center justify-center overflow-hidden order-first lg:order-first bg-cover bg-center loginBG"
+>
+
                     <div className="absolute inset-0 bg-black opacity-40" />
 
                     {/* Hero Content */}

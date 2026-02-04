@@ -9,6 +9,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import Skeleton from "../components/Skeleton";
 import TributeModal from "../components/TributeModal";
+import LuxGallery from "../components/LuxGallery";
 
 // Simple CountUp Component
 const Counter = ({ end, duration = 2000, suffix = "" }) => {
@@ -62,6 +63,13 @@ const Home = () => {
   const [selectedStory, setSelectedStory] = useState(null);
   const [instagramPosts, setInstagramPosts] = useState([]);
   const [showTribute, setShowTribute] = useState(false);
+  const [portfolioPreview, setPortfolioPreview] = useState([]);
+  const [loadingPortfolio, setLoadingPortfolio] = useState(true);
+
+  // Refs for testimonial navigation (to avoid duplicate nav buttons)
+  const testimonialsPrevRef = useRef(null);
+  const testimonialsNextRef = useRef(null);
+
   // Pop up
   useEffect(() => {
     // Show tribute popup automatically on home page load (ALWAYS for now)
@@ -112,6 +120,16 @@ const Home = () => {
       })
       .catch((err) => console.error("Error fetching testimonials:", err))
       .finally(() => setLoadingTestimonials(false));
+
+    // Fetch Portfolio preview (first 12 active images)
+    fetch("/api/gallery")
+      .then((res) => res.json())
+      .then((data) => {
+        const items = Array.isArray(data) ? data.filter(i => i.status === "Active") : [];
+        setPortfolioPreview(items.slice(0, 12));
+      })
+      .catch((err) => console.error("Error fetching portfolio:", err))
+      .finally(() => setLoadingPortfolio(false));
   }, []);
   useEffect(() => {
     let preloaderTimeout;
@@ -231,7 +249,6 @@ const Home = () => {
                   left: 0,
                 }}
               />
-              <div className="hero-overlay"></div>
               <div
                 className="container hfull d-flex align-items-center justify-content-center"
                 style={{ position: "relative", zIndex: 2, height: "100%" }}
@@ -266,7 +283,6 @@ const Home = () => {
                 <SwiperSlide key={index}>
                   <div className="hero-video-container">
                     <img src={slide.image} className="img-fluid ken-burns" alt="" />
-                    <div className="hero-overlay"></div>
                   </div>
 
                   <div
@@ -293,59 +309,80 @@ const Home = () => {
           )}
         </section>
 
-        {/* About Section */}
+        {/* About Section - Accent Card (updated visual) */}
         <section id="about" className="about section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
-            <div className="row align-items-center">
-              <div
-                className="col-lg-6 order-2 order-lg-1"
-                data-aos="fade-right"
-                data-aos-delay="200"
-              >
-                <div className="content section-title">
-                  <h2
-                    className="section-heading mb-4 text-center section-title"
-                    data-aos="fade-up"
-                  >
-                    Preserving Pure Emotion in Every Frame
-                  </h2>
+            <div className="accent-card d-flex align-items-center p-4" style={{ borderRadius: 20 }}>
 
-                  <p className="description-text my-3 text-left">
-                    Welcome to <span>The Patil Photography & Film's</span>. We believe that every love story is a masterpiece waiting to be unveiled. Our passion lies in capturing the fleeting, unscripted moments—the quiet glances, the joyful tears, and the timeless elegance of your celebration.
-                  </p>
+              {/* Image block */}
+              <div className="accent-image position-relative me-4" data-aos="fade-right" data-aos-delay="200">
+                <div className="accent-image-inner rounded-3">
+                  <img src="/assets/img/HomePage/7.webp" alt="Studio" className="img-fluid rounded-3" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
 
-                  <p className="description-text mb-4 text-left">
-                    With a cinematic approach and an eye for fine art, we transform your special day into a visual legacy, preserving the purity of your emotions for generations to come.
-                  </p>
-
-                  <div
-                    className="cta-section text-lg-start"
-                    data-aos="fade-up"
-                    data-aos-delay="450"
-                  >
-                    <Link to="/portfolio" className="cta-link">
-                      Explore Our Services
-                      <i className="bi bi-arrow-right ms-2"></i>
-                    </Link>
-                  </div>
+                <div className="accent-badge" aria-hidden>
+                  <div className="badge-number">+100</div>
+                  <div className="badge-text">Projects<br/>Completed</div>
                 </div>
               </div>
 
-              <div
-                className="col-lg-6 order-1 order-lg-2"
-                data-aos="fade-left"
-                data-aos-delay="200"
-              >
-                <div className="image-section mx-5 my-5">
-                  <div className="main-image">
-                    <img src="/assets/img/HomePage/7.webp" alt="showcase" />
-                  </div>
+              {/* Text block */}
+              <div className="flex-grow-1 text-white" data-aos="fade-left" data-aos-delay="300">
+                <div className="accent-label mb-1">Selected Work</div>
+                <h2 className="mb-3">Preserving Pure Emotion in Every Frame</h2>
+                <p className="mb-3 lead" style={{ opacity: 0.95 }}>
+                  Welcome to <strong>The Patil Photography &amp; Film's</strong>. We craft cinematic stories that celebrate authentic emotion, style, and connection.
+                </p>
+                <p className="mb-3" style={{ opacity: 0.9 }}>
+                  From intimate portraits to cinematic films, our team captures the moments that matter with elegance and artistry.
+                </p>
+
+                <div className="mt-3 d-flex gap-3">
+                  <Link to="/portfolio" className="btn btn-light">Explore Portfolio</Link>
+                  <Link to="/quote" className="btn btn-outline-light">Request a Quote</Link>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
+        {/* Portfolio Preview Section */}
+        <section id="portfolio-preview" className="portfolio-preview section">
+          <div className="container pb-5  section-title text-center" data-aos="fade-up" data-aos-delay="100">
+            <h2>Our Portfolio</h2>
+            <p>
+              A curated selection of recent works — a glimpse into our craft. Click through to view the full gallery.
+            </p>
+          </div>
+
+          <div className="container OurPortfolio" data-aos="fade-up" data-aos-delay="200">
+            {loadingPortfolio ? (
+              <div className="row g-3">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className="col-6 col-md-3">
+                    <Skeleton width="100%" style={{ paddingBottom: '70%', borderRadius: '14px' }} />
+                  </div>
+                ))}
+              </div>
+            ) : portfolioPreview.length ? (
+              <>
+                <LuxGallery images={portfolioPreview.slice(0, 12).map((p) => p.image)} galleryId="home-portfolio" />
+
+                <div className="text-center mt-4">
+                  <Link to="/portfolio" className="btn btn-outline-secondary" style={{ borderRadius: 30, padding: '10px 28px', borderWidth: 2 }}>
+                    See More Projects
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div className="col-12 text-center py-5">
+                <p>No portfolio images available.</p>
+              </div>
+            )}
+
+            <div className="Gradientbackground"></div>
+          </div> 
+        </section>
 
         {/* Statistics Section */}
         <section className="about statistics-section">
@@ -596,26 +633,40 @@ const Home = () => {
                 ))}
               </div>
             ) : testimonials.length > 0 ? (
-              <Swiper
-                modules={[Autoplay, Navigation]}
-                slidesPerView={1}
-                spaceBetween={30}
-                autoplay={{ delay: 5000, disableOnInteraction: true }}
-                navigation={testimonials.length > 1}
-                loop={testimonials.length > 1}
-                breakpoints={{
-                  640: {
-                    slidesPerView: 1,
-                  },
-                  768: {
-                    slidesPerView: 2,
-                  },
-                  1024: {
-                    slidesPerView: 3,
-                  },
-                }}
-                className="testimonial-slider"
-              >
+              <div className="testimonial-slider-wrapper position-relative">
+                <div className="testimonial-nav">
+                  <div ref={testimonialsPrevRef} className="swiper-button-prev" aria-label="Previous testimonial"></div>
+                  <div ref={testimonialsNextRef} className="swiper-button-next" aria-label="Next testimonial"></div>
+                </div>
+
+                <Swiper
+                  modules={[Autoplay, Navigation]}
+                  slidesPerView={1}
+                  spaceBetween={30}
+                  autoplay={{ delay: 5000, disableOnInteraction: true }}
+                  navigation={{ prevEl: testimonialsPrevRef.current, nextEl: testimonialsNextRef.current }}
+                  onBeforeInit={(swiper) => {
+                    try {
+                      swiper.params.navigation.prevEl = testimonialsPrevRef.current;
+                      swiper.params.navigation.nextEl = testimonialsNextRef.current;
+                    } catch (e) {
+                      // ignore
+                    }
+                  }}
+                  loop={testimonials.length > 1}
+                  breakpoints={{
+                    640: {
+                      slidesPerView: 1,
+                    },
+                    768: {
+                      slidesPerView: 2,
+                    },
+                    1024: {
+                      slidesPerView: 3,
+                    },
+                  }}
+                  className="testimonial-slider"
+                >
                 {testimonials.map((t, index) => (
                   <SwiperSlide key={t._id}>
                     <div
@@ -668,6 +719,7 @@ const Home = () => {
                   </SwiperSlide>
                 ))}
               </Swiper>
+              </div>
             ) : (
               <div className="text-center p-5">
                 <p>Currently updating our wall of love. Check back soon!</p>
@@ -704,13 +756,13 @@ const Home = () => {
             {loadingStories ? (
               <div className="row">
                 {[1, 2, 3].map((_, index) => (
-                  <div key={index} className="col-md-4">
+                  <div key={index} className="col-md-4 mb-4">
                     <div className="project-card" style={{ height: "100%" }}>
                       <Skeleton width="100%" height="300px" style={{ marginBottom: "15px" }} />
-                      <div className="d-flex flex-column gap-2">
+                      <div className="d-flex flex-column gap-2 p-4 pt-0">
                         <Skeleton width="80%" height="25px" />
                         <Skeleton width="100%" height="15px" />
-                        <Skeleton width="90%" height="15px" />
+                        <Skeleton width="90%" height="15px" style={{ paddingBottom: "15px" }} />
                       </div>
                     </div>
                   </div>

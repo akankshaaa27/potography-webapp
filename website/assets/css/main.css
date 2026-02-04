@@ -4908,6 +4908,49 @@ section,
   font-weight: bold;
 }
 
+/* Scoped wrapper buttons to avoid duplicate nav artifacts */
+.testimonial-slider-wrapper .swiper-button-next,
+.testimonial-slider-wrapper .swiper-button-prev {
+  position: absolute;
+  color: var(--accent-color);
+  background: var(--surface-color);
+  border: 2px solid var(--accent-color);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  bottom: -62px;
+  margin-top: 0;
+  transition: all 0.3s ease;
+}
+
+.testimonial-slider-wrapper .swiper-button-next:hover,
+.testimonial-slider-wrapper .swiper-button-prev:hover {
+  background: var(--accent-color);
+  color: var(--surface-color);
+  transform: scale(1.1);
+}
+
+.testimonial-slider-wrapper .swiper-button-next {
+  right: 0;
+  left: auto;
+}
+
+.testimonial-slider-wrapper .swiper-button-prev {
+  right: 50px;
+  left: auto;
+}
+
+.testimonial-slider-wrapper .swiper-button-next svg,
+.testimonial-slider-wrapper .swiper-button-prev svg {
+  display: none;
+}
+
+.testimonial-slider-wrapper .swiper-button-next::after,
+.testimonial-slider-wrapper .swiper-button-prev::after {
+  font-size: 18px;
+  font-weight: bold;
+}
+
 @media (max-width: 768px) {
   .testimonial-slider .swiper-button-next,
   .testimonial-slider .swiper-button-prev {
@@ -4924,6 +4967,12 @@ section,
   .testimonial-slider .swiper-button-prev {
     right: 45px;
   }
+}
+
+/* Hide any auto-generated nav inside the swiper container to avoid duplicates; we use wrapper buttons */
+.testimonial-slider .swiper-button-next,
+.testimonial-slider .swiper-button-prev {
+  display: none !important;
 }
 /*--------------------------------------------------------------
 # Testimonials Page Custom Styles

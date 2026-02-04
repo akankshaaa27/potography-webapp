@@ -937,14 +937,33 @@ section,
   object-fit: cover;
 }
 
-.hero .hero-overlay {
+/* Replace full-screen overlay with subtle top and bottom gradients */
+.hero .hero-overlay { display: none; }
+
+/* top gradient overlay for hero media (20% height) */
+.hero .hero-video-container::before {
+  content: "";
   position: absolute;
-  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: color-mix(in srgb, var(--background-color), transparent 20%);
+  right: 0;
+  top: 0;
+  height: 20%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0));
   z-index: 2;
+  pointer-events: none;
+}
+
+/* bottom gradient overlay for hero media (30% height) */
+.hero .hero-video-container::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0));
+  z-index: 2;
+  pointer-events: none;
 }
 
 .hfull {
@@ -953,7 +972,7 @@ section,
 
 .hero .container {
   position: relative;
-  z-index: 1;
+  z-index: 3; /* ensure content sits above the hero gradient */
 }
 
 .hero-content {
@@ -5277,6 +5296,23 @@ font-weight: 600 !important;
   transform: translateX(18%) rotate(8deg);
 }
 
+/* Bottom gradient overlay for luxury feel */
+.lux-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+  transition: opacity 260ms ease;
+  opacity: 1;
+}
+
+.lux-card:hover::after {
+  opacity: 0.9;
+}
 /* Responsive */
 @media (max-width: 1200px) {
   .lux-gallery {
@@ -5297,6 +5333,104 @@ font-weight: 600 !important;
     border-radius: 16px;
   }
 }
+
+/* Accent card for About section - updated to match provided design */
+.accent-card {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color), black 6%), var(--accent-color));
+  color: #fff;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(2,6,23,0.16);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.accent-image {
+  width: 44%;
+  min-height: 260px;
+  max-height: 380px;
+  overflow: visible;
+  flex: 0 0 44%;
+  position: relative;
+}
+
+.accent-image-inner {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 8px solid rgba(255,255,255,0.03);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 12px 30px rgba(0,0,0,0.35);
+  height: 100%;
+}
+
+.accent-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badge: square with bold number and small label */
+.accent-badge {
+  position: absolute;
+  right: -18px;
+  bottom: -18px;
+  width: 110px;
+  height: 110px;
+  background: rgba(2,30,20,0.95);
+  color: #fff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  transform: translateZ(0);
+}
+.accent-badge .badge-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.accent-badge .badge-text {
+  font-size: 0.72rem;
+  opacity: 0.95;
+  margin-top: 4px;
+  line-height: 1.05;
+}
+
+.accent-label {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  color: rgba(255,255,255,0.95);
+}
+
+.accent-card h2 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.accent-card p.lead {
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .accent-card { flex-direction: column; }
+  .accent-image { width: 100%; flex: 0 0 auto; min-height: 220px; }
+  .accent-badge { right: 14px; bottom: 12px; width: 88px; height: 88px; }
+  .accent-card .text-white { padding-top: 12px; }
+  .accent-card h2 { font-size: 24px; }
+}
+
+@media (max-width: 480px) {
+  .accent-badge { padding: 8px 10px; font-size: 0.95rem; width: 72px; height: 72px; }
+  .accent-badge .badge-number { font-size: 1.15rem; }
+  .accent-card h2 { font-size: 20px; }
+}
+
 
 @media (max-width: 380px) {
   .lux-gallery {
@@ -6749,4 +6883,20 @@ font-weight: 600 !important;
 .glightbox-container .ginner-container,
 .glightbox-container .gslide-inner-content {
   overflow: hidden !important;
+}
+.OurPortfolio {
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+}
+
+.Gradientbackground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 120px; /* desired gradient height */
+  pointer-events: none; /* allows clicks through */
+  z-index: 5;
+  background: linear-gradient(to top, var(--background-color, rgba(255,255,255,1)) 0%, transparent 100%);
 }

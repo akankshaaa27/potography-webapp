@@ -118,13 +118,13 @@ export default function AdminTeam() {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-0">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold font-playfair text-charcoal-900">Team Management</h1>
-                    <p className="text-slate-500">Manage your photographers and team members</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold font-playfair text-charcoal-900">Team Management</h1>
+                    <p className="hidden sm:block text-slate-500">Manage your photographers and team members</p>
                 </div>
-                <Button onClick={() => { setShowForm(true); resetForm(); }} className="bg-gold-500 hover:bg-gold-600">
+                <Button onClick={() => { setShowForm(true); resetForm(); }} className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-all shadow-lg">
                     <Plus className="mr-2 h-4 w-4" /> Add Member
                 </Button>
             </div>

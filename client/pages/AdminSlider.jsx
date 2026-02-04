@@ -71,7 +71,7 @@ export default function AdminSlider() {
   };
 
   return (
-    <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+    <div className="mt-0 container mx-auto px-0 pt-0 pb-6 animate-in fade-in duration-500">
       <PageHeader
         title="Slider Management"
         description="Manage homepage slider content and order"

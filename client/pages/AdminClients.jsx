@@ -177,7 +177,7 @@ export default function AdminClients() {
   };
 
   return (
-    <section className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+    <section className="mt-0 container mx-auto px-0 pb-6 pt-0 animate-in fade-in duration-500">
       <PageHeader
         title="Client Registry"
         description="Track couples, monitor budgets, and assign the next touchpoint."
@@ -442,7 +442,7 @@ export default function AdminClients() {
       {deleteId && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4" onClick={() => setDeleteId(null)}>
           <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-3xl text-rose-500">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-2xl sm:text-3xl text-rose-500">
               !
             </div>
             <h3 className="mt-4 text-lg font-semibold text-charcoal-900">Delete this client?</h3>

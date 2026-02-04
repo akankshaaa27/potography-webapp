@@ -76,7 +76,7 @@ export default function AdminGallery() {
   };
 
   return (
-    <div className="mt-4 container mx-auto p-4 animate-in fade-in duration-500">
+    <div className="mt-0 px-0 pt-0 pb-6 container mx-auto animate-in fade-in duration-500">
       <PageHeader
         title="Gallery"
         description="Manage your gallery and portfolio images."
