@@ -413,7 +413,7 @@ const Home = () => {
                   </div>
 
                   {/* CTA Button */}
-                  <Link to="/quote" className="btn btn-light" style={{ padding: '14px 32px', borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem', display: 'inline-block' }}>
+                  <Link to="/quote" className="cta-link" style={{ padding: '14px 32px', borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem', display: 'inline-block' }}>
                     Start Your Journey
                   </Link>
                 </div>
