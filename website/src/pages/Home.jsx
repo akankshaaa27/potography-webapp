@@ -309,38 +309,147 @@ const Home = () => {
           )}
         </section>
 
-        {/* About Section - Accent Card (updated visual) */}
-        <section id="about" className="about section">
+        {/* About Section - Clean & Meaningful */}
+        <section id="about" className="about section" style={{ backgroundColor: '#fafaf8', padding: '100px 0' }}>
           <div className="container" data-aos="fade-up" data-aos-delay="100">
-            <div className="accent-card d-flex align-items-center p-4" style={{ borderRadius: 20 }}>
+            {/* Section Header */}
+            <div style={{ textAlign: 'center', marginBottom: '80px', maxWidth: '700px', margin: '0 auto 80px' }}>
+              <div style={{ fontSize: '0.85rem', color: '#d4af37', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+                About Us
+              </div>
+              <h2 style={{ fontSize: '3.2rem', fontWeight: '700', lineHeight: '1.2', marginBottom: '24px', color: '#1a1a1a' }}>
+                Your Story, Our Passion
+              </h2>
+              <p style={{ fontSize: '1.05rem', lineHeight: '1.8', color: '#666' }}>
+                We believe every love story deserves to be celebrated with artistry, authenticity, and elegance. That's why we're here.
+              </p>
+            </div>
 
-              {/* Image block */}
-              <div className="accent-image position-relative me-4" data-aos="fade-right" data-aos-delay="200">
-                <div className="accent-image-inner rounded-3">
-                  <img src="/assets/img/HomePage/7.webp" alt="Studio" className="img-fluid rounded-3" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-
-                <div className="accent-badge" aria-hidden>
-                  <div className="badge-number">+100</div>
-                  <div className="badge-text">Projects<br/>Completed</div>
-                </div>
+            {/* Main Content - Two Column */}
+            <div className="row align-items-center g-5" style={{ marginBottom: '80px' }}>
+              {/* Image - LEFT */}
+              <div className="col-lg-5" data-aos="fade-right" data-aos-delay="150">
+                <img src="/assets/img/HomePage/7.webp" alt="Our Photography Studio" className="img-fluid" style={{
+                  borderRadius: '16px',
+                  width: '100%',
+                  height: 'auto',
+                  boxShadow: '0 15px 40px rgba(0,0,0,0.12)'
+                }} />
               </div>
 
-              {/* Text block */}
-              <div className="flex-grow-1 text-white" data-aos="fade-left" data-aos-delay="300">
-                <div className="accent-label mb-1">Selected Work</div>
-                <h2 className="mb-3">Preserving Pure Emotion in Every Frame</h2>
-                <p className="mb-3 lead" style={{ opacity: 0.95 }}>
-                  Welcome to <strong>The Patil Photography &amp; Film's</strong>. We craft cinematic stories that celebrate authentic emotion, style, and connection.
-                </p>
-                <p className="mb-3" style={{ opacity: 0.9 }}>
-                  From intimate portraits to cinematic films, our team captures the moments that matter with elegance and artistry.
-                </p>
+              {/* Content - RIGHT */}
+              <div className="col-lg-7" data-aos="fade-left" data-aos-delay="200">
+                <div style={{ paddingLeft: '20px' }}>
+                  <h3 style={{ fontSize: '1.8rem', fontWeight: '700', lineHeight: '1.3', marginBottom: '24px', color: '#1a1a1a' }}>
+                    We Create Timeless Memories
+                  </h3>
 
-                <div className="mt-3 d-flex gap-3">
-                  <Link to="/portfolio" className="btn btn-light">Explore Portfolio</Link>
-                  <Link to="/quote" className="btn btn-outline-light">Request a Quote</Link>
+                  <p style={{ fontSize: '1rem', lineHeight: '1.8', color: '#666', marginBottom: '20px' }}>
+                    At <strong>The Patil Photography &amp; Films</strong>, we don't just capture moments — we tell your unique love story through stunning visuals and cinematic excellence.
+                  </p>
+
+                  <p style={{ fontSize: '1rem', lineHeight: '1.8', color: '#666', marginBottom: '30px' }}>
+                    With over a decade of experience, our team has perfected the art of preserving authentic emotions, genuine connections, and beautiful details that make your wedding day truly unforgettable.
+                  </p>
+
+                  {/* Three Key Points */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginBottom: '32px' }}>
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: '#f0e8d8',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className="bi bi-heart" style={{ fontSize: '20px', color: '#d4af37' }}></i>
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 8px 0' }}>Authentic Storytelling</h4>
+                        <p style={{ fontSize: '0.95rem', color: '#777', margin: 0, lineHeight: '1.6' }}>We blend candid moments with artistic direction to tell your unique love story naturally and beautifully.</p>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: '#f0e8d8',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className="bi bi-camera" style={{ fontSize: '20px', color: '#d4af37' }}></i>
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 8px 0' }}>Premium Quality</h4>
+                        <p style={{ fontSize: '0.95rem', color: '#777', margin: 0, lineHeight: '1.6' }}>State-of-the-art equipment, professional editing, and a cinematic approach ensure perfection in every frame.</p>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: '#f0e8d8',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <i className="bi bi-person-heart" style={{ fontSize: '20px', color: '#d4af37' }}></i>
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 8px 0' }}>Personal Connection</h4>
+                        <p style={{ fontSize: '0.95rem', color: '#777', margin: 0, lineHeight: '1.6' }}>We work closely with you to understand your vision, style, and dreams to create something truly personal.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <Link to="/quote" className="btn btn-light" style={{ padding: '14px 32px', borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem', display: 'inline-block' }}>
+                    Start Your Journey
+                  </Link>
                 </div>
+              </div>
+            </div>
+
+            {/* Stats Section */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '32px', backgroundColor: '#fff', padding: '60px', borderRadius: '16px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="100">
+                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>
+                  <Counter end={500} suffix="+" />
+                </h3>
+                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Happy Couples</p>
+                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Worldwide</p>
+              </div>
+
+              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="150">
+                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>
+                  <Counter end={10} suffix="+" />
+                </h3>
+                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Years Experience</p>
+                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Industry Expert</p>
+              </div>
+
+              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="200">
+                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>
+                  <Counter end={15} suffix="+" />
+                </h3>
+                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Team Members</p>
+                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Certified Professionals</p>
+              </div>
+
+              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="250">
+                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>24/7</h3>
+                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Support</p>
+                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Always Available</p>
               </div>
             </div>
           </div>
@@ -384,82 +493,6 @@ const Home = () => {
           </div> 
         </section>
 
-        {/* Statistics Section */}
-        <section className="about statistics-section">
-          <div className="container" data-aos="fade-up" data-aos-delay="100">
-            <div className="row text-center">
-              <div
-                className="container pb-0 section-title text-center"
-                data-aos="fade-up"
-              >
-                <h2 className="mb-5 gradient-animated">Capturing Love Stories with Excellence</h2>
-                <div className="d-flex justify-content-center">
-                  <p className="w-75 d-block text-center para">
-                    At The Patil Photography & Films, we don't just capture
-                    moments — we create experiences. Each photograph is a
-                    testament to our commitment to luxury, artistry, and
-                    unparalleled craftsmanship.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-
-            <div className="row g-4">
-              {/* Stat 1 */}
-              <div
-                className="col-md-6 col-lg-3"
-                data-aos="fade-up"
-                data-aos-delay="100"
-              >
-                <div className="stat-card card-glow">
-                  <h3 className="stat-number"><Counter end={500} suffix="+" /></h3>
-                  <p className="stat-label">Elite Clients</p>
-                  <p className="stat-description">Worldwide</p>
-                </div>
-              </div>
-
-              {/* Stat 2 */}
-              <div
-                className="col-md-6 col-lg-3"
-                data-aos="fade-up"
-                data-aos-delay="200"
-              >
-                <div className="stat-card card-glow">
-                  <h3 className="stat-number"><Counter end={10} suffix="+" /></h3>
-                  <p className="stat-label">Years Excellence</p>
-                  <p className="stat-description">Industry Leader</p>
-                </div>
-              </div>
-
-              {/* Stat 3 */}
-              <div
-                className="col-md-6 col-lg-3"
-                data-aos="fade-up"
-                data-aos-delay="300"
-              >
-                <div className="stat-card card-glow">
-                  <h3 className="stat-number"><Counter end={15} suffix="+" /></h3>
-                  <p className="stat-label">Expert Team</p>
-                  <p className="stat-description">Certified Professionals</p>
-                </div>
-              </div>
-
-              {/* Stat 4 */}
-              <div
-                className="col-md-6 col-lg-3"
-                data-aos="fade-up"
-                data-aos-delay="400"
-              >
-                <div className="stat-card card-glow">
-                  <h3 className="stat-number">24/7</h3>
-                  <p className="stat-label">Concierge Service</p>
-                  <p className="stat-description">Always Available</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
         {/* Quote Section */}
         <section
           className="container px-5 pt-4"
@@ -472,134 +505,299 @@ const Home = () => {
           </h2>
         </section>
         {/* Services Section */}
-        <section id="services" className="services">
-          <div
-            className="container section-title text-center"
-            data-aos="fade-up"
-          >
-            <h2 className="gold-text-gradient">Our Signature Services</h2>
-            <div className="d-flex justify-content-center">
-              <p className="w-50 d-block text-center">
-                We offer a complete range of photography and videography
-                services tailored to make your special moments unforgettable
+        <section id="services" className="py-5" style={{ background: "#f9f7f4" }}>
+          <div className="container">
+            {/* Section Header */}
+            <div className="text-center mb-5" data-aos="fade-up">
+              <h2 className="gold-text-gradient mb-3" style={{ fontSize: "2.5rem", fontWeight: "700" }}>
+                Our Signature Services
+              </h2>
+              <p style={{ fontSize: "1.1rem", color: "#666", maxWidth: "600px", margin: "0 auto" }}>
+                Premium photography and videography experiences crafted to capture your unique story
               </p>
             </div>
-          </div>
 
-          <div className="container" data-aos="fade-up" data-aos-delay="100">
+            {/* Services Grid */}
             <div className="row g-4">
-              {/* Service 1 */}
-              <div
-                className="col-lg-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay="100"
-              >
-                <div className="service-card">
-                  <div className="service-icon">
-                    <i className="bi bi-heart"></i>
+              {/* Service Card 1 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div style={{
+                  background: "white",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  height: "100%"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.transform = "translateY(-5px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <div style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "2rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-heart-fill"></i>
                   </div>
-                  <h3 className="service-title">Wedding Photography</h3>
-                  <p className="service-description">
-                    Capture the essence of your wedding day with our
-                    comprehensive wedding photography packages, covering
-                    pre-wedding shoots, ceremonies, receptions, and intimate
-                    moments.
+                  <h3 style={{ fontSize: "1.3rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Wedding Photography
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
+                    Capture your entire day from pre-wedding to reception with professional coverage of all cherished moments
                   </p>
+                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                    Learn More →
+                  </a>
                 </div>
               </div>
 
-              {/* Service 2 */}
-              <div
-                className="col-lg-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay="200"
-              >
-                <div className="service-card">
-                  <div className="service-icon">
+              {/* Service Card 2 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div style={{
+                  background: "white",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  height: "100%"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.transform = "translateY(-5px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <div style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "2rem",
+                    color: "white"
+                  }}>
                     <i className="bi bi-film"></i>
                   </div>
-                  <h3 className="service-title">Cinematic Films</h3>
-                  <p className="service-description">
-                    Professional videography that tells your love story through
-                    cinema-quality films, featuring creative editing, drone
-                    footage, and emotional narratives.
+                  <h3 style={{ fontSize: "1.3rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Cinematic Films
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
+                    Premium videography with drone footage, creative editing, and cinematic storytelling that brings emotions to life
                   </p>
+                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                    Learn More →
+                  </a>
                 </div>
               </div>
 
-              {/* Service 3 */}
-              <div
-                className="col-lg-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay="300"
-              >
-                <div className="service-card">
-                  <div className="service-icon">
-                    <i className="bi bi-image"></i>
+              {/* Service Card 3 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div style={{
+                  background: "white",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  height: "100%"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.transform = "translateY(-5px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <div style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "2rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-camera"></i>
                   </div>
-                  <h3 className="service-title">Portrait Sessions</h3>
-                  <p className="service-description">
-                    Elegant and timeless portrait photography for couples,
-                    families, and individuals, with professional styling and
-                    beautiful natural or studio settings.
+                  <h3 style={{ fontSize: "1.3rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Portrait Sessions
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
+                    Elegant and timeless portraits capturing your essence with professional styling and beautiful locations
                   </p>
+                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                    Learn More →
+                  </a>
                 </div>
               </div>
 
-              {/* Service 4 */}
-              <div
-                className="col-lg-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay="400"
-              >
-                <div className="service-card">
-                  <div className="service-icon">
+              {/* Service Card 4 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div style={{
+                  background: "white",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  height: "100%"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.transform = "translateY(-5px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <div style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "2rem",
+                    color: "white"
+                  }}>
                     <i className="bi bi-calendar-heart"></i>
                   </div>
-                  <h3 className="service-title">Engagement Shoots</h3>
-                  <p className="service-description">
-                    Beautiful pre-wedding engagement sessions in stunning
-                    locations, capturing the joy and chemistry between you and
-                    your partner.
+                  <h3 style={{ fontSize: "1.3rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Engagement Shoots
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
+                    Celebrate your engagement with beautiful pre-wedding sessions in stunning locations capturing pure joy
                   </p>
+                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                    Learn More →
+                  </a>
                 </div>
               </div>
 
-              {/* Service 5 */}
-              <div
-                className="col-lg-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay="500"
-              >
-                <div className="service-card">
-                  <div className="service-icon">
-                    <i className="bi bi-album"></i>
+              {/* Service Card 5 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                <div style={{
+                  background: "white",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  height: "100%"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.transform = "translateY(-5px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <div style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "2rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-book"></i>
                   </div>
-                  <h3 className="service-title">Album & Prints</h3>
-                  <p className="service-description">
-                    Premium photo albums, prints, and canvas artwork that
-                    transform your favorite moments into stunning décor pieces
-                    for your home.
+                  <h3 style={{ fontSize: "1.3rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Albums & Prints
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
+                    Premium albums, prints, and canvas artwork that transform your moments into stunning home décor
                   </p>
+                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                    Learn More →
+                  </a>
                 </div>
               </div>
 
-              {/* Service 6 */}
-              <div
-                className="col-lg-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay="600"
-              >
-                <div className="service-card">
-                  <div className="service-icon">
-                    <i className="bi bi-play-circle"></i>
+              {/* Service Card 6 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                <div style={{
+                  background: "white",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  height: "100%"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.transform = "translateY(-5px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <div style={{
+                    width: "70px",
+                    height: "70px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "2rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-airplane"></i>
                   </div>
-                  <h3 className="service-title">Drone & Aerial</h3>
-                  <p className="service-description">
-                    Stunning aerial photography and videography using drone
-                    technology to capture breathtaking perspectives of your
-                    wedding venue and celebrations.
+                  <h3 style={{ fontSize: "1.3rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Drone & Aerial
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
+                    Breathtaking aerial perspectives using drone technology to capture stunning venue and celebration views
                   </p>
+                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                    Learn More →
+                  </a>
                 </div>
               </div>
             </div>
@@ -620,9 +818,9 @@ const Home = () => {
                     <div className="testimonial-item" style={{ height: "100%", padding: "30px" }}>
                       <div className="d-flex align-items-center mb-3">
                         <Skeleton borderRadius="50%" width="50px" height="50px" />
-                        <div className="ms-3">
-                          <Skeleton width="120px" height="20px" style={{ marginBottom: "5px" }} />
-                          <Skeleton width="80px" height="15px" />
+                        <div className="ms-3 flex gap-4 align-middle">
+                          <Skeleton width="120px" height="20px"/>
+                          <Skeleton width="80px" height="20px" />
                         </div>
                       </div>
                       <Skeleton width="100%" height="15px" style={{ marginBottom: "10px" }} />
@@ -833,8 +1031,8 @@ const Home = () => {
             <div className="d-flex justify-content-center mt-0">
               <Link
                 to="/stories"
-                className="submit-btn  mt-3"
-                style={{ textDecoration: "none" }}
+                className="cta-link"
+                style={{ textDecoration: "none", borderRadius: 30, padding: '10px 28px', borderWidth: 2 }}
               >
                 <span>View All Stories</span>
                 <i className="bi bi-arrow-right ms-2"></i>
@@ -843,27 +1041,76 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Process/Experience Section */}
-        <section id="experience" className="section light-background">
+        {/* Our Values Section */}
+        <section id="experience" className="section" style={{ backgroundColor: '#f9f8f6', padding: '80px 0' }}>
           <div className="container" data-aos="fade-up">
-            <div className="section-title text-center">
-              <h2 className="gold-text-gradient">The Experience</h2>
-              <p>From our first conversation to the final delivery, we ensure a seamless and enjoyable journey.</p>
+            {/* Section Header */}
+            <div className="section-title text-center" style={{ marginBottom: '60px' }}>
+              <h2 style={{ fontSize: '2.8rem', fontWeight: '700', marginBottom: '16px', color: '#1a1a1a' }}>Top Values for You</h2>
+              <p style={{ fontSize: '1.05rem', color: '#888', fontWeight: '500' }}>Experience the difference with our premium photography services</p>
             </div>
+
+            {/* Values Grid */}
             <div className="row g-4">
               {[
-                { icon: "bi-chat-heart", title: "1. Connect", desc: "We start with a consultation to understand your vision, style, and unique story." },
-                { icon: "bi-camera", title: "2. Create", desc: "On the big day, we blend into the background to capture candid, authentic moments artfully." },
-                { icon: "bi-magic", title: "3. Curate", desc: "We hand-edit every image, enhancing colors and emotions to create a cinematic look." },
-                { icon: "bi-box2-heart", title: "4. Cherish", desc: "Receive your memories in a beautiful online gallery and premium handcrafted albums." }
-              ].map((step, idx) => (
+                { 
+                  icon: "bi-chat-dots", 
+                  title: "Personalized Consultation", 
+                  desc: "We listen to your vision and craft a customized photography plan that reflects your unique love story and style." 
+                },
+                { 
+                  icon: "bi-star-fill", 
+                  title: "Professional Direction", 
+                  desc: "Our expert team guides you through every moment, ensuring natural poses, authentic emotions, and stunning compositions." 
+                },
+                { 
+                  icon: "bi-brush", 
+                  title: "Premium Editing", 
+                  desc: "Each image is meticulously edited with our signature cinematic style to enhance colors and emotions perfectly." 
+                },
+                { 
+                  icon: "bi-gift", 
+                  title: "Timeless Delivery", 
+                  desc: "Receive your cherished memories in a beautiful online gallery, albums, and premium prints designed to last forever." 
+                }
+              ].map((value, idx) => (
                 <div key={idx} className="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay={idx * 100}>
-                  <div className="process-step card-glow">
-                    <div className="icon-box">
-                      <i className={`bi ${step.icon}`}></i>
+                  <div style={{ textAlign: 'center', padding: '32px 24px', transition: 'transform 0.3s ease, box-shadow 0.3s ease', cursor: 'pointer' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-8px)';
+                      e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.08)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    {/* Icon */}
+                    <div style={{ marginBottom: '20px' }}>
+                      <div style={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        width: '64px',
+                        height: '64px',
+                        backgroundColor: '#f0e8d8',
+                        borderRadius: '12px',
+                        fontSize: '32px',
+                        color: '#d4af37'
+                      }}>
+                        <i className={`bi ${value.icon}`}></i>
+                      </div>
                     </div>
-                    <h3>{step.title}</h3>
-                    <p>{step.desc}</p>
+
+                    {/* Title */}
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#1a1a1a', marginBottom: '12px', lineHeight: '1.3' }}>
+                      {value.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: '1.6', margin: 0 }}>
+                      {value.desc}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -871,68 +1118,15 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Connect / Meet the Artist Section */}
-        <section className="connect-section">
-          <div className="container">
-            <div className="row justify-content-center align-items-center">
-              <div className="col-lg-6" data-aos="fade-right">
-                <div className="connect-card card-glow">
-                  <div className="text-center">
-                    <img src="/assets/img/slider/hero6.jpg" className="connect-avatar float-anim" alt="Photographer" />
-                    <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>Let's Create Magic</h2>
-                    <p className="text-muted">Lead Photographer & Visual Storyteller</p>
-                    <p className="mt-3">
-                      "My goal is not just to take photos, but to create a visual legacy of your love. Let's chat about your big day and see if we are the perfect match."
-                    </p>
-                    <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer" className="connect-btn">
-                      <i className="bi bi-whatsapp"></i> Chat with Me Directly
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-5 offset-lg-1" data-aos="fade-left">
-                <h2 className="gold-text-gradient mb-4">Why Connect With Us?</h2>
-                <ul className="list-unstyled" style={{ fontSize: '1.1rem', lineHeight: '2' }}>
-                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> personalized Consultation</li>
-                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> Custom-Tailored Packages</li>
-                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> Clear & Transparent Pricing</li>
-                  <li><i className="bi bi-check-circle-fill text-warning me-2"></i> A Friend, Not Just a Vendor</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* FAQ Section */}
-        <section id="faq" className="section">
-          <div className="container" data-aos="fade-up">
-            <div className="section-title text-center">
-              <h2 className="gold-text-gradient">Common Questions</h2>
-            </div>
-            <div className="row justify-content-center">
-              <div className="col-lg-8">
-                {[
-                  { q: "Do you travel for weddings?", a: "Absolutely! We love destination weddings and are available to travel worldwide to capture your special day." },
-                  { q: "How many photos will we receive?", a: "For a full-day wedding, you can expect 500+ hand-edited, high-resolution images." },
-                  { q: "Do you provide video services as well?", a: "Yes, we specialize in cinematic wedding films that beautifully complement our photography." },
-                  { q: "How long until we see our photos?", a: "We provide a sneak peek within 1 week, and the full gallery is typically ready within 4-6 weeks." }
-                ].map((item, idx) => (
-                  <div key={idx} className="faq-item" data-aos="fade-up" data-aos-delay={idx * 100}>
-                    <h3>{item.q} <i className="bi bi-plus-circle-dotted" style={{ fontSize: '1rem' }}></i></h3>
-                    <p>{item.a}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
 
+   
         {/* Call to Action Banner */}
         <section className="cta-banner">
           <div className="container" data-aos="zoom-in">
             <h2>Ready to Create Magic?</h2>
             <p className="mb-4" style={{ fontSize: '1.2rem', opacity: 0.9 }}>Let's turn your fleeting moments into timeless memories.</p>
-            <Link to="/quote" className="cta-button-light">
+            <Link to="/quote" className="cta-link">
               Book Your Date
             </Link>
           </div>

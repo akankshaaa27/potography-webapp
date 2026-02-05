@@ -57,6 +57,13 @@ const Header = () => {
           <ul>
             <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link></li>
             <li><Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About Us</Link></li>
+            <li className={`dropdown ${location.pathname.startsWith('/services') || location.pathname === '/service-details' ? 'active' : ''}`}>
+              <Link to="/services">Services</Link>
+              {/* <ul>
+                <li><Link to="/services" className={location.pathname === '/services' ? 'active' : ''}>All Services</Link></li>
+                <li><Link to="/service-details" className={location.pathname === '/service-details' ? 'active' : ''}>Service Details</Link></li>
+              </ul> */}
+            </li>
             <li><Link to="/team" className={location.pathname === '/team' ? 'active' : ''}>Team</Link></li>
             <li><Link to="/portfolio" className={location.pathname === '/portfolio' ? 'active' : ''}>Portfolio</Link></li>
             <li><Link to="/stories" className={location.pathname === '/stories' ? 'active' : ''}>Stories</Link></li>

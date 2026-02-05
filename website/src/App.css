@@ -125,17 +125,7 @@ h1, h2, h3, .section-title h2 {
   opacity: 0.9;
 }
 
-/* Gold Gradient Text */
-.gold-text-gradient {
-  background: -webkit-linear-gradient(45deg, #d4a574, #ffeebb, #c49561);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
-/* Premium Section Spacing */
-.section {
-  padding: 100px 0;
-}
 
 /* Glassmorphism Cards */
 .service-card, .stat-card, .project-card, .testimonial-item {

@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const defaultProfile = {
   name: "Aarohi Kulkarni",
@@ -35,8 +36,18 @@ const activityLog = [
 ];
 
 export default function UserProfile() {
+  const { user, token } = useAuth() || {};
+
   const [profile, setProfile] = useState(defaultProfile);
+  const [loading, setLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const [payoutPassword, setPayoutPassword] = useState("");
+  const [payoutDetails, setPayoutDetails] = useState(null);
+  const [globalSettings, setGlobalSettings] = useState(null);
+
   const [preferences, setPreferences] = useState({
     notifications: {
       briefs: true,
@@ -53,9 +64,100 @@ export default function UserProfile() {
   const shootsPerFocus = useMemo(() => {
     return profile.focus.map((focusArea, index) => ({
       label: focusArea,
-      value: [42, 31, 24][index] || 12,
+      value: (profile.focusCounts && profile.focusCounts[focusArea]) || [42, 31, 24][index] || 12,
     }));
-  }, [profile.focus]);
+  }, [profile.focus, profile.focusCounts]);
+
+  // Fetch profile & global settings
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        setLoading(true);
+        // Prefer user context; fall back to /api/users/me
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const res = await fetch("/api/users/me", { headers });
+        if (!mounted) return;
+        if (res.ok) {
+          const data = await res.json();
+          setProfile((prev) => ({ ...prev, ...data }));
+          setPreferences((prev) => ({ ...prev, ...(data.preferences || {}) }));
+          setIsOwner(!user || user.id === data.id || true); // conservative default for demo
+          setIsAdmin(user?.role === "admin");
+        }
+
+        const gs = await fetch("/api/global-settings", { headers });
+        if (gs.ok) {
+          const gdata = await gs.json();
+          setGlobalSettings(gdata);
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [token, user]);
+
+  // Helpers to persist bio & preferences
+  async function saveBio() {
+    try {
+      const res = await fetch("/api/users/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : undefined },
+        body: JSON.stringify({ bio: profile.bio }),
+      });
+      if (!res.ok) throw new Error("Save failed");
+      alert("Bio saved");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save bio");
+    }
+  }
+
+  async function savePreferences() {
+    try {
+      const res = await fetch("/api/users/me/preferences", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : undefined },
+        body: JSON.stringify(preferences),
+      });
+      if (!res.ok) throw new Error("Save failed");
+      alert("Preferences saved");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save preferences");
+    }
+  }
+
+  async function revealPayout(e) {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/users/me/payout-view", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : undefined },
+        body: JSON.stringify({ password: payoutPassword }),
+      });
+      if (!res.ok) throw new Error("Unauthorized");
+      const data = await res.json();
+      setPayoutDetails(data);
+      setShowPayoutModal(false);
+    } catch (err) {
+      console.error(err);
+      alert("Unable to reveal payout details. Check your password.");
+    }
+  }
+
+  if (loading) return (
+    <section className="page-shell mt-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm text-center">Loading profile...</div>
+    </section>
+  );
 
   function togglePref(section, key) {
     setPreferences((prev) => ({
@@ -122,6 +224,15 @@ export default function UserProfile() {
               className="mt-4 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-charcoal-900 shadow-inner focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
               rows={4}
             />
+
+            <div className="mt-3 flex gap-3">
+              <button onClick={saveBio} className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition">
+                Save Bio
+              </button>
+              <button onClick={() => { setProfile(defaultProfile); alert('Reverted to defaults'); }} className="rounded-lg px-4 py-2 text-sm font-medium border">
+                Revert
+              </button>
+            </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
                 <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Primary Platforms</h3>
@@ -186,12 +297,15 @@ export default function UserProfile() {
             <div className="mt-4 grid gap-4 text-sm text-charcoal-900 md:grid-cols-2">
               <div className="rounded-xl border border-slate-100 p-4">
                 <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Primary</p>
-                <p className="mt-2 font-semibold">{profile.payoutMethod}</p>
+                <p className="mt-2 font-semibold">{payoutDetails ? payoutDetails.primary : (profile.payoutMethod || 'HDFC •••• 8123')}</p>
                 <p className="text-xs text-slate-500">Weekly settlements • Instant alerts</p>
+                <div className="mt-3">
+                  <button onClick={() => setShowPayoutModal(true)} className="text-sm font-medium text-charcoal-900 underline">View details</button>
+                </div>
               </div>
               <div className="rounded-xl border border-slate-100 p-4">
                 <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Backup</p>
-                <p className="mt-2 font-semibold">{profile.backupPayout}</p>
+                <p className="mt-2 font-semibold">{payoutDetails ? payoutDetails.backup : (profile.backupPayout || 'UPI • aarohi@ibl')}</p>
                 <p className="text-xs text-slate-500">Used when bank is offline</p>
               </div>
             </div>
@@ -209,6 +323,18 @@ export default function UserProfile() {
                 </li>
               ))}
             </ul>
+
+            {globalSettings && (
+              <div className="mt-4 rounded-2xl border border-slate-100 bg-white p-4">
+                <h3 className="text-sm font-semibold">Organization / Global Settings <span className="ml-2 text-xs text-slate-400">(read-only)</span></h3>
+                <div className="mt-3 text-xs text-slate-600">
+                  <p>Timezone: <strong className="ml-2 text-charcoal-900">{globalSettings.timezone}</strong></p>
+                  <p>Default currency: <strong className="ml-2 text-charcoal-900">{globalSettings.currency}</strong></p>
+                  <p>Contract template: <strong className="ml-2 text-charcoal-900">{globalSettings.contractTemplate}</strong></p>
+                  <p className="mt-2 text-xs text-slate-500">These values are managed by your organization and cannot be changed here.</p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -232,6 +358,11 @@ export default function UserProfile() {
                 active={preferences.notifications.reminders}
                 onToggle={() => togglePref("notifications", "reminders")}
               />
+
+              <div className="mt-3 flex gap-3">
+                <button onClick={savePreferences} className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition">Save Preferences</button>
+                <button onClick={() => setPreferences({ notifications: { briefs: true, payouts: true, reminders: false }, security: { mfa: true, biometric: false, deviceAlerts: true } })} className="rounded-lg px-4 py-2 text-sm font-medium border">Reset</button>
+              </div>
             </div>
           </div>
 
@@ -269,6 +400,7 @@ export default function UserProfile() {
         </div>
       </div>
       <ChangePasswordModal isOpen={passwordModalOpen} onClose={() => setPasswordModalOpen(false)} />
+      <PayoutModal open={showPayoutModal} onClose={() => setShowPayoutModal(false)} password={payoutPassword} setPassword={setPayoutPassword} revealPayout={revealPayout} details={payoutDetails} />
     </section>
   );
 }
@@ -323,6 +455,9 @@ function ChangePasswordModal({ isOpen, onClose }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   if (!isOpen) return null;
+
+  // Re-use existing password modal
+  // NOTE: keep security calls server-side in production. This is a simple UX wrapper.
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -435,3 +570,39 @@ function ChangePasswordModal({ isOpen, onClose }) {
     </div>
   );
 }
+
+/* Payout modal */
+function PayoutModal({ open, onClose, password, setPassword, revealPayout, details }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+        <h2 className="text-xl font-semibold text-charcoal-900">View Payout Details</h2>
+        <p className="text-sm text-slate-500 mb-4">Enter your password to unlock your stored payout methods.</p>
+        {!details ? (
+          <form onSubmit={revealPayout} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Confirm Password</label>
+              <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Cancel</button>
+              <button type="submit" className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-medium text-white hover:bg-gold-600 transition">Unlock</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div className="rounded-xl border border-slate-100 p-4">
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Primary</p>
+              <p className="mt-2 font-semibold">{details.primary}</p>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button onClick={onClose} className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Close</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
