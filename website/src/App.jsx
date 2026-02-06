@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import './App.css'
 import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 import { useSettings } from './hooks/useSettings'
 import WhatsAppButton from './components/WhatsAppButton'
-import Stories from './pages/Stories'
 
 // Lazy load components
 const About = lazy(() => import('./pages/About'))
