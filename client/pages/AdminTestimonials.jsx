@@ -220,9 +220,9 @@ export default function AdminTestimonials() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <Skeleton width="40px" height="40px" borderRadius="50%" />
-                                                <div>
-                                                    <Skeleton width="120px" height="18px" style={{ marginBottom: "4px" }} />
-                                                    <Skeleton width="80px" height="12px" />
+                                                <div className="flex gap-4 align-middle" >
+                                                    <Skeleton width="120px" height="18px" />
+                                                    <Skeleton width="80px" height="18px" />
                                                 </div>
                                             </div>
                                         </td>

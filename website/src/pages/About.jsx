@@ -116,183 +116,282 @@ const About = () => {
           </div>
         </section>
 
-          <section className="why-choose-us py-5">
-      <div className="container">
-        <div className="text-center mb-5">
-          <div className="section-title pb-3 mb-3">
-            <h2>Why Choose Us</h2>
-          </div>
+        {/* Why Choose Us Section */}
+        <section className="why-choose-us py-5" style={{ background: "#fff" }}>
+          <div className="container">
+            {/* Section Header */}
+            <div className="text-center mb-5" data-aos="fade-up">
+              <h2 className="gold-text-gradient mb-3" style={{ fontSize: "2.5rem", fontWeight: "700" }}>
+                Why Choose Us
+              </h2>
+              <p style={{ fontSize: "1.1rem", color: "#666", maxWidth: "700px", margin: "0 auto" }}>
+                At The Patil Photography & Film's, we craft timeless stories filled with emotion, elegance, and authenticity
+              </p>
+            </div>
 
-          <p className="section-subtitle">
-            At The Patil Photography & Film’s, we do more than document events —
-            we craft timeless stories filled with emotion, elegance, and authenticity.
-          </p>
-        </div>
-
-        <div className="accordion accordion-flush" id="whyChooseUsAccordion">
-
-          {/* 1 */}
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="headingOne">
-              <button
-                className="accordion-button d-flex align-items-center gap-3"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseOne"
-              >
-                <div className="service-icon">
-                  <i className="bi bi-camera"></i>
+            {/* Features Grid */}
+            <div className="row g-4 mt-3">
+              {/* Feature 1 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div style={{
+                  background: "#f9f7f4",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  height: "100%",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #ede8e0"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#f9f7f4";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div style={{
+                    width: "60px",
+                    height: "60px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "1.8rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-camera"></i>
+                  </div>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Timeless Storytelling
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", margin: "0" }}>
+                    We believe your wedding is a once-in-a-lifetime story. Our approach blends cinematic vision with genuine emotions.
+                  </p>
                 </div>
-                <span>Timeless Storytelling, Not Just Photography</span>
-              </button>
-            </h2>
-            <div
-              id="collapseOne"
-              className="accordion-collapse collapse show"
-              data-bs-parent="#whyChooseUsAccordion"
-            >
-              <div className="accordion-body">
-                We believe your wedding is not a photoshoot — it is a once-in-a-lifetime story.
-                Our approach blends cinematic vision with genuine emotions.
+              </div>
+
+              {/* Feature 2 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div style={{
+                  background: "#f9f7f4",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  height: "100%",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #ede8e0"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#f9f7f4";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div style={{
+                    width: "60px",
+                    height: "60px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "1.8rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-gem"></i>
+                  </div>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Luxury Aesthetic
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", margin: "0" }}>
+                    From soft lighting to refined compositions, our style is elegant, graceful, and cinematic.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div style={{
+                  background: "#f9f7f4",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  height: "100%",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #ede8e0"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#f9f7f4";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div style={{
+                    width: "60px",
+                    height: "60px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "1.8rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-heart"></i>
+                  </div>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Emotion-Driven Expertise
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", margin: "0" }}>
+                    The most beautiful moments are unspoken. We capture genuine emotions naturally and authentically.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div style={{
+                  background: "#f9f7f4",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  height: "100%",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #ede8e0"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#f9f7f4";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div style={{
+                    width: "60px",
+                    height: "60px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "1.8rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-stars"></i>
+                  </div>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Stress-Free Experience
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", margin: "0" }}>
+                    From consultation to delivery, we ensure a smooth, professional journey you can trust.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 5 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                <div style={{
+                  background: "#f9f7f4",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  height: "100%",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #ede8e0"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#f9f7f4";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div style={{
+                    width: "60px",
+                    height: "60px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "1.8rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-people"></i>
+                  </div>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Tailored Stories
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", margin: "0" }}>
+                    No two love stories are the same. Every wedding is customized to reflect your unique vision.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 6 */}
+              <div className="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                <div style={{
+                  background: "#f9f7f4",
+                  borderRadius: "12px",
+                  padding: "2.5rem",
+                  textAlign: "center",
+                  height: "100%",
+                  transition: "all 0.3s ease",
+                  border: "1px solid #ede8e0"
+                }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#f9f7f4";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div style={{
+                    width: "60px",
+                    height: "60px",
+                    background: "linear-gradient(135deg, #d4a574 0%, #b8860b 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    fontSize: "1.8rem",
+                    color: "white"
+                  }}>
+                    <i className="bi bi-infinity"></i>
+                  </div>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "1rem", color: "#222" }}>
+                    Lasting Memories
+                  </h3>
+                  <p style={{ color: "#666", lineHeight: "1.6", margin: "0" }}>
+                    Your wedding visuals are heirlooms—timeless, emotional, and crafted to last forever.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* 2 */}
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="headingTwo">
-              <button
-                className="accordion-button collapsed d-flex align-items-center gap-3"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseTwo"
-              >
-                <div className="service-icon">
-                  <i className="bi bi-gem"></i>
-                </div>
-                <span>Luxury Aesthetic with a Personal Touch</span>
-              </button>
-            </h2>
-            <div
-              id="collapseTwo"
-              className="accordion-collapse collapse"
-              data-bs-parent="#whyChooseUsAccordion"
-            >
-              <div className="accordion-body">
-                From soft lighting to refined compositions, our style is elegant,
-                graceful, and cinematic.
-              </div>
-            </div>
-          </div>
-
-          {/* 3 */}
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="headingThree">
-              <button
-                className="accordion-button collapsed d-flex align-items-center gap-3"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseThree"
-              >
-                <div className="service-icon">
-                  <i className="bi bi-heart"></i>
-                </div>
-                <span>Emotion-Driven & Candid Expertise</span>
-              </button>
-            </h2>
-            <div
-              id="collapseThree"
-              className="accordion-collapse collapse"
-              data-bs-parent="#whyChooseUsAccordion"
-            >
-              <div className="accordion-body">
-                The most beautiful moments are often unspoken — a glance, a tear, a smile.
-                We capture emotions naturally.
-              </div>
-            </div>
-          </div>
-
-          {/* 4 */}
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="headingFour">
-              <button
-                className="accordion-button collapsed d-flex align-items-center gap-3"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseFour"
-              >
-                <div className="service-icon">
-                  <i className="bi bi-stars"></i>
-                </div>
-                <span>Seamless & Stress-Free Experience</span>
-              </button>
-            </h2>
-            <div
-              id="collapseFour"
-              className="accordion-collapse collapse"
-              data-bs-parent="#whyChooseUsAccordion"
-            >
-              <div className="accordion-body">
-                From consultation to delivery, we ensure a smooth, professional journey.
-              </div>
-            </div>
-          </div>
-
-          {/* 5 */}
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="headingFive">
-              <button
-                className="accordion-button collapsed d-flex align-items-center gap-3"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseFive"
-              >
-                <div className="service-icon">
-                  <i className="bi bi-people"></i>
-                </div>
-                <span>Tailored Stories for Every Couple</span>
-              </button>
-            </h2>
-            <div
-              id="collapseFive"
-              className="accordion-collapse collapse"
-              data-bs-parent="#whyChooseUsAccordion"
-            >
-              <div className="accordion-body">
-                No two love stories are the same. Every wedding is customized to your vision.
-              </div>
-            </div>
-          </div>
-
-          {/* 6 */}
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="headingSix">
-              <button
-                className="accordion-button collapsed d-flex align-items-center gap-3"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseSix"
-              >
-                <div className="service-icon">
-                  <i className="bi bi-infinity"></i>
-                </div>
-                <span>Memories Crafted to Last Forever</span>
-              </button>
-            </h2>
-            <div
-              id="collapseSix"
-              className="accordion-collapse collapse"
-              data-bs-parent="#whyChooseUsAccordion"
-            >
-              <div className="accordion-body">
-                Your wedding visuals are heirlooms — timeless, emotional, and lasting forever.
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
       </main>
 
       <Footer />

@@ -1888,16 +1888,14 @@ section,
 
 .testimonials .testimonial-content {
   background-color: var(--surface-color);
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 2rem;
   position: relative;
   transition: all 0.3s ease;
   border: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);
 }
 
-.testimonials .testimonial-content:hover {
-  transform: translateY(-5px);
-}
+
 
 .testimonials .testimonial-content p {
   font-size: 1rem;
@@ -4919,7 +4917,7 @@ section,
   width: 45px;
   height: 45px;
   bottom: -62px;
-  margin-top: 0;
+  margin-top: 210px;
   transition: all 0.3s ease;
 }
 
