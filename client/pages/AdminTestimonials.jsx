@@ -36,7 +36,7 @@ export default function AdminTestimonials() {
             const contentType = res.headers.get("content-type");
             if (contentType && contentType.includes("text/html")) {
                 console.error("API returned HTML instead of JSON. Server restart required.");
-                alert("⚠️ Backend Update Required\n\nThe new Testimonials API is not loaded yet.\n\nPlease go to your terminal, STOP the server (Ctrl+C), and START it again (npm run dev).");
+                alert("⚠️ Backend Update Required\n\nThe new Reviews & Feedback API is not loaded yet.\n\nPlease go to your terminal, STOP the server (Ctrl+C), and START it again (npm run dev).");
                 return;
             }
 
@@ -53,7 +53,7 @@ export default function AdminTestimonials() {
             const data = await res.json();
             setTestimonials(Array.isArray(data) ? data : []);
         } catch (error) {
-            console.error("Error fetching testimonials:", error);
+            console.error("Error fetching reviews:", error);
         } finally {
             setLoading(false);
         }
@@ -96,10 +96,10 @@ export default function AdminTestimonials() {
                 fetchTestimonials();
             } else {
                 const errorData = await res.json();
-                alert(`Error saving testimonial: ${errorData.message}`);
+                alert(`Error saving review: ${errorData.message}`);
             }
         } catch (error) {
-            console.error("Error saving testimonial:", error);
+            console.error("Error saving review:", error);
             alert("Network error. Please try again.");
         } finally {
             setIsSaving(false);
@@ -107,7 +107,7 @@ export default function AdminTestimonials() {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this testimonial?")) {
+        if (window.confirm("Are you sure you want to delete this review?")) {
             await fetch(`/api/testimonials/${id}`, { method: "DELETE" });
             fetchTestimonials();
         }
@@ -155,14 +155,14 @@ export default function AdminTestimonials() {
     return (
         <div className="mt-0 container mx-auto px-0 pt-0 pb-6 animate-in fade-in duration-500">
             <PageHeader
-                title="Testimonials"
+                title="Reviews & Feedback"
                 description="Manage accolades and love stories from couples."
                 action={
                     <button
                         onClick={() => { resetForm(); setShowModal(true); }}
                         className="flex items-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-gray-800 transition-all shadow-lg font-medium"
                     >
-                        <Plus size={18} /> Add New Testimonial
+                        <Plus size={18} /> Add New Review
                     </button>
                 }
             />
@@ -239,9 +239,9 @@ export default function AdminTestimonials() {
                 </div>
             ) : filteredTestimonials.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
-                    <p className="text-slate-500 mb-4">No testimonials found.</p>
+                    <p className="text-slate-500 mb-4">No reviews found.</p>
                     <button onClick={() => setShowModal(true)} className="text-charcoal-900 font-semibold hover:underline">
-                        Create your first testimonial
+                        Create your first review
                     </button>
                 </div>
             ) : (
@@ -389,7 +389,7 @@ export default function AdminTestimonials() {
                     <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white px-6 py-4 border-b border-slate-100 flex justify-between items-center z-10">
                             <h2 className="text-xl font-bold text-charcoal-900">
-                                {isEditing ? "Edit Testimonial" : "New Testimonial"}
+                                {isEditing ? "Edit Review" : "New Review"}
                             </h2>
                             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-charcoal-900">
                                 <X size={20} />
@@ -492,7 +492,7 @@ export default function AdminTestimonials() {
 
                             {/* Full Width Inputs */}
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Short Testimonial <span className="text-slate-400 text-xs">(For preview, max 200 chars)</span></label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Short Review <span className="text-slate-400 text-xs">(For preview, max 200 chars)</span></label>
                                 <textarea
                                     required
                                     maxLength={200}
@@ -504,7 +504,7 @@ export default function AdminTestimonials() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Full Testimonial</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Full Review</label>
                                 <textarea
                                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm h-32"
                                     value={currentTestimonial.fullDescription}

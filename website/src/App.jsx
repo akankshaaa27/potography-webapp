@@ -15,7 +15,7 @@ const Contact = lazy(() => import('./pages/Contact'))
 const Films = lazy(() => import('./pages/Films'))
 const Gallery = lazy(() => import('./pages/Gallery'))
 const Quote = lazy(() => import('./pages/Quote'))
-const Testimonials = lazy(() => import('./pages/Testimonials'))
+const ReviewsFeedback = lazy(() => import('./pages/Testimonials'))
 const ServiceDetails = lazy(() => import('./pages/ServiceDetails'))
 const ProjectDetails = lazy(() => import('./pages/ProjectDetails'))
 const Privacy = lazy(() => import('./pages/Privacy'))
@@ -102,7 +102,8 @@ function App() {
             <Route path="/films" element={<Films />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/webtestimonials" element={<Testimonials />} />
+            <Route path="/reviews-feedback" element={<ReviewsFeedback />} />
+            <Route path="/webtestimonials" element={<ReviewsFeedback />} />
             <Route path="/quote" element={<Quote />} />
             <Route path="/team" element={<Team />} />
             <Route path="/privacy" element={<Privacy />} />

@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [expandedReviews, setExpandedReviews] = useState({});
   const [formData, setFormData] = useState({
     coupleName: "",
     location: "",
@@ -23,12 +20,12 @@ const Testimonials = () => {
 
   useEffect(() => {
     try {
-      document.body.className = "testimonials-page";
+      document.body.className = "reviews-feedback-page";
     } catch (error) {
-      console.error("Error in Testimonials useEffect:", error);
+      console.error("Error in Reviews useEffect:", error);
     }
 
-    // Fetch Testimonials
+    // Fetch Reviews & Feedback
     fetch("/api/testimonials?type=active")
       .then((res) => res.json())
       .then((data) => {
@@ -38,7 +35,7 @@ const Testimonials = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching testimonials:", err);
+        console.error("Error fetching reviews:", err);
         setLoading(false);
       });
 
@@ -53,9 +50,22 @@ const Testimonials = () => {
     }));
   };
 
+  const truncateText = (text, wordLimit = 50) => {
+    if (!text) return text;
+    const words = text.split(' ');
+    if (words.length <= wordLimit) return text;
+    return words.slice(0, wordLimit).join(' ') + '...';
+  };
+
+  const toggleExpandReview = (reviewId) => {
+    setExpandedReviews(prev => ({
+      ...prev,
+      [reviewId]: !prev[reviewId]
+    }));
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (submitting) return; // Prevent multiple submissions
+    if (submitting) return;
 
     setSubmitting(true);
     setErrorMessage("");
@@ -105,53 +115,72 @@ const Testimonials = () => {
 
       <main className="main">
         {/* Page Header */}
-        {/* Page Title */}
         <div className="page-title dark-background" style={{ backgroundImage: "url('/assets/img/HomePage/16.webp')" }}>
           <div className="container position-relative">
-            <h1>Testimonials & Reviews</h1>
+            <h1>Reviews & Feedback</h1>
             <p>Words from the heart of our beloved couples</p>
             <nav className="breadcrumbs">
               <ol>
                 <li><a href="/">Home</a></li>
-                <li className="current">Testimonials</li>
+                <li className="current">Reviews & Feedback</li>
               </ol>
             </nav>
           </div>
         </div>
 
-        {/* Testimonials Section */}
-        <section className="testimonials-full section">
+        {/* Reviews & Feedback Section */}
+        <section className="reviews-feedback-section section" style={{ backgroundColor: '#fafaf8', paddingTop: '80px', paddingBottom: '80px' }}>
           <div className="container">
-            {/* Header with Button */}
-            <div className="section-header mb-5" data-aos="fade-up">
-              <h2 className="section-title">From the Hearts of Our Couples</h2>
-              <p className="section-description">
-                Every love story is unique, and we're honored to be a part of
-                it. Read what our couples have to say about their experience
-                with us.
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '80px', maxWidth: '700px', margin: '0 auto 80px' }} data-aos="fade-up">
+              <div style={{ fontSize: '0.85rem', color: '#d4af37', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+                From Our Couples
+              </div>
+              <h2 style={{ fontSize: '3.2rem', fontWeight: '700', lineHeight: '1.2', marginBottom: '24px', color: '#1a1a1a' }}>
+                From the Hearts of Our Couples
+              </h2>
+              <p style={{ fontSize: '1.05rem', lineHeight: '1.8', color: '#666', marginBottom: '40px' }}>
+                Every love story is unique, and we're honored to be a part of it. Read what our couples have to say about their experience with us.
               </p>
               <button
-                className="btn-submit-testimonial mt-4"
+                className="cta-link"
                 onClick={() => setShowForm(!showForm)}
                 data-aos="fade-up"
                 data-aos-delay="100"
+                style={{ padding: '14px 32px', borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem', display: 'inline-block', backgroundColor: '#d4af37', color: '#FFF', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#c49a2f';
+                  e.target.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#d4af37';
+                  e.target.style.transform = 'translateY(0)';
+                }}
               >
                 <i className="bi bi-pencil-square me-2"></i>
-                Share Your Testimonial
+                Share Your Review
               </button>
             </div>
 
-            {/* Testimonial Form */}
+            {/* Review Form */}
             {showForm && (
               <div
-                className="testimonial-form-container mb-5"
+                className="review-form-container mb-5"
                 data-aos="fade-up"
+                style={{ 
+                  backgroundColor: '#ffffff', 
+                  padding: '40px', 
+                  borderRadius: '12px', 
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+                  maxWidth: '700px',
+                  margin: '0 auto 40px'
+                }}
               >
-                <h3 className="form-title">Share Your Experience</h3>
-                <form onSubmit={handleSubmit} className="testimonial-form">
-                  <div className="form-row">
-                    <div className="form-group col-md-6">
-                      <label htmlFor="coupleName">Couple Name *</label>
+                <h3 className="form-title" style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '24px', color: '#1a1a1a' }}>Share Your Experience</h3>
+                <form onSubmit={handleSubmit} className="review-form" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div className="form-group">
+                      <label htmlFor="coupleName" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>Couple Name *</label>
                       <input
                         type="text"
                         className="form-control"
@@ -161,10 +190,17 @@ const Testimonials = () => {
                         onChange={handleInputChange}
                         placeholder="Your couple name"
                         required
+                        style={{ 
+                          width: '100%', 
+                          padding: '10px 12px', 
+                          border: '1px solid #ddd', 
+                          borderRadius: '6px',
+                          fontSize: '0.95rem'
+                        }}
                       />
                     </div>
-                    <div className="form-group col-md-6">
-                      <label htmlFor="location">Location *</label>
+                    <div className="form-group">
+                      <label htmlFor="location" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>Location *</label>
                       <input
                         type="text"
                         className="form-control"
@@ -174,12 +210,19 @@ const Testimonials = () => {
                         onChange={handleInputChange}
                         placeholder="Your location"
                         required
+                        style={{ 
+                          width: '100%', 
+                          padding: '10px 12px', 
+                          border: '1px solid #ddd', 
+                          borderRadius: '6px',
+                          fontSize: '0.95rem'
+                        }}
                       />
                     </div>
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="shortDescription">Your Testimonial *</label>
+                    <label htmlFor="shortDescription" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>Your Review *</label>
                     <textarea
                       className="form-control"
                       id="shortDescription"
@@ -189,18 +232,33 @@ const Testimonials = () => {
                       placeholder="Share your experience with us..."
                       rows="5"
                       required
+                      style={{ 
+                        width: '100%', 
+                        padding: '10px 12px', 
+                        border: '1px solid #ddd', 
+                        borderRadius: '6px',
+                        fontSize: '0.95rem',
+                        fontFamily: 'inherit'
+                      }}
                     ></textarea>
                   </div>
 
-                  <div className="form-row">
-                    <div className="form-group col-md-6">
-                      <label htmlFor="rating">Rating *</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div className="form-group">
+                      <label htmlFor="rating" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>Rating *</label>
                       <select
                         className="form-control"
                         id="rating"
                         name="rating"
                         value={formData.rating}
                         onChange={handleInputChange}
+                        style={{ 
+                          width: '100%', 
+                          padding: '10px 12px', 
+                          border: '1px solid #ddd', 
+                          borderRadius: '6px',
+                          fontSize: '0.95rem'
+                        }}
                       >
                         <option value="5">5 Stars - Excellent</option>
                         <option value="4">4 Stars - Very Good</option>
@@ -209,8 +267,8 @@ const Testimonials = () => {
                         <option value="1">1 Star - Poor</option>
                       </select>
                     </div>
-                    <div className="form-group col-md-6">
-                      <label htmlFor="thumbnail">Photo URL (Optional)</label>
+                    <div className="form-group">
+                      <label htmlFor="thumbnail" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>Photo URL (Optional)</label>
                       <input
                         type="url"
                         className="form-control"
@@ -219,6 +277,13 @@ const Testimonials = () => {
                         value={formData.thumbnail}
                         onChange={handleInputChange}
                         placeholder="https://example.com/photo.jpg"
+                        style={{ 
+                          width: '100%', 
+                          padding: '10px 12px', 
+                          border: '1px solid #ddd', 
+                          borderRadius: '6px',
+                          fontSize: '0.95rem'
+                        }}
                       />
                     </div>
                   </div>
@@ -227,6 +292,13 @@ const Testimonials = () => {
                     <div
                       className="alert alert-success alert-dismissible fade show"
                       role="alert"
+                      style={{ 
+                        padding: '12px 16px', 
+                        borderRadius: '6px',
+                        backgroundColor: '#d4edda',
+                        color: '#155724',
+                        border: '1px solid #c3e6cb'
+                      }}
                     >
                       {successMessage}
                     </div>
@@ -236,17 +308,36 @@ const Testimonials = () => {
                     <div
                       className="alert alert-danger alert-dismissible fade show"
                       role="alert"
+                      style={{ 
+                        padding: '12px 16px', 
+                        borderRadius: '6px',
+                        backgroundColor: '#f8d7da',
+                        color: '#721c24',
+                        border: '1px solid #f5c6cb'
+                      }}
                     >
                       {errorMessage}
                     </div>
                   )}
 
-                  <div className="form-actions">
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
                     <button
                       type="submit"
-                      className="btn-form-submit"
                       disabled={submitting}
-                      style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+                      style={{ 
+                        padding: '12px 28px', 
+                        backgroundColor: '#d4af37', 
+                        color: '#1a1a1a', 
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontWeight: '600',
+                        fontSize: '0.95rem',
+                        cursor: submitting ? 'not-allowed' : 'pointer',
+                        opacity: submitting ? 0.7 : 1,
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => !submitting && (e.target.style.backgroundColor = '#c49a2f')}
+                      onMouseLeave={(e) => !submitting && (e.target.style.backgroundColor = '#d4af37')}
                     >
                       {submitting ? (
                         <>
@@ -254,14 +345,26 @@ const Testimonials = () => {
                           Submitting...
                         </>
                       ) : (
-                        "Submit Testimonial"
+                        "Submit Review"
                       )}
                     </button>
                     <button
                       type="button"
-                      className="btn-form-cancel"
                       onClick={() => setShowForm(false)}
                       disabled={submitting}
+                      style={{ 
+                        padding: '12px 28px', 
+                        backgroundColor: '#f0f0f0', 
+                        color: '#1a1a1a', 
+                        border: '1px solid #ddd',
+                        borderRadius: '6px',
+                        fontWeight: '600',
+                        fontSize: '0.95rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => (e.target.style.backgroundColor = '#e0e0e0')}
+                      onMouseLeave={(e) => (e.target.style.backgroundColor = '#f0f0f0')}
                     >
                       Cancel
                     </button>
@@ -270,53 +373,112 @@ const Testimonials = () => {
               </div>
             )}
 
-            {/* Testimonials Grid */}
+            {/* Reviews Grid */}
             {!showForm && (
               loading ? (
                 <div className="text-center py-5">
-                  <p>Loading testimonials...</p>
+                  <p>Loading reviews...</p>
                 </div>
               ) : testimonials.length > 0 ? (
-                <div className="testimonials-grid">
-                  <div className="row g-4">
-                    {testimonials.map((testimonial, index) => (
+                <div className="reviews-grid">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '32px' }}>
+                    {testimonials.map((review, index) => (
                       <div
-                        key={testimonial._id}
-                        className="col-lg-4 col-md-6"
+                        key={review._id}
                         data-aos="fade-up"
                         data-aos-delay={index * 100}
+                        style={{
+                          background: 'white',
+                          borderRadius: '12px',
+                          padding: '2.5rem',
+                          boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
+                          transition: 'all 0.3s ease',
+                          cursor: 'pointer',
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.12)';
+                          e.currentTarget.style.transform = 'translateY(-5px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
                       >
-                        <div className="testimonial-card">
-                          <div className="quote-icon">
-                            <i className="bi bi-quote"></i>
-                          </div>
-                          <p className="testimonial-text">
-                            "{testimonial.shortDescription}"
-                          </p>
+                        {/* Quote Icon */}
+                        <div style={{ marginBottom: '16px' }}>
+                          <i className="bi bi-quote" style={{ fontSize: '2rem', color: '#d4af37', opacity: 0.5 }}></i>
+                        </div>
 
-                          {/* Star Rating */}
-                          <div className="testimonial-rating">
-                            {[...Array(testimonial.rating || 5)].map((_, i) => (
-                              <i key={i} className="bi bi-star-fill"></i>
-                            ))}
-                          </div>
+                        {/* Review Text */}
+                        <p style={{ 
+                          fontSize: '1rem', 
+                          lineHeight: '1.8', 
+                          color: '#666', 
+                          marginBottom: '20px',
+                          flexGrow: 1,
+                          fontStyle: 'italic'
+                        }}>
+                          "{expandedReviews[review._id] ? review.shortDescription : truncateText(review.shortDescription)} "
+                   
 
-                          <div className="testimonial-author">
-                            {testimonial.thumbnail && (
-                              <img
-                                src={testimonial.thumbnail}
-                                alt={testimonial.coupleName}
-                                className="author-image"
-                              />
-                            )}
-                            <div className="author-info">
-                              <h4 className="author-name">
-                                {testimonial.coupleName}
-                              </h4>
-                              <p className="author-location">
-                                {testimonial.location}
-                              </p>
-                            </div>
+                        {/* View More Button */}
+                        {review.shortDescription && review.shortDescription.split(' ').length > 50 && (
+                          <button
+                            onClick={() => toggleExpandReview(review._id)}
+                            style={{
+                              display: 'Block',
+                              background: 'none',
+                              border: 'none',
+                              color: '#d4af37',
+                              cursor: 'pointer',
+                              fontWeight: '600',
+                              fontSize: '0.9rem',
+                              padding: '0 0 12px 0',
+                              textDecoration: 'none',
+                              transition: 'all 0.3s ease',
+                              marginBottom: '12px'
+                            }}
+                            onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+                            onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+                          >
+                            {expandedReviews[review._id] ? ' View Less' : ' View More'}
+                          </button>
+                        )}
+     </p>
+                        {/* Star Rating */}
+                        <div style={{ marginBottom: '20px', color: '#ffc107' }}>
+                          {[...Array(review.rating || 5)].map((_, i) => (
+                            <i key={i} className="bi bi-star-fill" style={{ marginRight: '4px' }}></i>
+                          ))}
+                        </div>
+
+                        {/* Divider */}
+                        <div style={{ borderTop: '1px solid #eee', marginBottom: '16px' }}></div>
+
+                        {/* Author Info */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          {review.thumbnail && (
+                            <img
+                              src={review.thumbnail}
+                              alt={review.coupleName}
+                              style={{
+                                width: '50px',
+                                height: '50px',
+                                borderRadius: '50%',
+                                objectFit: 'cover'
+                              }}
+                            />
+                          )}
+                          <div>
+                            <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>
+                              {review.coupleName}
+                            </h4>
+                            <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>
+                              {review.location}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -325,7 +487,7 @@ const Testimonials = () => {
                 </div>
               ) : (
                 <div className="text-center py-5">
-                  <p>No testimonials yet. Be the first to share your experience!</p>
+                  <p style={{ fontSize: '1.05rem', color: '#666' }}>No reviews yet. Be the first to share your experience!</p>
                 </div>
               )
             )}
@@ -333,11 +495,30 @@ const Testimonials = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="testimonials-cta section">
-          <div className="container text-center" data-aos="fade-up">
-            <h2>Ready to Create Your Love Story?</h2>
-            <p>Let us capture your special moments with the elegance they deserve.</p>
-            <a href="/quote" className="btn-primary-cta">
+        <section className="cta-banner" style={{ backgroundColor: '#1a1a1a', color: 'white', padding: '80px 0', textAlign: 'center' }} data-aos="fade-up">
+          <div className="container">
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '700', marginBottom: '16px', color: '#fff' }}>Ready to Create Your Love Story?</h2>
+            <p style={{ fontSize: '1.1rem', color: '#ccc', marginBottom: '32px' }}>Let us capture your special moments with the elegance they deserve.</p>
+            <a href="/quote" style={{ 
+              display: 'inline-block',
+              padding: '14px 32px',
+              backgroundColor: '#d4af37',
+              color: '#1a1a1a',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              fontSize: '0.95rem',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#c49a2f';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#d4af37';
+              e.target.style.transform = 'translateY(0)';
+            }}
+            >
               Get Your Quote
               <i className="bi bi-arrow-right ms-2"></i>
             </a>
