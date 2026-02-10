@@ -30,7 +30,6 @@ export const updateSettings = async (req, res) => {
             secondaryLogo,
             backgroundImage,
             socialLinks,
-            websiteUrl,
             contactEmail,
             contactPhone,
             primaryMobileNumber,
@@ -43,7 +42,6 @@ export const updateSettings = async (req, res) => {
         if (secondaryLogo !== undefined) settings.secondaryLogo = secondaryLogo;
         if (backgroundImage !== undefined) settings.backgroundImage = backgroundImage;
         if (socialLinks !== undefined) settings.socialLinks = socialLinks;
-        if (websiteUrl !== undefined) settings.websiteUrl = websiteUrl;
         if (contactEmail !== undefined) settings.contactEmail = contactEmail;
         if (contactPhone !== undefined) settings.contactPhone = contactPhone;
         if (primaryMobileNumber !== undefined) settings.primaryMobileNumber = primaryMobileNumber;

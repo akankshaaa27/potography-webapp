@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Image as ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Image as ImageIcon, ChevronUp, ChevronDown } from "lucide-react";
 import Skeleton from "../components/Skeleton";
 import PageHeader from "../components/PageHeader";
 
@@ -61,6 +61,22 @@ export default function AdminSlider() {
     },
   });
 
+  // Local helper state derived from mutation and form
+  const isSaving = mutation.isLoading;
+  const editingId = form.id;
+
+  const handleSave = () => {
+    // Basic validation
+    if (!form.title && !form.image) {
+      toast.error("Please provide at least a title or an image for the slide");
+      return;
+    }
+
+    // Prepare payload
+    const payload = { ...form };
+    mutation.mutate(payload);
+  };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -68,6 +84,47 @@ export default function AdminSlider() {
       reader.onloadend = () => setForm({ ...form, image: reader.result });
       reader.readAsDataURL(file);
     }
+  };
+
+  // Move slide up/down by swapping order with neighbor
+  const updateOrders = async (updates) => {
+    try {
+      // updates: [{ id, order }, ...]
+      await Promise.all(
+        updates.map((u) =>
+          fetch(`/api/slider/${u.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ order: u.order }),
+          })
+        )
+      );
+      queryClient.invalidateQueries({ queryKey: ["slider"] });
+      toast.success("Order updated");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update order");
+    }
+  };
+
+  const move = (id, dir) => {
+    // dir: -1 up, +1 down
+    const list = [...sliders];
+    const idx = list.findIndex(s => s._id === id);
+    if (idx === -1) return;
+    const targetIdx = idx + dir;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+
+    const a = list[idx];
+    const b = list[targetIdx];
+
+    // Swap their order values
+    const updates = [
+      { id: a._id, order: b.order || targetIdx + 1 },
+      { id: b._id, order: a.order || idx + 1 },
+    ];
+
+    updateOrders(updates);
   };
 
   return (
@@ -127,6 +184,22 @@ export default function AdminSlider() {
                   </div>
 
                   <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      onClick={() => move(slider._id, -1)}
+                      disabled={sliders[0]._id === slider._id}
+                      title="Move up"
+                      className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200"
+                    >
+                      <ChevronUp size={18} />
+                    </button>
+                    <button
+                      onClick={() => move(slider._id, 1)}
+                      disabled={sliders[sliders.length - 1]._id === slider._id}
+                      title="Move down"
+                      className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200"
+                    >
+                      <ChevronDown size={18} />
+                    </button>
                     <button
                       onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: slider.image, status: slider.status, order: slider.order }); setModalOpen(true); }}
                       className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-200"
@@ -199,6 +272,22 @@ export default function AdminSlider() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="inline-flex gap-2">
+                        <button
+                          onClick={() => move(slider._id, -1)}
+                          disabled={sliders[0]._id === slider._id}
+                          title="Move up"
+                          className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
+                        >
+                          <ChevronUp size={18} />
+                        </button>
+                        <button
+                          onClick={() => move(slider._id, 1)}
+                          disabled={sliders[sliders.length - 1]._id === slider._id}
+                          title="Move down"
+                          className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
+                        >
+                          <ChevronDown size={18} />
+                        </button>
                         <button
                           onClick={() => { setForm({ id: slider._id, title: slider.title, subtitle: slider.subtitle || "", image: slider.image, status: slider.status, order: slider.order }); setModalOpen(true); }}
                           className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"

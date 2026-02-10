@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Skeleton from "../components/Skeleton";
 
 // Extract YouTube ID
 const getYouTubeId = (url) => {
@@ -103,33 +104,89 @@ const Films = () => {
             {/* Category Filter Tabs */}
             <div className="row mb-5">
               <div className="col-12 d-flex justify-content-center">
-                <ul className="portfolio-filters list-unstyled d-flex flex-wrap justify-content-center gap-3 mb-0">
-                  <li
-                    className={`${activeCategory === "All" ? "filter-active" : ""}`}
-                    onClick={() => setActiveCategory("All")}
-                    style={{ cursor: 'pointer', padding: '8px 20px', borderRadius: '4px', fontWeight: '500', transition: 'all 0.3s ease', backgroundColor: activeCategory === 'All' ? '#daa520' : '#f4f4f4', color: activeCategory === 'All' ? '#fff' : '#333' }}
-                  >
-                    All
-                  </li>
-                  {categories.map((cat) => (
+                {loading ? (
+                  <div className="d-flex flex-wrap justify-content-center gap-3 mb-0">
+                    {[1, 2, 3, 4].map((_, index) => (
+                      <Skeleton key={index} width="120px" height="40px" borderRadius="25px" />
+                    ))}
+                  </div>
+                ) : (
+                  <ul className="portfolio-filters list-unstyled d-flex flex-wrap justify-content-center gap-3 mb-0">
                     <li
-                      key={cat._id}
-                      className={`${activeCategory === cat.name ? "filter-active" : ""}`}
-                      onClick={() => setActiveCategory(cat.name)}
-                      style={{ cursor: 'pointer', padding: '8px 20px', borderRadius: '4px', fontWeight: '500', transition: 'all 0.3s ease', backgroundColor: activeCategory === cat.name ? '#daa520' : '#f4f4f4', color: activeCategory === cat.name ? '#fff' : '#333' }}
+                      className={`portfolio-tab ${activeCategory === "All" ? "tab-active" : ""}`}
+                      onClick={() => setActiveCategory("All")}
+                      style={{
+                        cursor: 'pointer',
+                        padding: '10px 24px',
+                        borderRadius: '25px',
+                        fontWeight: '600',
+                        fontSize: '0.95rem',
+                        transition: 'all 0.3s ease',
+                        backgroundColor: activeCategory === 'All' ? '#daa520' : 'transparent',
+                        color: activeCategory === 'All' ? '#fff' : '#666',
+                        border: activeCategory === 'All' ? 'none' : '2px solid #e0e0e0',
+                        textTransform: 'capitalize',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (activeCategory !== 'All') {
+                          e.target.style.borderColor = '#daa520';
+                          e.target.style.color = '#daa520';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (activeCategory !== 'All') {
+                          e.target.style.borderColor = '#e0e0e0';
+                          e.target.style.color = '#666';
+                        }
+                      }}
                     >
-                      {cat.label || cat.name}
+                      All
                     </li>
-                  ))}
-                </ul>
+                    {categories.map((cat) => (
+                      <li
+                        key={cat._id}
+                        className={`portfolio-tab ${activeCategory === cat.name ? "tab-active" : ""}`}
+                        onClick={() => setActiveCategory(cat.name)}
+                        style={{
+                          cursor: 'pointer',
+                          padding: '10px 24px',
+                          borderRadius: '25px',
+                          fontWeight: '600',
+                          fontSize: '0.95rem',
+                          transition: 'all 0.3s ease',
+                          backgroundColor: activeCategory === cat.name ? '#daa520' : 'transparent',
+                          color: activeCategory === cat.name ? '#fff' : '#666',
+                          border: activeCategory === cat.name ? 'none' : '2px solid #e0e0e0',
+                          textTransform: 'capitalize',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (activeCategory !== cat.name) {
+                            e.target.style.borderColor = '#daa520';
+                            e.target.style.color = '#daa520';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (activeCategory !== cat.name) {
+                            e.target.style.borderColor = '#e0e0e0';
+                            e.target.style.color = '#666';
+                          }
+                        }}
+                      >
+                        {cat.label || cat.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
 
             {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-gold-500" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
+              <div className="films-grid">
+                {[1, 2, 3, 4, 5, 6].map((_, index) => (
+                  <div key={index} className="film-card">
+                    <Skeleton width="100%" height="250px" borderRadius="8px" />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="films-grid">

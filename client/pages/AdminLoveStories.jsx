@@ -141,154 +141,165 @@ export default function AdminLoveStories() {
 
             {showForm && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold">{editingId ? "Edit Story" : "Add New Story"}</h2>
-                            <button
-                                onClick={() => setShowForm(false)}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                ✕
-                            </button>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-5 border-b">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gold-100 text-gold-700 rounded-lg flex items-center justify-center font-bold">S</div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-900">{editingId ? "Edit Story" : "Add New Story"}</h3>
+                                    <p className="text-sm text-gray-500">Create a beautiful story entry to showcase on the website.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md">Close</button>
+                            </div>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Story Title</label>
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        value={form.title}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 outline-none"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                                    <input
-                                        type="text"
-                                        name="location"
-                                        value={form.location}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 outline-none"
-                                        required
-                                    />
-                                </div>
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Full Description</label>
-                                <textarea
-                                    name="description"
-                                    value={form.description}
-                                    onChange={handleChange}
-                                    rows="5"
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 outline-none"
-                                    required
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Main Thumbnail (Required)</label>
-                                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative h-32 flex items-center justify-center">
-                                        {form.thumbnail ? (
-                                            <div className="relative w-full h-full">
-                                                <img
-                                                    src={form.thumbnail}
-                                                    alt="Thumbnail"
-                                                    className="w-full h-full object-contain rounded-lg"
-                                                />
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                                                    <span className="text-white font-medium text-sm">Change</span>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="text-gray-400 flex flex-col items-center">
-                                                <span className="text-2xl">+</span>
-                                                <span className="text-xs">Upload Image</span>
-                                            </div>
-                                        )}
+                        <form onSubmit={handleSubmit} className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Left: Inputs */}
+                            <div className="lg:col-span-2 space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Story Title</label>
                                         <input
-                                            type="file"
-                                            onChange={handleThumbnailChange}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                            accept="image/*"
+                                            type="text"
+                                            name="title"
+                                            value={form.title}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gold-500 outline-none"
+                                            placeholder="e.g. A Monsoon Wedding"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                        <input
+                                            type="text"
+                                            name="location"
+                                            value={form.location}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gold-500 outline-none"
+                                            placeholder="City, Country"
+                                            required
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                    <select
-                                        name="status"
-                                        value={form.status}
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Description</label>
+                                    <textarea
+                                        name="description"
+                                        value={form.description}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold-500 outline-none"
-                                    >
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
+                                        rows="6"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-gold-500 outline-none"
+                                        placeholder="Write a compelling story that highlights the moment..."
+                                        required
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <select
+                                            name="status"
+                                            value={form.status}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gold-500 outline-none bg-white"
+                                        >
+                                            <option value="Active">Active</option>
+                                            <option value="Inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Order (display priority)</label>
+                                        <select
+                                            name="order"
+                                            value={form.order || 1}
+                                            onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gold-500 outline-none bg-white"
+                                        >
+                                            {[...Array(20)].map((_, i) => (
+                                                <option key={i} value={i + 1}>{i + 1}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Gallery Images</label>
+                                    <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                                        {form.gallery.map((img, index) => (
+                                            <div key={index} className="relative group rounded-md overflow-hidden border">
+                                                <img src={img} alt={`Gallery ${index}`} className="w-full h-24 object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeGalleryImage(index)}
+                                                    className="absolute top-2 right-2 bg-white/90 text-red-600 p-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition"
+                                                    aria-label="Remove image"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <label className="flex items-center justify-center cursor-pointer rounded-md border-2 border-dashed border-gray-200 p-3 text-gray-500 hover:border-gold-500 hover:bg-gold-50 transition">
+                                            <div className="text-center">
+                                                <div className="text-2xl">+</div>
+                                                <div className="text-xs">Add Images</div>
+                                            </div>
+                                            <input type="file" multiple onChange={handleGalleryChange} accept="image/*" className="hidden" />
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Gallery Images</label>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                                    {form.gallery.map((img, index) => (
-                                        <div key={index} className="relative group aspect-square">
-                                            <img
-                                                src={img}
-                                                alt={`Gallery ${index}`}
-                                                className="w-full h-full object-cover rounded-lg border border-gray-200"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeGalleryImage(index)}
-                                                className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
-                                    ))}
-                                    <label className="cursor-pointer border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center p-4 hover:border-gold-500 hover:bg-gold-50 transition aspect-square">
-                                        <span className="text-2xl text-gray-400 mb-1">+</span>
-                                        <span className="text-xs text-gray-500">Add Images</span>
-                                        <input
-                                            type="file"
-                                            multiple
-                                            onChange={handleGalleryChange}
-                                            className="hidden"
-                                            accept="image/*"
-                                        />
-                                    </label>
+                            {/* Right: Preview & Thumbnail */}
+                            <aside className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Main Thumbnail (Required)</label>
+                                    <div className="relative rounded-md overflow-hidden border border-gray-200 bg-gray-50 h-48 flex items-center justify-center">
+                                        {form.thumbnail ? (
+                                            <>
+                                                <img src={form.thumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                <div className="absolute top-3 right-3 flex gap-2">
+                                                    <label className="bg-white/90 p-2 rounded-md cursor-pointer shadow-sm text-sm">
+                                                        Change
+                                                        <input type="file" accept="image/*" onChange={handleThumbnailChange} className="hidden" />
+                                                    </label>
+                                                    <button type="button" onClick={() => setForm({ ...form, thumbnail: "" })} className="bg-white/90 p-2 rounded-md shadow-sm text-red-600">Remove</button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-gray-400">
+                                                <div className="text-3xl mb-2">📷</div>
+                                                <div className="text-sm">Upload Thumbnail</div>
+                                                <input type="file" accept="image/*" onChange={handleThumbnailChange} className="hidden" />
+                                            </label>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="flex justify-end pt-4 border-t border-gray-100">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowForm(false)}
-                                    className="mr-3 px-6 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSaving}
-                                    className="px-6 py-2 rounded-lg bg-gold-500 text-white hover:bg-gold-600 font-medium shadow-sm flex items-center gap-2"
-                                >
-                                    {isSaving ? (
-                                        <>
-                                            <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                            Saving...
-                                        </>
-                                    ) : (
-                                        editingId ? "Update Story" : "Create Story"
-                                    )}
-                                </button>
-                            </div>
+                                <div className="bg-gray-50 rounded-md p-3 border border-gray-100">
+                                    <h4 className="text-sm font-semibold text-gray-800 mb-2">Tips</h4>
+                                    <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                                        <li>Use high quality images (recommended 1200x800)</li>
+                                        <li>Write a descriptive title and location</li>
+                                        <li>Order defines display priority (1 is highest)</li>
+                                    </ul>
+                                </div>
+
+                                <div className="mt-auto flex flex-col gap-2">
+                                    <button type="button" onClick={() => setShowForm(false)} className="w-full px-4 py-2 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50">Cancel</button>
+                                    <button type="submit" disabled={isSaving} className="w-full px-4 py-2 rounded-md bg-gold-600 text-white font-semibold hover:bg-gold-700">
+                                        {isSaving ? (
+                                            <span className="inline-flex items-center gap-2"><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</span>
+                                        ) : (
+                                            editingId ? "Update Story" : "Create Story"
+                                        )}
+                                    </button>
+                                </div>
+                            </aside>
                         </form>
                     </div>
                 </div>
