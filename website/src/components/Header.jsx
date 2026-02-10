@@ -7,6 +7,7 @@ const Header = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [showTeamMenu, setShowTeamMenu] = useState(false);
 
   // ... (rest of logic)
 
@@ -25,6 +26,25 @@ const Header = () => {
       console.error('Error in Header useEffect:', error);
     }
   }, [isMobileNavOpen]);
+
+  // Check if any public team members exist; if not, hide Team menu
+  useEffect(() => {
+    let mounted = true;
+    fetch('/api/team?publicOnly=true')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!mounted) return;
+        setShowTeamMenu(Array.isArray(data) && data.length > 0);
+      })
+      .catch((err) => {
+        console.error('Error fetching team for header:', err);
+        if (mounted) setShowTeamMenu(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Close mobile nav on route change
   useEffect(() => {
@@ -64,13 +84,16 @@ const Header = () => {
                 <li><Link to="/service-details" className={location.pathname === '/service-details' ? 'active' : ''}>Service Details</Link></li>
               </ul> */}
             </li>
-            <li><Link to="/team" className={location.pathname === '/team' ? 'active' : ''}>Team</Link></li>
+            {/* {showTeamMenu && (
+              <li><Link to="/team" className={location.pathname === '/team' ? 'active' : ''}>Team</Link></li>
+            )} */}
             <li><Link to="/portfolio" className={location.pathname === '/portfolio' ? 'active' : ''}>Portfolio</Link></li>
             <li><Link to="/stories" className={location.pathname === '/stories' ? 'active' : ''}>Stories</Link></li>
             <li><Link to="/films" className={location.pathname === '/films' ? 'active' : ''}>Films</Link></li>
-            <li><Link to="/webtestimonials" className={location.pathname === '/webtestimonials' ? 'active' : ''}>Testimonials</Link></li>
-            <li><Link to="/quote" className={location.pathname === '/quote' ? 'active' : ''}>Book Us</Link></li>
+            <li><Link to="/reviews-feedback" className={location.pathname === '/reviews-feedback' ? 'active' : ''}>Reviews & Feedback</Link></li>
             <li><Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact Us</Link></li>
+            <li><Link to="/quote" className={location.pathname === '/quote' ? 'active' : ''}>Book Us</Link></li>
+            
           </ul>
           <i
             className={`mobile-nav-toggle d-xl-none bi ${isMobileNavOpen ? 'bi-x' : 'bi-list'}`}

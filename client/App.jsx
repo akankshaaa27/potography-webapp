@@ -295,6 +295,7 @@ const AppShell = () => {
             <Route path="/admin-users" element={<AdminUsers />} />
             <Route path="/admin-slider" element={<AdminSlider />} />
             <Route path="/admin-love-stories" element={<AdminLoveStories />} />
+            <Route path="/admin-reviews-feedback" element={<AdminTestimonials />} />
             <Route path="/admin-testimonials" element={<AdminTestimonials />} />
             <Route path="/admin-enquiries" element={<AdminEnquiries />} />
             <Route path="/admin-contact-messages" element={<AdminContacts />} />

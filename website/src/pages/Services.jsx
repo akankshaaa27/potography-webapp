@@ -69,30 +69,44 @@ const Services = () => {
       <main className="main">
         <section id="services" className="services section light-background">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
-            <div className="services-grid">
+            {/* Fresh Services Header */}
+            <div className="services-header">
+              <h2>Why Choose Our Services</h2>
+              <p>At The Patil Photography & Film's, we craft timeless stories filled with emotion, elegance, and authenticity</p>
+            </div>
+
+            {/* Modern Service Cards Grid */}
+            <div className="row g-4 mb-5">
               {servicesList.map((s, idx) => (
-                <div className={`service-item ${s.id === 3 ? 'featured' : ''}`} key={s.id} data-aos="fade-up" data-aos-delay={150 + idx * 50}>
-                  {s.id === 3 && <div className="featured-badge">Premium</div>}
-                  <div className="service-number">{String(s.id).padStart(2, '0')}</div>
-                  <div className="service-icon">
-                    <i className="bi bi-camera" />
+                <div key={s.id} className={`col-lg-4 col-md-6 ${idx === 0 ? 'featured-service' : ''}`} data-aos="fade-up" data-aos-delay={100 + idx * 100}>
+                  <div className={`service-card-modern ${idx === 0 ? 'featured' : ''}`}>
+                    <div className="service-number">0{s.id}</div>
+                    <div className="service-icon">
+                      {s.id === 1 && <i className="bi bi-building" />}
+                      {s.id === 2 && <i className="bi bi-heart" />}
+                      {s.id === 3 && <i className="bi bi-person-circle" />}
+                      {s.id === 4 && <i className="bi bi-box" />}
+                      {s.id === 5 && <i className="bi bi-film" />}
+                      {s.id === 6 && <i className="bi bi-magic" />}
+                    </div>
+                    <h3>{s.title}</h3>
+                    <p>{s.description}</p>
+                    <a href={s.cta} className="service-link">
+                      Explore Service
+                      <i className="bi bi-arrow-right" />
+                    </a>
                   </div>
-                  <h3>{s.title}</h3>
-                  <p>{s.description}</p>
-                  <a href={s.cta} className="service-cta">
-                    <span>Explore Service</span>
-                    <i className="bi bi-arrow-right" />
-                  </a>
                 </div>
               ))}
             </div>
 
+            {/* CTA Section */}
             <div className="row mt-5" data-aos="fade-up" data-aos-delay="400">
               <div className="col-lg-12 text-center">
-                <div className="cta-section">
+                <div className="">
                   <h4>Ready to book a shoot?</h4>
                   <p>Contact our team to discuss your requirements and get a custom quote.</p>
-                  <a href="/quote" className="btn-primary">
+                  <a href="/quote" className="cta-link">
                     <span>Get Free Quote</span>
                     <i className="bi bi-arrow-right" />
                   </a>

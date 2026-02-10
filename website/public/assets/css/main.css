@@ -165,8 +165,12 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 80px;
-  margin-right: 8px;
+    max-height: 95px !important;
+    margin-right: 8px;
+}
+.header.header-scrolled .logo img {
+    max-height: 65px !important;
+    margin-right: 8px;
 }
 
 .header .logo h1 {
@@ -3502,6 +3506,11 @@ justify-content: center;
   flex-direction: column;
   gap: 16px;
 }
+.contact-info-page {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
 @media (max-width: 992px) {
   .quote .contact-info {
@@ -4834,10 +4843,13 @@ font-weight: 600 !important;
 }
 
 .service-icon i {
-  font-size: 1.2rem;
-  color: #555;
-  transition: color 0.3s ease;
- 
+    bottom: 16px;
+    left: 22px;
+    position: relative;
+    /* padding: 20px; */
+    font-size: 1.2rem;
+    color: #ffffff !important;
+    transition: color 0.3s ease;
 }
 
 /* HOVER EFFECT */

@@ -560,7 +560,7 @@ const Home = () => {
                   <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
                     Capture your entire day from pre-wedding to reception with professional coverage of all cherished moments
                   </p>
-                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                  <a href="#" className="cta-link">
                     Learn More →
                   </a>
                 </div>
@@ -607,7 +607,7 @@ const Home = () => {
                   <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
                     Premium videography with drone footage, creative editing, and cinematic storytelling that brings emotions to life
                   </p>
-                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                  <a href="#" className="cta-link">
                     Learn More →
                   </a>
                 </div>
@@ -654,7 +654,7 @@ const Home = () => {
                   <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
                     Elegant and timeless portraits capturing your essence with professional styling and beautiful locations
                   </p>
-                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                  <a href="#" className="cta-link">
                     Learn More →
                   </a>
                 </div>
@@ -701,7 +701,7 @@ const Home = () => {
                   <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
                     Celebrate your engagement with beautiful pre-wedding sessions in stunning locations capturing pure joy
                   </p>
-                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                  <a href="#" className="cta-link">
                     Learn More →
                   </a>
                 </div>
@@ -748,7 +748,7 @@ const Home = () => {
                   <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
                     Premium albums, prints, and canvas artwork that transform your moments into stunning home décor
                   </p>
-                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                  <a href="#" className="cta-link">
                     Learn More →
                   </a>
                 </div>
@@ -795,7 +795,7 @@ const Home = () => {
                   <p style={{ color: "#666", lineHeight: "1.6", marginBottom: "1rem" }}>
                     Breathtaking aerial perspectives using drone technology to capture stunning venue and celebration views
                   </p>
-                  <a href="#" style={{ color: "#d4a574", textDecoration: "none", fontWeight: "600", fontSize: "0.95rem" }}>
+                  <a href="#" className="cta-link">
                     Learn More →
                   </a>
                 </div>
@@ -842,7 +842,10 @@ const Home = () => {
                   slidesPerView={1}
                   spaceBetween={30}
                   autoplay={{ delay: 5000, disableOnInteraction: true }}
-                  navigation={{ prevEl: testimonialsPrevRef.current, nextEl: testimonialsNextRef.current }}
+                  navigation={{
+                    prevEl: testimonialsPrevRef?.current,
+                    nextEl: testimonialsNextRef?.current,
+                  }}
                   onBeforeInit={(swiper) => {
                     try {
                       swiper.params.navigation.prevEl = testimonialsPrevRef.current;
@@ -927,7 +930,7 @@ const Home = () => {
 
           <div className="d-flex justify-content-center mt-5">
             <Link to="/testimonials" className="submit-btn mt-3" style={{ textDecoration: "none" }}>
-              <span>View All Testimonials</span>
+              <span>View All Reviews</span>
               <i className="bi bi-arrow-right ms-2"></i>
             </Link>
           </div>
@@ -1010,7 +1013,7 @@ const Home = () => {
                         <div className="cta-section text-md-start">
                           <a
                             href="#"
-                            className="cta-link"
+                            className=""
                             onClick={(e) => {
                               e.preventDefault();
                               setSelectedStory(story);
@@ -1032,7 +1035,6 @@ const Home = () => {
               <Link
                 to="/stories"
                 className="cta-link"
-                style={{ textDecoration: "none", borderRadius: 30, padding: '10px 28px', borderWidth: 2 }}
               >
                 <span>View All Stories</span>
                 <i className="bi bi-arrow-right ms-2"></i>

@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { useSettings } from '../hooks/useSettings';
+import React, { useEffect, useState } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { useSettings } from "../hooks/useSettings";
 
 const Contact = () => {
   const { settings } = useSettings();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
   useEffect(() => {
-    document.body.className = 'contact-page';
+    document.body.className = "contact-page";
 
     return () => {
-      document.body.className = '';
+      document.body.className = "";
     };
   }, []);
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -43,7 +43,7 @@ const Contact = () => {
 
       if (res.ok) {
         alert("Thanks for reaching out! We will get back to you shortly.");
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ name: "", email: "", subject: "", message: "" });
       } else {
         alert("Could not send message. Please try again.");
       }
@@ -61,12 +61,17 @@ const Contact = () => {
 
       <main className="main">
         {/* Page Title */}
-        <div className="page-title dark-background" style={{ backgroundImage: "url('/assets/img/HomePage/16.webp')" }}>
+        <div
+          className="page-title dark-background"
+          style={{ backgroundImage: "url('/assets/img/HomePage/16.webp')" }}
+        >
           <div className="container position-relative">
             <h1>Contact</h1>
             <nav className="breadcrumbs">
               <ol>
-                <li><a href="/">Home</a></li>
+                <li>
+                  <a href="/">Home</a>
+                </li>
                 <li className="current">Contact</li>
               </ol>
             </nav>
@@ -77,16 +82,15 @@ const Contact = () => {
         <section id="contact" className="contact section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             <div className="row gy-4">
-
               <div className="col-lg-4">
-                <div className="contact-info">
+                <div className="contact-info-page">
                   <div className="contact-card">
                     <div className="icon-box">
                       <i className="bi bi-geo-alt"></i>
                     </div>
                     <div className="contact-text">
                       <h4>Location</h4>
-                      <p>{settings?.address || "karad Dist: Satara"}</p>
+                      <p>{settings?.address || "Maharashtra, India"}</p>
                     </div>
                   </div>
 
@@ -96,7 +100,11 @@ const Contact = () => {
                     </div>
                     <div className="contact-text">
                       <h4>Email</h4>
-                      <p>{settings?.contactEmail || "info@thepatilphotography.com"}</p>
+                      <p>
+                        {settings?.contactEmail && (
+                          <p>{settings.contactEmail}</p>
+                        )}
+                      </p>
                     </div>
                   </div>
 
@@ -107,7 +115,9 @@ const Contact = () => {
                     <div className="contact-text">
                       <h4>Call</h4>
                       <p>{settings?.primaryMobileNumber}</p>
-                      {settings?.secondaryMobileNumber && <p>{settings?.secondaryMobileNumber}</p>}
+                      {settings?.secondaryMobileNumber && (
+                        <p>{settings?.secondaryMobileNumber}</p>
+                      )}
                     </div>
                   </div>
 
@@ -124,9 +134,16 @@ const Contact = () => {
               </div>
 
               <div className="col-lg-8">
-                <div className="contact-form-container" data-aos="fade-up" data-aos-delay="400">
+                <div
+                  className="contact-form-container"
+                  data-aos="fade-up"
+                  data-aos-delay="400"
+                >
                   <h3>Get in Touch</h3>
-                  <p>We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                  <p>
+                    We'd love to hear from you. Send us a message and we'll
+                    respond as soon as possible.
+                  </p>
 
                   <form onSubmit={handleSubmit} className="contact-form">
                     <div className="row">
@@ -181,11 +198,18 @@ const Contact = () => {
                         type="submit"
                         class="submit-btn mt-3"
                         disabled={submitting}
-                        style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+                        style={{
+                          opacity: submitting ? 0.7 : 1,
+                          cursor: submitting ? "not-allowed" : "pointer",
+                        }}
                       >
                         {submitting ? (
                           <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span
+                              className="spinner-border spinner-border-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
                             Sending...
                           </>
                         ) : (
@@ -204,7 +228,11 @@ const Contact = () => {
       <Footer />
 
       {/* Scroll Top Button */}
-      <a href="#" id="scroll-top" className="scroll-top d-flex align-items-center justify-content-center">
+      <a
+        href="#"
+        id="scroll-top"
+        className="scroll-top d-flex align-items-center justify-content-center"
+      >
         <i className="bi bi-arrow-up-short"></i>
       </a>
     </>

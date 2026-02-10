@@ -3,32 +3,34 @@ import { useSettings } from "../hooks/useSettings";
 import { LogOut } from "lucide-react";
 
 const items = [
-  // Operations & Management
+  // Core Operations (Most Important)
   { to: "/admin-dashboard", label: "Dashboard" },
   { to: "/admin-calendar", label: "Calendar" },
+  
+  // Business Critical
   { to: "/admin-quotations", label: "Quotations" },
   { to: "/admin-orders", label: "Orders" },
   { to: "/admin-invoices", label: "Invoices" },
   { to: "/admin-clients", label: "Clients" },
 
-  // Website Content
-  { to: "/admin-gallery", label: "Portfolio" },
-  { to: "/admin-films", label: "Films" },
-  { to: "/admin-love-stories", label: "Love Stories" },
-  { to: "/admin-slider", label: "Slider" },
-  { to: "/admin-popup", label: "Popup Manager" },
-  { to: "/admin-testimonials", label: "Testimonials" },
-  { to: "/admin-team", label: "Team Management" },
-
-  // Incoming Interactions
+  // Lead Management & Communication
   { to: "/admin-enquiries", label: "Enquiries" },
   { to: "/admin-contact-messages", label: "Contact Messages" },
 
-  // System Administration
+  // Website Content Management
+  { to: "/admin-gallery", label: "Portfolio" },
+  { to: "/admin-films", label: "Films" },
+  { to: "/admin-love-stories", label: "Love Stories" },
+  { to: "/admin-reviews-feedback", label: "Reviews & Feedback" },
+  { to: "/admin-team", label: "Team Management" },
+  { to: "/admin-slider", label: "Slider" },
+  { to: "/admin-popup", label: "Popup Manager" },
+
+  // System Administration (Least Important)
   { to: "/admin-users", label: "Users" },
+  { to: "/admin-settings", label: "Global Settings" },
   { to: "/admin-accessories", label: "Accessories" },
   { to: "/admin-common-types", label: "Common Types" },
-  { to: "/admin-settings", label: "Global Settings" },
 ];
 
 export default function Navigation({ isMobileOpen = false, isOpen = true, onClose = () => { }, onLogout }) {

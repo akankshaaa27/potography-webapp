@@ -46,40 +46,45 @@ const Team = () => {
                 {/* Meet Our Team Section */}
                 <section id="team" className="team section">
                     <div className="container" data-aos="fade-up">
-                        <div className="section-title text-center pb-3 mb-3">
-                            <h2>Meet Our Team</h2>
-                            <p>Passion, Creativity, and Excellence</p>
-                        </div>
-
-                        <div className="row gy-4 justify-content-center">
-                            {teamLoading ? (
-                                <div className="text-center p-5">Loading team...</div>
-                            ) : team?.length > 0 ? (
-                                team.map((member) => (
-                                    <div key={member._id} className="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay={100}>
-                                        <div className="team-member">
-                                            <div className="member-img">
-                                                <img src={member.image || "/assets/img/logo.PNG"} className="img-fluid" alt={member.name} style={{ width: '100%', height: '350px', objectFit: 'cover' }} />
-                                                <div className="social">
-                                                    {member.socialLinks?.instagram && <a href={member.socialLinks.instagram} target="_blank"><i className="bi bi-instagram"></i></a>}
-                                                    {member.socialLinks?.facebook && <a href={member.socialLinks.facebook} target="_blank"><i className="bi bi-facebook"></i></a>}
-                                                    {member.socialLinks?.website && <a href={member.socialLinks.website} target="_blank"><i className="bi bi-globe"></i></a>}
-                                                </div>
-                                            </div>
-                                            <div className="member-info">
-                                                <h4>{member.name}</h4>
-                                                <span>{member.role}</span>
-                                                <p>{member.bio}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center p-5">
-                                    <p>Our team is growing! Check back soon.</p>
+                                <div className="section-title text-center pb-3 mb-5">
+                                    <h2 style={{ fontSize: '2.4rem', fontWeight: 800, background: 'linear-gradient(90deg,#f7e7c8,#d4af37)', WebkitBackgroundClip: 'text', color: 'transparent' }}>Meet The Atelier</h2>
+                                    <p style={{ color: '#666' }}>A collective of storytellers, each handpicked for craft, discretion, and an eye for cinematic romance.</p>
                                 </div>
-                            )}
-                        </div>
+
+                                <div style={{ marginTop: '12px' }}>
+                                    {teamLoading ? (
+                                        <div className="text-center p-5">Loading team...</div>
+                                    ) : team?.length > 0 ? (
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '26px', alignItems: 'stretch' }}>
+                                            {team.map((member, idx) => (
+                                                <div key={member._id || idx} data-aos="fade-up" data-aos-delay={idx * 60} style={{ background: '#fff', borderRadius: '12px', padding: '14px', boxShadow: '0 6px 18px rgba(24,24,24,0.06)', border: '1px solid #eee', transition: 'transform .22s ease', display: 'flex', flexDirection: 'column', gap: '12px' }} onMouseEnter={(e)=> e.currentTarget.style.transform='translateY(-4px)'} onMouseLeave={(e)=> e.currentTarget.style.transform='translateY(0)'}>
+                                                    <div style={{ borderRadius: '10px', overflow: 'hidden', background: '#f5f5f5' }}>
+                                                        <div style={{ width: '100%', height: '320px', overflow: 'hidden' }}>
+                                                            <img src={member.image || '/assets/img/logo.PNG'} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ textAlign: 'center', paddingTop: '6px' }}>
+                                                        <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#111' }}>{member.name}</div>
+                                                        <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '6px' }}>{member.role}</div>
+                                                    </div>
+
+                                                    <p style={{ color: '#444', lineHeight: 1.6, margin: 0 }}>{member.bio}</p>
+
+                                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '8px' }}>
+                                                        {member.socialLinks?.instagram && <a href={member.socialLinks.instagram} target="_blank" rel="noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#1a1a1a', border: '1px solid #eee' }}><i className="bi bi-instagram"></i></a>}
+                                                        {member.socialLinks?.facebook && <a href={member.socialLinks.facebook} target="_blank" rel="noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#1a1a1a', border: '1px solid #eee' }}><i className="bi bi-facebook"></i></a>}
+                                                        {member.socialLinks?.website && <a href={member.socialLinks.website} target="_blank" rel="noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#1a1a1a', border: '1px solid #eee' }}><i className="bi bi-globe"></i></a>}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center p-5">
+                                            <p>Our team is growing! Check back soon.</p>
+                                        </div>
+                                    )}
+                                </div>
                     </div>
                 </section>
 
