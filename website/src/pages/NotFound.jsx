@@ -1,52 +1,92 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 
 const NotFound = () => {
-  useEffect(() => {
-    document.body.className = '404-page';
-    
-    return () => {
-      document.body.className = '';
-    };
-  }, []);
-
   return (
-    <>
-      <Header />
-      
-      {/* Page Title */}
-      <div className="page-title dark-background" style={{backgroundImage: "url('/assets/img/slider/11.jpg')"}}>
-        <div className="container position-relative">
-          <h1>Page Not Found</h1>
-          <p>The page you're looking for doesn't exist</p>
-          <nav className="breadcrumbs">
-            <ol>
-              <li><a href="/">Home</a></li>
-              <li className="current">404</li>
-            </ol>
-          </nav>
-        </div>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#e8e8e8',
+      position: 'relative',
+      overflow: 'hidden',
+      padding: '40px 20px'
+    }}>
+      {/* Faded background 404 */}
+      <div style={{
+        position: 'absolute',
+        fontSize: '400px',
+        fontWeight: '900',
+        color: 'rgba(200, 180, 180, 0.15)',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        lineHeight: '1',
+        zIndex: 0,
+        whiteSpace: 'nowrap'
+      }}>
+        404
       </div>
 
-      <main className="main">
-        <section className="section mt-5 pt-5">
-          <div className="container">
-            <div className="row justify-content-center text-center">
-              <div className="col-lg-6">
-                <h1 className="display-1">404</h1>
-                <h2>Page Not Found</h2>
-                <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
-                <Link to="/" className="btn btn-primary">Go Home</Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+      {/* Content */}
+      <div style={{
+        textAlign: 'center',
+        position: 'relative',
+        zIndex: 10,
+        maxWidth: '600px'
+      }}>
+        <h1 style={{
+          fontSize: '3.5rem',
+          fontWeight: '600',
+          color: '#333',
+          margin: '0 0 20px 0',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        }}>
+          Page not found
+        </h1>
 
-      <Footer />
-    </>
+        <p style={{
+          fontSize: '1.1rem',
+          color: '#999',
+          margin: '0 0 40px 0',
+          lineHeight: '1.6',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        }}>
+          Duis dolor sit amet, consectetur adipiscing elit vestibulum in pharitra.
+        </p>
+
+        <Link
+          to="/"
+          style={{
+            background: '#ff5722',
+            color: '#fff',
+            padding: '14px 40px',
+            borderRadius: '50px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            fontSize: '1rem',
+            transition: 'all 0.3s ease',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'inline-block',
+            boxShadow: '0 4px 15px rgba(255, 87, 34, 0.3)'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = '#ff6f42';
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 6px 20px rgba(255, 87, 34, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = '#ff5722';
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 4px 15px rgba(255, 87, 34, 0.3)';
+          }}
+        >
+          Go To Home →
+        </Link>
+      </div>
+    </div>
   );
 };
 

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, Phone, MapPin, Calendar, CheckSquare, Eye, X, ChevronDown, Plus } from "lucide-react";
+import { Trash2, Phone, MapPin, Calendar, Zap, Eye, X, MessageCircle } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 
 export default function AdminEnquiries() {
     const [enquiries, setEnquiries] = useState([]);
     const [viewDetails, setViewDetails] = useState(null);
+    const [filter, setFilter] = useState("All");
 
     useEffect(() => {
         fetchEnquiries();
@@ -28,8 +29,10 @@ export default function AdminEnquiries() {
                 body: JSON.stringify({ status }),
             });
             if (res.ok) {
-                // Update local state to reflect change immediately without refetching
                 setEnquiries(prev => prev.map(e => e._id === id ? { ...e, status } : e));
+                if (viewDetails?._id === id) {
+                    setViewDetails({...viewDetails, status});
+                }
             }
         } catch (error) {
             console.error("Error updating status:", error);
@@ -39,255 +42,284 @@ export default function AdminEnquiries() {
     const handleDelete = async (id) => {
         if (confirm("Are you sure you want to delete this enquiry?")) {
             await fetch(`/api/enquiries/${id}`, { method: "DELETE" });
+            if (viewDetails?._id === id) setViewDetails(null);
             fetchEnquiries();
         }
     };
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'New': return 'bg-blue-50 text-blue-700 border-blue-200';
-            case 'Contacted': return 'bg-amber-50 text-amber-700 border-amber-200';
-            case 'Booked': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-            case 'Closed': return 'bg-slate-50 text-slate-600 border-slate-200';
-            default: return 'bg-gray-50 text-gray-600 border-gray-200';
+            case 'New': return 'bg-blue-50 text-blue-700 border border-blue-200';
+            case 'Contacted': return 'bg-amber-50 text-amber-700 border border-amber-200';
+            case 'Booked': return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+            case 'Closed': return 'bg-slate-100 text-slate-600 border border-slate-300';
+            default: return 'bg-slate-50 text-slate-600 border border-slate-200';
         }
     };
 
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case 'New': return 'bg-blue-100 text-blue-800';
+            case 'Contacted': return 'bg-amber-100 text-amber-800';
+            case 'Booked': return 'bg-emerald-100 text-emerald-800';
+            case 'Closed': return 'bg-slate-200 text-slate-800';
+            default: return 'bg-slate-100 text-slate-800';
+        }
+    };
+
+    const filteredEnquiries = filter === "All" 
+        ? enquiries 
+        : enquiries.filter(e => e.status === filter);
+
+    const stats = {
+        total: enquiries.length,
+        new: enquiries.filter(e => e.status === 'New').length,
+        contacted: enquiries.filter(e => e.status === 'Contacted').length,
+        booked: enquiries.filter(e => e.status === 'Booked').length,
+    };
+
     return (
-         <>
-        <div className="mt-0 container mx-auto px-0 pt-0 pb-6 animate-in fade-in duration-500">
+        <div className="min-h-screen animate-in fade-in duration-500">
             <PageHeader
                 title="Book Us Enquiries"
                 description="Manage enquiry requests and track customer interest"
             />
-                {enquiries.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
-                        <p className="text-slate-500">No enquiries found yet.</p>
+
+            {/* Stats Cards - Simple */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {[
+                    { label: 'Total', value: stats.total, color: 'bg-slate-100' },
+                    { label: 'New', value: stats.new, color: 'bg-blue-100' },
+                    { label: 'Contacted', value: stats.contacted, color: 'bg-amber-100' },
+                    { label: 'Booked', value: stats.booked, color: 'bg-emerald-100' },
+                ].map((stat, idx) => (
+                    <div key={idx} className={`${stat.color} rounded-lg p-4 text-center`}>
+                        <p className="text-3xl font-bold text-charcoal-900">{stat.value}</p>
+                        <p className="text-sm text-slate-600 mt-1">{stat.label}</p>
                     </div>
-                ) : (
-                    enquiries.map((enquiry) => (
-                        <div key={enquiry._id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-                            <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
-                                <div>
-                                    <div className="flex items-center gap-3">
-                                        <h3 className="text-xl font-bold text-charcoal-900">
-                                            {enquiry.groomName} <span className="text-gold-500">&</span> {enquiry.brideName}
+                ))}
+            </div>
+
+
+            {/* Filter Tabs */}
+            <div className="flex gap-2 mb-6">
+                {['All', 'New', 'Contacted', 'Booked', 'Closed'].map(status => (
+                    <button
+                        key={status}
+                        onClick={() => setFilter(status)}
+                        className={`px-4 py-2 rounded-lg font-medium transition ${
+                            filter === status
+                                ? 'bg-charcoal-900 text-white'
+                                : 'bg-slate-200 text-charcoal-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        {status}
+                    </button>
+                ))}
+            </div>
+
+            {/* Enquiries Table/Grid */}
+            {filteredEnquiries.length === 0 ? (
+                <div className="text-center py-20 bg-slate-100 rounded-lg">
+                    <MessageCircle className="mx-auto h-12 w-12 text-slate-400 mb-3" />
+                    <p className="text-slate-600 font-medium">No enquiries found</p>
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {filteredEnquiries.map((enquiry) => (
+                        <div
+                            key={enquiry._id}
+                            className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition"
+                        >
+                            <div className="flex items-center justify-between gap-4">
+                                {/* Left Info */}
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="font-semibold text-charcoal-900 text-sm">
+                                            {enquiry.groomName} & {enquiry.brideName}
                                         </h3>
-                                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(enquiry.status)} md:hidden`}>
+                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusBadge(enquiry.status)}`}>
                                             {enquiry.status}
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
-                                        <Phone size={14} /> <span>{enquiry.phoneNumber}</span>
+                                    <div className="text-sm text-slate-600 space-y-1">
+                                        <div className="flex items-center gap-4">
+                                            <span className="flex items-center gap-1">
+                                                <Phone size={14} /> {enquiry.phoneNumber}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <Calendar size={14} /> {new Date(enquiry.eventStartDate).toLocaleDateString()}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <MapPin size={14} /> {enquiry.location}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <Zap size={14} /> ₹{enquiry.budget ? (enquiry.budget / 100000).toFixed(1) : "N/A"}L
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 w-full md:w-auto">
-                                    <div className="relative group w-full md:w-48">
-                                        <select
-                                            value={enquiry.status}
-                                            onChange={(e) => updateStatus(enquiry._id, e.target.value)}
-                                            className={`w-full appearance-none pl-4 pr-10 py-2 rounded-xl text-sm font-semibold border border-transparent cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gold-500/20 transition-all ${getStatusColor(enquiry.status)}`}
-                                        >
-                                            <option value="New">New Enquiry</option>
-                                            <option value="Contacted">Contacted</option>
-                                            <option value="Booked">Booked</option>
-                                            <option value="Closed">Closed</option>
-                                        </select>
-                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" size={16} />
-                                    </div>
+                                {/* Actions */}
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    <select
+                                        value={enquiry.status}
+                                        onChange={(e) => updateStatus(enquiry._id, e.target.value)}
+                                        className={`text-xs py-1 px-2 rounded border-0 cursor-pointer font-medium focus:outline-none focus:ring-1 focus:ring-charcoal-600 ${getStatusColor(enquiry.status)}`}
+                                    >
+                                        <option value="New">New</option>
+                                        <option value="Contacted">Contacted</option>
+                                        <option value="Booked">Booked</option>
+                                        <option value="Closed">Closed</option>
+                                    </select>
+                                    <button
+                                        onClick={() => setViewDetails(enquiry)}
+                                        className="p-1.5 text-slate-500 hover:text-charcoal-900 hover:bg-slate-100 rounded transition"
+                                        title="View Details"
+                                    >
+                                        <Eye size={18} />
+                                    </button>
                                     <button
                                         onClick={() => handleDelete(enquiry._id)}
-                                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
-                                        title="Delete Enquiry"
+                                        className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition"
+                                        title="Delete"
                                     >
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gold-500 shadow-sm">
-                                        <Calendar size={16} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Event Dates</span>
-                                        <span className="font-medium">
-                                            {new Date(enquiry.eventStartDate).toLocaleDateString()} - {new Date(enquiry.eventEndDate).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gold-500 shadow-sm">
-                                        <MapPin size={16} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Location</span>
-                                        <span className="font-medium">{enquiry.location}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mb-6">
-                                <p className="text-sm text-slate-600 italic line-clamp-2">
-                                    "{enquiry.message || "No message provided."}"
-                                </p>
-                                {enquiry.message && enquiry.message.length > 100 && (
-                                    <button
-                                        onClick={() => setViewDetails(enquiry)}
-                                        className="text-xs font-semibold text-gold-600 hover:text-gold-700 mt-2 hover:underline flex items-center gap-1"
-                                    >
-                                        View Full Details
-                                    </button>
-                                )}
-                                {!enquiry.message && (
-                                    <button
-                                        onClick={() => setViewDetails(enquiry)}
-                                        className="text-xs font-semibold text-gold-600 hover:text-gold-700 mt-2 hover:underline flex items-center gap-1"
-                                    >
-                                        View All Details
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Tags Section */}
-                            <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-semibold text-slate-400 uppercase">Budget</span>
-                                    <span className="text-sm font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-100">
-                                        ₹{enquiry.budget ? enquiry.budget.toLocaleString() : "N/A"}
-                                    </span>
-                                </div>
-                                <div className="flex-1"></div>
-                                <button
-                                    onClick={() => setViewDetails(enquiry)}
-                                    className="text-sm font-medium text-charcoal-600 hover:text-charcoal-900 flex items-center gap-2 px-4 py-2 hover:bg-slate-50 rounded-lg transition"
-                                >
-                                    <Eye size={16} /> View Details
-                                </button>
-                            </div>
-
                         </div>
-                    ))
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
 
             {/* View Details Modal */}
             {viewDetails && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" onClick={() => setViewDetails(null)}>
-                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                        <div className="sticky top-0 bg-white px-6 py-4 border-b border-slate-100 flex justify-between items-center z-10">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setViewDetails(null)}>
+                    <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
+                        {/* Modal Header */}
+                        <div className="sticky top-0 bg-charcoal-900 text-white px-6 py-4 flex justify-between items-start border-b">
                             <div>
-                                <h2 className="text-xl font-bold text-charcoal-900">Enquiry Details</h2>
-                                <p className="text-sm text-slate-500">From {viewDetails.groomName} & {viewDetails.brideName}</p>
+                                <h2 className="text-xl font-bold">{viewDetails.groomName} & {viewDetails.brideName}</h2>
+                                <p className="text-sm text-slate-300 mt-1">Enquiry Details</p>
                             </div>
                             <button
                                 onClick={() => setViewDetails(null)}
-                                className="p-2 text-slate-400 hover:text-charcoal-900 hover:bg-slate-100 rounded-lg transition"
+                                className="text-slate-300 hover:text-white p-1"
                             >
-                                <X size={20} />
+                                <X size={24} />
                             </button>
                         </div>
 
                         <div className="p-6 space-y-6">
-                            {/* Status Banner */}
-                            <div className={`p-4 rounded-xl border flex justify-between items-center ${getStatusColor(viewDetails.status)}`}>
+                            {/* Basic Info */}
+                            <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span className="text-xs uppercase font-semibold opacity-70">Current Status</span>
-                                    <p className="font-bold text-lg">{viewDetails.status}</p>
+                                    <span className="text-slate-500 font-medium block mb-1">Status</span>
+                                    <span className={`inline-block px-3 py-1 rounded font-medium ${getStatusBadge(viewDetails.status)}`}>
+                                        {viewDetails.status}
+                                    </span>
                                 </div>
-                                <div className="text-right">
-                                    <span className="text-xs uppercase font-semibold opacity-70">Enquiry Date</span>
-                                    <p className="font-semibold text-sm">
-                                        {viewDetails.createdAt ? new Date(viewDetails.createdAt).toLocaleDateString() : new Date().toLocaleDateString()}
-                                    </p>
+                                <div>
+                                    <span className="text-slate-500 font-medium block mb-1">Date</span>
+                                    <p className="text-charcoal-900 font-medium">{new Date(viewDetails.createdAt).toLocaleDateString()}</p>
                                 </div>
                             </div>
 
-                            {/* Contact Info */}
-                            <div>
-                                <h3 className="text-sm uppercase tracking-wider text-gold-500 font-semibold mb-3">Contact Information</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                        <span className="block text-xs text-slate-500 mb-1">Mobile Number</span>
-                                        <span className="block font-medium text-charcoal-900">{viewDetails.phoneNumber}</span>
+                            {/* Contact Details */}
+                            <div className="bg-slate-50 p-4 rounded-lg">
+                                <h3 className="font-semibold text-charcoal-900 mb-3">Contact Information</h3>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-600">Phone:</span>
+                                        <span className="font-medium">{viewDetails.phoneNumber}</span>
                                     </div>
-                                    <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                        <span className="block text-xs text-slate-500 mb-1">Estimated Budget</span>
-                                        <span className="block font-medium text-charcoal-900">₹{viewDetails.budget ? viewDetails.budget.toLocaleString() : "N/A"}</span>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-600">Budget:</span>
+                                        <span className="font-medium">₹{viewDetails.budget ? (viewDetails.budget / 100000).toFixed(1) : "N/A"}L</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Event Details */}
-                            <div>
-                                <h3 className="text-sm uppercase tracking-wider text-gold-500 font-semibold mb-3">Event Details</h3>
-                                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
-                                    <div className="flex gap-3">
-                                        <Calendar className="text-slate-400 shrink-0 mt-0.5" size={18} />
-                                        <div>
-                                            <span className="block text-sm font-semibold text-charcoal-900">Date Range</span>
-                                            <span className="text-sm text-slate-600">
-                                                {new Date(viewDetails.eventStartDate).toLocaleDateString()} - {new Date(viewDetails.eventEndDate).toLocaleDateString()}
-                                            </span>
-                                        </div>
+                            <div className="bg-slate-50 p-4 rounded-lg">
+                                <h3 className="font-semibold text-charcoal-900 mb-3">Event Information</h3>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-600">Date Range:</span>
+                                        <span className="font-medium">{new Date(viewDetails.eventStartDate).toLocaleDateString()} - {new Date(viewDetails.eventEndDate).toLocaleDateString()}</span>
                                     </div>
-                                    <div className="flex gap-3">
-                                        <MapPin className="text-slate-400 shrink-0 mt-0.5" size={18} />
-                                        <div>
-                                            <span className="block text-sm font-semibold text-charcoal-900">Location</span>
-                                            <span className="text-sm text-slate-600">{viewDetails.location}</span>
-                                        </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-600">Location:</span>
+                                        <span className="font-medium">{viewDetails.location}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Selection */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Events & Services */}
+                            {(viewDetails.events?.length > 0 || viewDetails.services?.length > 0) && (
                                 <div>
-                                    <h3 className="text-sm uppercase tracking-wider text-gold-500 font-semibold mb-3">Events Selected</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {viewDetails.events.map(e => (
-                                            <span key={e} className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-sm font-medium text-charcoal-600 shadow-sm">
-                                                {e}
-                                            </span>
-                                        ))}
-                                    </div>
+                                    {viewDetails.events?.length > 0 && (
+                                        <div className="mb-4">
+                                            <h3 className="font-semibold text-charcoal-900 mb-2">Events</h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {viewDetails.events?.map(e => (
+                                                    <span key={e} className="px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
+                                                        {e}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {viewDetails.services?.length > 0 && (
+                                        <div>
+                                            <h3 className="font-semibold text-charcoal-900 mb-2">Services</h3>
+                                            <div className="flex flex-wrap gap-2">
+                                                {viewDetails.services?.map(s => (
+                                                    <span key={s} className="px-3 py-1 bg-amber-100 text-amber-800 rounded text-sm font-medium">
+                                                        {s}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <div>
-                                    <h3 className="text-sm uppercase tracking-wider text-gold-500 font-semibold mb-3">Services Needed</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {viewDetails.services.map(s => (
-                                            <span key={s} className="px-3 py-1.5 rounded-lg bg-gold-50 border border-gold-100 text-sm font-medium text-gold-700 shadow-sm">
-                                                {s}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                            )}
 
                             {/* Message */}
-                            <div>
-                                <h3 className="text-sm uppercase tracking-wider text-gold-500 font-semibold mb-3">Personal Message</h3>
-                                <div className="p-4 bg-amber-50 rounded-xl border border-amber-100 text-charcoal-800 leading-relaxed text-sm">
-                                    "{viewDetails.message || "No message provided."}"
+                            {viewDetails.message && (
+                                <div className="bg-slate-50 p-4 rounded-lg">
+                                    <h3 className="font-semibold text-charcoal-900 mb-2">Message</h3>
+                                    <p className="text-sm text-charcoal-700 leading-relaxed">{viewDetails.message}</p>
                                 </div>
-                            </div>
-
+                            )}
                         </div>
 
-                        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end">
+                        {/* Modal Footer */}
+                        <div className="px-6 py-4 border-t bg-slate-50 flex gap-3 justify-between">
                             <button
                                 onClick={() => setViewDetails(null)}
-                                className="px-5 py-2.5 bg-charcoal-900 text-white rounded-xl hover:bg-charcoal-800 font-medium transition shadow-sm"
+                                className="px-4 py-2 bg-slate-200 text-charcoal-900 rounded font-medium hover:bg-slate-300 transition flex-1"
                             >
-                                Close Details
+                                Close
                             </button>
+                            <select
+                                value={viewDetails.status}
+                                onChange={(e) => {
+                                    updateStatus(viewDetails._id, e.target.value);
+                                    setViewDetails({...viewDetails, status: e.target.value});
+                                }}
+                                className={`flex-1 px-3 py-2 rounded font-medium border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-charcoal-600 ${getStatusColor(viewDetails.status)}`}
+                            >
+                                <option value="New">New</option>
+                                <option value="Contacted">Contacted</option>
+                                <option value="Booked">Booked</option>
+                                <option value="Closed">Closed</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }

@@ -1,24 +1,90 @@
 import { Link } from "react-router-dom";
-import { Home } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="text-center py-16">
-      <h1 className="font-playfair text-6xl font-bold text-charcoal-900 dark:text-white mb-4">
+    <div style={{
+      minHeight: '75vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'rgb(248, 250, 252)',
+      position: 'relative',
+      overflow: 'hidden',
+      padding: '40px 20px'
+    }}>
+      {/* Faded background 404 */}
+      <div style={{
+        position: 'absolute',
+        fontSize: '400px',
+        fontWeight: '900',
+        color: 'rgba(200, 180, 180, 0.15)',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        lineHeight: '1',
+        zIndex: 0,
+        whiteSpace: 'nowrap'
+      }}>
         404
-      </h1>
-      <h2 className="luxury-text-subtitle text-2xl mb-4">Page Not Found</h2>
-      <p className="font-montserrat text-charcoal-600 dark:text-charcoal-300 mb-8 max-w-md mx-auto">
-        The page you're looking for doesn't exist. Let's get you back to
-        managing your photography business.
-      </p>
-      <Link
-        to="/"
-        className="inline-flex items-center gap-2 px-8 py-3 bg-gold-500 hover:bg-gold-600 text-white font-montserrat font-medium rounded transition-colors"
-      >
-        <Home className="w-5 h-5" />
-        Back to Dashboard
-      </Link>
+      </div>
+
+      {/* Content */}
+      <div style={{
+        textAlign: 'center',
+        position: 'relative',
+        zIndex: 10,
+        maxWidth: '600px'
+      }}>
+        <h1 style={{
+          fontSize: '3.5rem',
+          fontWeight: '600',
+          color: '#333',
+          margin: '0 0 20px 0',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        }}>
+          Page not found
+        </h1>
+
+        <p style={{
+          fontSize: '1.1rem',
+          color: '#999',
+          margin: '0 0 40px 0',
+          lineHeight: '1.6',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        }}>
+          Duis dolor sit amet, consectetur adipiscing elit vestibulum in pharitra.
+        </p>
+
+        <Link
+          to="/"
+          style={{
+            background: '#ff5722',
+            color: '#fff',
+            padding: '14px 40px',
+            borderRadius: '50px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            fontSize: '1rem',
+            transition: 'all 0.3s ease',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'inline-block',
+            boxShadow: '0 4px 15px rgba(255, 87, 34, 0.3)'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = '#ff6f42';
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 6px 20px rgba(255, 87, 34, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = '#ff5722';
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 4px 15px rgba(255, 87, 34, 0.3)';
+          }}
+        >
+          Go To Home →
+        </Link>
+      </div>
     </div>
   );
 }
