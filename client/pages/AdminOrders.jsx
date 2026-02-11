@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { generatePDF } from "../utils/pdfGenerator";
+import { generatePDF, generateOrderPDF } from "../utils/pdfGenerator";
+import { useSettings } from "../hooks/useSettings";
 import { Eye, FileText, Edit, Trash2, Download, Plus } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 
@@ -26,6 +27,7 @@ const emptyOrder = {
 };
 
 export default function AdminOrders() {
+  const { data: settings } = useSettings();
   const [orders, setOrders] = useState([]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -310,101 +312,7 @@ export default function AdminOrders() {
   }
 
   async function downloadReceipt(order) {
-    const businessName = "The Patil Photography";
-    const logoHtml = `<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 20px;">P</span></div>`;
-
-    const paid = parseFloat(order.amount_paid) || parseFloat(order.paidAmount) || 0;
-    const total = parseFloat(order.amount) || 0;
-    const remaining = total - paid;
-    const eventDate = order.event_date || order.date ? new Date(order.event_date || order.date).toLocaleDateString() : "N/A";
-
-    const content = `
-      <div style="font-family: 'Playfair Display', serif; padding: 40px; background: white; color: #1a1a1a;">
-        <!-- Header -->
-        <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #d4a574; padding-bottom: 20px;">
-          <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
-            ${logoHtml}
-            <div>
-              <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #1a1a1a;">${businessName}</h1>
-            </div>
-          </div>
-          <h2 style="font-size: 24px; font-weight: bold; margin: 20px 0 0 0; color: #1a1a1a;">PAYMENT RECEIPT</h2>
-        </div>
-
-        <!-- Receipt Details -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-          <div>
-            <h3 style="color: #d4a574; font-size: 12px; font-weight: bold; margin-bottom: 10px;">CLIENT DETAILS</h3>
-            <p style="margin: 0; font-size: 16px; font-weight: bold;">${order.name || order.customerName}</p>
-            <p style="margin: 5px 0; font-size: 12px;">${order.email || ""}</p>
-            <p style="margin: 5px 0; font-size: 12px;">${order.whatsapp_no || order.customerPhone || ""}</p>
-          </div>
-          <div style="text-align: right;">
-            <p style="margin: 5px 0; font-size: 12px;"><strong>Order ID:</strong> #${order._id.slice(-6).toUpperCase()}</p>
-            <p style="margin: 5px 0; font-size: 12px;"><strong>Receipt Date:</strong> ${new Date().toLocaleDateString()}</p>
-            <p style="margin: 5px 0; font-size: 12px;"><strong>Event:</strong> ${order.event_name || "-"}</p>
-            <p style="margin: 5px 0; font-size: 12px;"><strong>Event Date:</strong> ${eventDate}</p>
-          </div>
-        </div>
-
-        <!-- Financial Summary Table -->
-         <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-          <thead>
-            <tr style="background: #2d2d2d; color: white;">
-              <th style="padding: 12px; text-align: left; border: 1px solid #d4a574;">Description</th>
-              <th style="padding: 12px; text-align: right; border: 1px solid #d4a574;">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border: 1px solid #e5e5e5;">
-              <td style="padding: 12px; border: 1px solid #e5e5e5;">Total Project Value (${order.photography_type || "Service"})</td>
-              <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5;">₹${total.toLocaleString()}</td>
-            </tr>
-             <tr style="border: 1px solid #e5e5e5;">
-              <td style="padding: 12px; border: 1px solid #e5e5e5;">Amount Received</td>
-              <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5; font-weight: bold; color: green;">₹${paid.toLocaleString()}</td>
-            </tr>
-          </tbody>
-        </table>
-
-         <!-- Summary / Balance -->
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
-          <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; width: 300px;">
-             <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
-              <span>Total Amount:</span>
-              <span>₹${total.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
-              <span>Paid Amount:</span>
-              <span>₹${paid.toLocaleString()}</span>
-            </div>
-             <div style="border-top: 2px solid #d4a574; padding-top: 8px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #d4a574;">
-              <span>Balance Due:</span>
-              <span>₹${remaining > 0 ? remaining.toLocaleString() : "0 (Fully Paid)"}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer -->
-         <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px;">
-          <p style="margin: 0; font-size: 12px; line-height: 1.6; font-style: italic;">Thank you for trusting us with your memories!</p>
-        </div>
-      </div>
-    `;
-
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = content;
-    tempDiv.id = "pdf-content";
-    tempDiv.style.position = "absolute";
-    tempDiv.style.left = "-9999px";
-    tempDiv.style.width = "794px";
-    document.body.appendChild(tempDiv);
-
-    try {
-      await generatePDF("pdf-content", `Receipt_${(order.name || "Order").replace(/\s+/g, '_')}.pdf`);
-    } finally {
-      document.body.removeChild(tempDiv);
-    }
+    generateOrderPDF(order, settings || {});
   }
 
   const [photographyTypes, setPhotographyTypes] = useState(() => {

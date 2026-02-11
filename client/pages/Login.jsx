@@ -107,18 +107,23 @@ const Login = () => {
                                 </div>
                             )}
 
-                            {/* Remember Me */}
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    id="rememberMe"
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="w-4 h-4 text-gold-600 rounded focus:ring-2 focus:ring-gold-500 cursor-pointer"
-                                />
-                                <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700 cursor-pointer">
-                                    Remember me
-                                </label>
+                            {/* Remember Me & Forgot Password */}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="rememberMe"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        className="w-4 h-4 text-gold-600 rounded focus:ring-2 focus:ring-gold-500 cursor-pointer"
+                                    />
+                                    <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700 cursor-pointer">
+                                        Remember me
+                                    </label>
+                                </div>
+                                <Link to="/forgot-password" className="text-sm text-gold-600 hover:text-gold-700 font-semibold">
+                                    Forgot Password?
+                                </Link>
                             </div>
 
                             {/* Login Button */}
@@ -145,6 +150,7 @@ const Login = () => {
                 {/* Right Section - Left-side Hero (Image/Illustration) */}
               <div
   className="hidden lg:flex relative p-8 items-center justify-center overflow-hidden order-first lg:order-first bg-cover bg-center loginBG"
+  style={{ backgroundImage: settings?.backgroundImage ? `url('${settings.backgroundImage}')` : "url('/assets/img/default-bg.jpg')" }}
 >
 
                     <div className="absolute inset-0 bg-black opacity-40" />

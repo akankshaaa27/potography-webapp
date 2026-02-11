@@ -33,14 +33,20 @@ function App() {
       if (settings.businessName) {
         document.title = settings.businessName;
       }
-      if (settings.primaryLogo) {
-        let link = document.querySelector("link[rel~='icon']");
-        if (!link) {
-          link = document.createElement('link');
-          link.rel = 'icon';
-          document.getElementsByTagName('head')[0].appendChild(link);
+      // Use secondary logo for favicon, fallback to primary logo
+      const faviconUrl = settings.secondaryLogo || settings.primaryLogo;
+      if (faviconUrl) {
+        if (window.setFavicon) {
+          window.setFavicon(faviconUrl);
+        } else {
+          let link = document.querySelector("link[rel~='icon']");
+          if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.getElementsByTagName('head')[0].appendChild(link);
+          }
+          link.href = faviconUrl;
         }
-        link.href = settings.primaryLogo;
       }
     }
   }, [settings]);

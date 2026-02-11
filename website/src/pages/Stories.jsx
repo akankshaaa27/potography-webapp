@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import StoryModal from "../components/StoryModal";
+import Skeleton from "../components/Skeleton";
 
 const Stories = () => {
   const [stories, setStories] = useState([]);
@@ -80,7 +81,23 @@ const Stories = () => {
         <section className="projects section pt-3">
           <div className="container">
             {loading ? (
-              <div className="text-center py-5"><p>Loading stories...</p></div>
+              <div className="row gy-4">
+                {[...Array(6)].map((_, index) => (
+                  <div className="col-lg-4 col-md-6" key={index}>
+                    <div className="project-card">
+                      <div className="project-image" style={{ overflow: 'hidden' }}>
+                        <Skeleton width="100%" height="300px" borderRadius="8px" />
+                      </div>
+                      <div className="project-info" style={{ padding: '20px' }}>
+                        <Skeleton width="70%" height="24px" borderRadius="4px" style={{ marginBottom: '12px' }} />
+                        <Skeleton width="100%" height="16px" borderRadius="4px" style={{ marginBottom: '8px' }} />
+                        <Skeleton width="100%" height="16px" borderRadius="4px" style={{ marginBottom: '16px' }} />
+                        <Skeleton width="120px" height="20px" borderRadius="4px" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="row gy-4">
                 {stories.length === 0 ? (

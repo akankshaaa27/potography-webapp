@@ -54,11 +54,42 @@ export const generateQuotationPDF = (quotation, client, settings = {}) => {
   const businessName = settings.businessName || "The Patil Photography";
   const primaryLogo = settings.primaryLogo || ""; // URL or Base64
   const contactText = "Crafting beautiful moments, flawlessly documented";
-  // We can add contact info from settings if desired (settings.contactPhone, settings.contactEmail)
+  const address = settings.address || "";
+  const primaryPhone = settings.primaryMobileNumber || "";
+  const secondaryPhone = settings.secondaryMobileNumber || "";
+  const contactEmail = settings.contactEmail || "";
+  const socialLinks = settings.socialLinks || [];
 
   const logoHtml = primaryLogo
     ? `<img src="${primaryLogo}" style="height: 50px; object-fit: contain;" />`
     : `<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 20px;">P</span></div>`;
+
+  // Social media icons HTML
+  const socialIconsHtml = socialLinks
+    .filter(l => l.active)
+    .map(link => {
+      const platformIcons = {
+        'WhatsApp': '📱',
+        'Instagram': '📷',
+        'Facebook': 'f',
+        'YouTube': '▶',
+        'Twitter': '𝕏',
+        'LinkedIn': 'in',
+        'Other': '🔗'
+      };
+      return `<a href="${link.url}" target="_blank" style="margin: 0 5px; text-decoration: none; color: #d4a574; font-weight: bold;">${platformIcons[link.platform] || link.platform}</a>`;
+    })
+    .join('');
+
+  // Contact info HTML
+  const contactInfoHtml = `
+    <div style="font-size: 10px; color: #666; line-height: 1.8;">
+      ${primaryPhone ? `<p style="margin: 0;">📞 ${primaryPhone}${secondaryPhone ? ` | ${secondaryPhone}` : ''}</p>` : ''}
+      ${contactEmail ? `<p style="margin: 0;">✉️ ${contactEmail}</p>` : ''}
+      ${address ? `<p style="margin: 0;">📍 ${address}</p>` : ''}
+      ${socialIconsHtml ? `<p style="margin: 0 0 5px 0;">Social: ${socialIconsHtml}</p>` : ''}
+    </div>
+  `;
 
   const content = `
     <div style="font-family: 'Playfair Display', serif; padding: 40px; background: white; color: #1a1a1a;">
@@ -156,10 +187,13 @@ export const generateQuotationPDF = (quotation, client, settings = {}) => {
         <p style="margin: 0; font-size: 12px; line-height: 1.6; font-style: italic;">${quotation.thankYouMessage}</p>
       </div>
 
-      <!-- Footer -->
-      <div style="border-top: 2px solid #d4a574; padding-top: 20px; text-align: center; font-size: 10px; color: #666;">
-        <p style="margin: 0;">${businessName} | ${contactText}</p>
-        <p style="margin: 5px 0 0 0;">This quotation is valid till ${new Date(quotation.validityDate).toLocaleDateString()}</p>
+      <!-- Footer with Contact Info and Social Links -->
+      <div style="border-top: 2px solid #d4a574; padding-top: 20px;">
+        <div style="text-align: center; margin-bottom: 15px;">
+          ${contactInfoHtml}
+        </div>
+        <p style="margin: 10px 0 0 0; text-align: center; font-size: 10px; color: #666;">${businessName} | ${contactText}</p>
+        <p style="margin: 5px 0 0 0; text-align: center; font-size: 10px; color: #666;">This quotation is valid till ${new Date(quotation.validityDate).toLocaleDateString()}</p>
       </div>
     </div>
   `;
@@ -186,10 +220,42 @@ export const generateInvoicePDF = (invoice, client, settings = {}) => {
   const businessName = settings.businessName || "The Patil Photography";
   const primaryLogo = settings.primaryLogo || "";
   const contactText = "Crafting beautiful moments, flawlessly documented";
+  const address = settings.address || "";
+  const primaryPhone = settings.primaryMobileNumber || "";
+  const secondaryPhone = settings.secondaryMobileNumber || "";
+  const contactEmail = settings.contactEmail || "";
+  const socialLinks = settings.socialLinks || [];
 
   const logoHtml = primaryLogo
     ? `<img src="${primaryLogo}" style="height: 50px; object-fit: contain;" />`
     : `<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 20px;">P</span></div>`;
+
+  // Social media icons HTML
+  const socialIconsHtml = socialLinks
+    .filter(l => l.active)
+    .map(link => {
+      const platformIcons = {
+        'WhatsApp': '📱',
+        'Instagram': '📷',
+        'Facebook': 'f',
+        'YouTube': '▶',
+        'Twitter': '𝕏',
+        'LinkedIn': 'in',
+        'Other': '🔗'
+      };
+      return `<a href="${link.url}" target="_blank" style="margin: 0 5px; text-decoration: none; color: #d4a574; font-weight: bold;">${platformIcons[link.platform] || link.platform}</a>`;
+    })
+    .join('');
+
+  // Contact info HTML
+  const contactInfoHtml = `
+    <div style="font-size: 10px; color: #666; line-height: 1.8;">
+      ${primaryPhone ? `<p style="margin: 0;">📞 ${primaryPhone}${secondaryPhone ? ` | ${secondaryPhone}` : ''}</p>` : ''}
+      ${contactEmail ? `<p style="margin: 0;">✉️ ${contactEmail}</p>` : ''}
+      ${address ? `<p style="margin: 0;">📍 ${address}</p>` : ''}
+      ${socialIconsHtml ? `<p style="margin: 0 0 5px 0;">Social: ${socialIconsHtml}</p>` : ''}
+    </div>
+  `;
 
   const content = `
     <div style="font-family: 'Playfair Display', serif; padding: 40px; background: white; color: #1a1a1a;">
@@ -295,10 +361,13 @@ export const generateInvoicePDF = (invoice, client, settings = {}) => {
         <p style="margin: 0; font-size: 12px; line-height: 1.6; font-style: italic;">${invoice.thankYouMessage}</p>
       </div>
 
-      <!-- Footer -->
-      <div style="border-top: 2px solid #d4a574; padding-top: 20px; text-align: center; font-size: 10px; color: #666;">
-        <p style="margin: 0;">${businessName} | ${contactText}</p>
-        <p style="margin: 5px 0 0 0;">Invoice Date: ${new Date(invoice.invoiceDate).toLocaleDateString()}</p>
+      <!-- Footer with Contact Info and Social Links -->
+      <div style="border-top: 2px solid #d4a574; padding-top: 20px;">
+        <div style="text-align: center; margin-bottom: 15px;">
+          ${contactInfoHtml}
+        </div>
+        <p style="margin: 10px 0 0 0; text-align: center; font-size: 10px; color: #666;">${businessName} | ${contactText}</p>
+        <p style="margin: 5px 0 0 0; text-align: center; font-size: 10px; color: #666;">Invoice Date: ${new Date(invoice.invoiceDate).toLocaleDateString()}</p>
       </div>
     </div>
   `;
@@ -315,6 +384,152 @@ export const generateInvoicePDF = (invoice, client, settings = {}) => {
   setTimeout(async () => {
     try {
       await generatePDF("pdf-content", `Invoice-${invoice.invoiceNumber}.pdf`);
+    } finally {
+      document.body.removeChild(tempDiv);
+    }
+  }, 500);
+};
+
+export const generateOrderPDF = (order, settings = {}) => {
+  const businessName = settings.businessName || "The Patil Photography";
+  const primaryLogo = settings.primaryLogo || "";
+  const contactText = "Crafting beautiful moments, flawlessly documented";
+  const address = settings.address || "";
+  const primaryPhone = settings.primaryMobileNumber || "";
+  const secondaryPhone = settings.secondaryMobileNumber || "";
+  const contactEmail = settings.contactEmail || "";
+  const socialLinks = settings.socialLinks || [];
+
+  const logoHtml = primaryLogo
+    ? `<img src="${primaryLogo}" style="height: 50px; object-fit: contain;" />`
+    : `<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d4a574, #c49561); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-weight: bold; font-size: 20px;">P</span></div>`;
+
+  // Social media icons HTML
+  const socialIconsHtml = socialLinks
+    .filter(l => l.active)
+    .map(link => {
+      const platformIcons = {
+        'WhatsApp': '📱',
+        'Instagram': '📷',
+        'Facebook': 'f',
+        'YouTube': '▶',
+        'Twitter': '𝕏',
+        'LinkedIn': 'in',
+        'Other': '🔗'
+      };
+      return `<a href="${link.url}" target="_blank" style="margin: 0 5px; text-decoration: none; color: #d4a574; font-weight: bold;">${platformIcons[link.platform] || link.platform}</a>`;
+    })
+    .join('');
+
+  // Contact info HTML
+  const contactInfoHtml = `
+    <div style="font-size: 10px; color: #666; line-height: 1.8;">
+      ${primaryPhone ? `<p style="margin: 0;">📞 ${primaryPhone}${secondaryPhone ? ` | ${secondaryPhone}` : ''}</p>` : ''}
+      ${contactEmail ? `<p style="margin: 0;">✉️ ${contactEmail}</p>` : ''}
+      ${address ? `<p style="margin: 0;">📍 ${address}</p>` : ''}
+      ${socialIconsHtml ? `<p style="margin: 0 0 5px 0;">Social: ${socialIconsHtml}</p>` : ''}
+    </div>
+  `;
+
+  const paid = parseFloat(order.amount_paid) || parseFloat(order.paidAmount) || 0;
+  const total = parseFloat(order.amount) || 0;
+  const remaining = total - paid;
+  const eventDate = order.event_date || order.date ? new Date(order.event_date || order.date).toLocaleDateString() : "N/A";
+
+  const content = `
+    <div style="font-family: 'Playfair Display', serif; padding: 40px; background: white; color: #1a1a1a;">
+      <!-- Header -->
+      <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px solid #d4a574; padding-bottom: 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px;">
+          ${logoHtml}
+          <div>
+            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #1a1a1a;">${businessName}</h1>
+          </div>
+        </div>
+        <h2 style="font-size: 24px; font-weight: bold; margin: 20px 0 0 0; color: #1a1a1a;">PAYMENT RECEIPT</h2>
+      </div>
+
+      <!-- Receipt Details -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+        <div>
+          <h3 style="color: #d4a574; font-size: 12px; font-weight: bold; margin-bottom: 10px;">CLIENT DETAILS</h3>
+          <p style="margin: 0; font-size: 16px; font-weight: bold;">${order.name || order.customerName}</p>
+          <p style="margin: 5px 0; font-size: 12px;">${order.email || ""}</p>
+          <p style="margin: 5px 0; font-size: 12px;">${order.whatsapp_no || order.customerPhone || ""}</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="margin: 5px 0; font-size: 12px;"><strong>Order ID:</strong> #${order._id.slice(-6).toUpperCase()}</p>
+          <p style="margin: 5px 0; font-size: 12px;"><strong>Receipt Date:</strong> ${new Date().toLocaleDateString()}</p>
+          <p style="margin: 5px 0; font-size: 12px;"><strong>Event:</strong> ${order.event_name || "-"}</p>
+          <p style="margin: 5px 0; font-size: 12px;"><strong>Event Date:</strong> ${eventDate}</p>
+        </div>
+      </div>
+
+      <!-- Financial Summary Table -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <thead>
+          <tr style="background: #2d2d2d; color: white;">
+            <th style="padding: 12px; text-align: left; border: 1px solid #d4a574;">Description</th>
+            <th style="padding: 12px; text-align: right; border: 1px solid #d4a574;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border: 1px solid #e5e5e5;">
+            <td style="padding: 12px; border: 1px solid #e5e5e5;">Total Project Value (${order.photography_type || "Service"})</td>
+            <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5;">₹${total.toLocaleString()}</td>
+          </tr>
+          <tr style="border: 1px solid #e5e5e5;">
+            <td style="padding: 12px; border: 1px solid #e5e5e5;">Amount Received</td>
+            <td style="padding: 12px; text-align: right; border: 1px solid #e5e5e5; font-weight: bold; color: green;">₹${paid.toLocaleString()}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Summary / Balance -->
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; width: 300px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+            <span>Total Amount:</span>
+            <span>₹${total.toLocaleString()}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+            <span>Paid Amount:</span>
+            <span>₹${paid.toLocaleString()}</span>
+          </div>
+          <div style="border-top: 2px solid #d4a574; padding-top: 8px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #d4a574;">
+            <span>Balance Due:</span>
+            <span>₹${remaining > 0 ? remaining.toLocaleString() : "0 (Fully Paid)"}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thank You -->
+      <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px;">
+        <p style="margin: 0; font-size: 12px; line-height: 1.6; font-style: italic;">Thank you for trusting us with your memories!</p>
+      </div>
+
+      <!-- Footer with Contact Info and Social Links -->
+      <div style="border-top: 2px solid #d4a574; padding-top: 20px;">
+        <div style="text-align: center; margin-bottom: 15px;">
+          ${contactInfoHtml}
+        </div>
+        <p style="margin: 10px 0 0 0; text-align: center; font-size: 10px; color: #666;">${businessName} | ${contactText}</p>
+        <p style="margin: 5px 0 0 0; text-align: center; font-size: 10px; color: #666;">Receipt Date: ${new Date().toLocaleDateString()}</p>
+      </div>
+    </div>
+  `;
+
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = content;
+  tempDiv.id = "pdf-content";
+  tempDiv.style.position = "absolute";
+  tempDiv.style.left = "-9999px";
+  tempDiv.style.width = "794px";
+  document.body.appendChild(tempDiv);
+
+  setTimeout(async () => {
+    try {
+      await generatePDF("pdf-content", `Receipt_${(order.name || "Order").replace(/\s+/g, '_')}.pdf`);
     } finally {
       document.body.removeChild(tempDiv);
     }

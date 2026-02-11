@@ -1,7 +1,7 @@
 import "./global.css";
 import "./lib/apiFetch";
 import React, { useEffect, useState } from "react";
-import { Menu, Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon, User, Key, LogOut, Radio, RefreshCcw, Mail, PanelLeft } from "lucide-react";
+import { Menu, Instagram, Facebook, Youtube, Twitter, Linkedin, Link as LinkIcon, User, Key, LogOut, Radio, RefreshCcw, Mail, PanelLeft, MessageCircle, Globe } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +48,8 @@ import AdminSettings from "./pages/AdminSettings";
 import AdminTeam from "./pages/AdminTeam";
 import AdminPopup from "./pages/AdminPopup";
 import AdminCalendar from "./pages/AdminCalendar";
-
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -115,8 +116,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
-          {/* Public Route */}
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Redirect /admin to / */}
           <Route path="/admin" element={<Navigate to="/" replace />} />
@@ -178,12 +181,18 @@ const AppShell = () => {
       if (settings.businessName) {
         document.title = settings.businessName + " | Admin Console";
       }
-      if (settings.primaryLogo) {
-        const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'icon';
-        link.href = settings.primaryLogo;
-        document.getElementsByTagName('head')[0].appendChild(link);
+      // Use secondary logo for favicon, fallback to primary logo
+      const faviconUrl = settings.secondaryLogo || settings.primaryLogo;
+      if (faviconUrl) {
+        if (window.setFavicon) {
+          window.setFavicon(faviconUrl);
+        } else {
+          const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+          link.type = 'image/x-icon';
+          link.rel = 'icon';
+          link.href = faviconUrl;
+          document.getElementsByTagName('head')[0].appendChild(link);
+        }
       }
     }
   }, [settings]);
@@ -325,15 +334,17 @@ const AppShell = () => {
             <div className="flex gap-4">
               {settings?.socialLinks?.filter(l => l.active).map((link, i) => {
                 const Icon = {
+                  'WhatsApp': MessageCircle,
                   'Instagram': Instagram,
                   'Facebook': Facebook,
                   'YouTube': Youtube,
                   'Twitter': Twitter,
                   'LinkedIn': Linkedin,
+                  'Other': Globe,
                 }[link.platform] || LinkIcon;
 
                 return (
-                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-gold-600 transition-colors">
+                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-gold-600 transition-colors" title={link.platform}>
                     <Icon size={18} />
                   </a>
                 )

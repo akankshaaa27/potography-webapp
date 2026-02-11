@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import StoryModal from "../components/StoryModal";
+import "../styles/home.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -10,6 +11,7 @@ import "swiper/css/navigation";
 import Skeleton from "../components/Skeleton";
 import TributeModal from "../components/TributeModal";
 import LuxGallery from "../components/LuxGallery";
+// import HomeFeature from "../components/HomeFeature";
 
 // Simple CountUp Component
 const Counter = ({ end, duration = 2000, suffix = "" }) => {
@@ -235,26 +237,9 @@ const Home = () => {
         {/* Hero Section */}
         <section id="hero" className="hero dark-background">
           {loadingSlider || slides.length === 0 ? (
-            <div className="hero-video-container" style={{ position: "relative", height: "100vh" }}>
-              <img
-                src="/assets/img/slider/hero6.jpg"
-                className="img-fluid"
-                alt="Beauty of Photography"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                }}
-              />
-              <div
-                className="container hfull d-flex align-items-center justify-content-center"
-                style={{ position: "relative", zIndex: 2, height: "100%" }}
-                data-aos="fade-up"
-                data-aos-delay="100"
-              >
+            <div className="hero-video-container hero-fullheight">
+              <img src="/assets/img/slider/hero6.jpg" className="img-fluid hero-bg-image" alt="Beauty of Photography" />
+              <div className="container hfull d-flex align-items-center justify-content-center hero-content-wrapper" data-aos="fade-up" data-aos-delay="100">
                 <div className="row justify-content-center text-center">
                   <div className="col-lg-8">
                     <div className="hero-content">
@@ -281,22 +266,18 @@ const Home = () => {
             >
               {slides.map((slide, index) => (
                 <SwiperSlide key={index}>
-                  <div className="hero-video-container">
-                    <img src={slide.image} className="img-fluid ken-burns" alt="" />
+                  <div className="hero-video-container hero-fullheight">
+                    <img src={slide.image} className="img-fluid ken-burns hero-bg-image" alt="" />
                   </div>
 
-                  <div
-                    className="container hfull"
-                    data-aos="fade-up"
-                    data-aos-delay="100"
-                  >
+                  <div className="container hfull hero-content-wrapper" data-aos="fade-up" data-aos-delay="100">
                     <div className="row justify-content-center text-center">
                       <div className="col-lg-8">
                         <div className="hero-content">
-                          <h1 className="gold-text-gradient animate-reveal" style={{ animationDelay: '0.2s' }}>
+                          <h1 className="gold-text-gradient animate-reveal">
                             {slide.title}
                           </h1>
-                          <p className="animate-reveal" style={{ animationDelay: '0.4s' }}>
+                          <p className="animate-reveal">
                             {slide.subtitle}
                           </p>
                         </div>
@@ -310,146 +291,92 @@ const Home = () => {
         </section>
 
         {/* About Section - Clean & Meaningful */}
-        <section id="about" className="about section" style={{ backgroundColor: '#fafaf8', padding: '100px 0' }}>
+        <section id="about" className="about section about-section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
             {/* Section Header */}
-            <div style={{ textAlign: 'center', marginBottom: '80px', maxWidth: '700px', margin: '0 auto 80px' }}>
-              <div style={{ fontSize: '0.85rem', color: '#d4af37', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-                About Us
-              </div>
-              <h2 style={{ fontSize: '3.2rem', fontWeight: '700', lineHeight: '1.2', marginBottom: '24px', color: '#1a1a1a' }}>
-                Your Story, Our Passion
-              </h2>
-              <p style={{ fontSize: '1.05rem', lineHeight: '1.8', color: '#666' }}>
-                We believe every love story deserves to be celebrated with artistry, authenticity, and elegance. That's why we're here.
-              </p>
+            <div className="about-header">
+              <div className="about-sub">About Us</div>
+              <h2 className="about-title">Your Story, Our Passion</h2>
+              <p className="about-lead">We believe every love story deserves to be celebrated with artistry, authenticity, and elegance. That's why we're here.</p>
             </div>
 
             {/* Main Content - Two Column */}
-            <div className="row align-items-center g-5" style={{ marginBottom: '80px' }}>
+            <div className="row align-items-center g-5 about-main">
               {/* Image - LEFT */}
               <div className="col-lg-5" data-aos="fade-right" data-aos-delay="150">
-                <img src="/assets/img/HomePage/7.webp" alt="Our Photography Studio" className="img-fluid" style={{
-                  borderRadius: '16px',
-                  width: '100%',
-                  height: 'auto',
-                  boxShadow: '0 15px 40px rgba(0,0,0,0.12)'
-                }} />
+                <img src="/assets/img/HomePage/7.webp" alt="Our Photography Studio" className="img-fluid about-image" />
               </div>
 
               {/* Content - RIGHT */}
               <div className="col-lg-7" data-aos="fade-left" data-aos-delay="200">
-                <div style={{ paddingLeft: '20px' }}>
-                  <h3 style={{ fontSize: '1.8rem', fontWeight: '700', lineHeight: '1.3', marginBottom: '24px', color: '#1a1a1a' }}>
-                    We Create Timeless Memories
-                  </h3>
+                <div className="about-content-inner">
+                  <h3 className="about-h3">We Create Timeless Memories</h3>
 
-                  <p style={{ fontSize: '1rem', lineHeight: '1.8', color: '#666', marginBottom: '20px' }}>
+                  <p className="about-p">
                     At <strong>The Patil Photography &amp; Films</strong>, we don't just capture moments — we tell your unique love story through stunning visuals and cinematic excellence.
                   </p>
 
-                  <p style={{ fontSize: '1rem', lineHeight: '1.8', color: '#666', marginBottom: '30px' }}>
+                  <p className="about-p">
                     With over a decade of experience, our team has perfected the art of preserving authentic emotions, genuine connections, and beautiful details that make your wedding day truly unforgettable.
                   </p>
 
                   {/* Three Key Points */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginBottom: '32px' }}>
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        backgroundColor: '#f0e8d8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0
-                      }}>
-                        <i className="bi bi-heart" style={{ fontSize: '20px', color: '#d4af37' }}></i>
-                      </div>
+                  <div className="about-points">
+                    <div className="about-point">
+                      <div className="about-icon"><i className="bi bi-heart"></i></div>
                       <div>
-                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 8px 0' }}>Authentic Storytelling</h4>
-                        <p style={{ fontSize: '0.95rem', color: '#777', margin: 0, lineHeight: '1.6' }}>We blend candid moments with artistic direction to tell your unique love story naturally and beautifully.</p>
+                        <h4>Authentic Storytelling</h4>
+                        <p>We blend candid moments with artistic direction to tell your unique love story naturally and beautifully.</p>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        backgroundColor: '#f0e8d8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0
-                      }}>
-                        <i className="bi bi-camera" style={{ fontSize: '20px', color: '#d4af37' }}></i>
-                      </div>
+                    <div className="about-point">
+                      <div className="about-icon"><i className="bi bi-camera"></i></div>
                       <div>
-                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 8px 0' }}>Premium Quality</h4>
-                        <p style={{ fontSize: '0.95rem', color: '#777', margin: 0, lineHeight: '1.6' }}>State-of-the-art equipment, professional editing, and a cinematic approach ensure perfection in every frame.</p>
+                        <h4>Premium Quality</h4>
+                        <p>State-of-the-art equipment, professional editing, and a cinematic approach ensure perfection in every frame.</p>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        backgroundColor: '#f0e8d8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0
-                      }}>
-                        <i className="bi bi-person-heart" style={{ fontSize: '20px', color: '#d4af37' }}></i>
-                      </div>
+                    <div className="about-point">
+                      <div className="about-icon"><i className="bi bi-person-heart"></i></div>
                       <div>
-                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 8px 0' }}>Personal Connection</h4>
-                        <p style={{ fontSize: '0.95rem', color: '#777', margin: 0, lineHeight: '1.6' }}>We work closely with you to understand your vision, style, and dreams to create something truly personal.</p>
+                        <h4>Personal Connection</h4>
+                        <p>We work closely with you to understand your vision, style, and dreams to create something truly personal.</p>
                       </div>
                     </div>
                   </div>
 
                   {/* CTA Button */}
-                  <Link to="/quote" className="cta-link" style={{ padding: '14px 32px', borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem', display: 'inline-block' }}>
-                    Start Your Journey
-                  </Link>
+                  <Link to="/quote" className="cta-link about-cta">Start Your Journey</Link>
                 </div>
               </div>
             </div>
 
             {/* Stats Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '32px', backgroundColor: '#fff', padding: '60px', borderRadius: '16px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
-              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="100">
-                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>
-                  <Counter end={500} suffix="+" />
-                </h3>
-                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Happy Couples</p>
-                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Worldwide</p>
+            <div className="stats-grid">
+              <div className="stats-card" data-aos="fade-up" data-aos-delay="100">
+                <h3 className="stats-number"><Counter end={500} suffix="+" /></h3>
+                <p className="stats-title">Happy Couples</p>
+                <p className="stats-sub">Worldwide</p>
               </div>
 
-              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="150">
-                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>
-                  <Counter end={10} suffix="+" />
-                </h3>
-                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Years Experience</p>
-                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Industry Expert</p>
+              <div className="stats-card" data-aos="fade-up" data-aos-delay="150">
+                <h3 className="stats-number"><Counter end={10} suffix="+" /></h3>
+                <p className="stats-title">Years Experience</p>
+                <p className="stats-sub">Industry Expert</p>
               </div>
 
-              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="200">
-                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>
-                  <Counter end={15} suffix="+" />
-                </h3>
-                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Team Members</p>
-                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Certified Professionals</p>
+              <div className="stats-card" data-aos="fade-up" data-aos-delay="200">
+                <h3 className="stats-number"><Counter end={15} suffix="+" /></h3>
+                <p className="stats-title">Team Members</p>
+                <p className="stats-sub">Certified Professionals</p>
               </div>
 
-              <div style={{ textAlign: 'center' }} data-aos="fade-up" data-aos-delay="250">
-                <h3 style={{ fontSize: '2.8rem', fontWeight: '700', color: '#d4af37', margin: '0 0 8px 0' }}>24/7</h3>
-                <p style={{ fontSize: '0.95rem', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Support</p>
-                <p style={{ fontSize: '0.85rem', color: '#999', margin: 0 }}>Always Available</p>
+              <div className="stats-card" data-aos="fade-up" data-aos-delay="250">
+                <h3 className="stats-number">24/7</h3>
+                <p className="stats-title">Support</p>
+                <p className="stats-sub">Always Available</p>
               </div>
             </div>
           </div>
@@ -492,6 +419,8 @@ const Home = () => {
             <div className="Gradientbackground"></div>
           </div> 
         </section>
+        
+        {/* <HomeFeature loveStories={loveStories} loading={loadingStories} /> */}
 
         {/* Quote Section */}
         <section

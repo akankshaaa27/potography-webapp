@@ -38,10 +38,6 @@ const systemSettingsSchema = new mongoose.Schema({
         default: ""
     },
     socialLinks: [socialLinkSchema],
-    websiteUrl: {
-        type: String,
-        default: ""
-    },
     contactEmail: {
         type: String,
         default: ""

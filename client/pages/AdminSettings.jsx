@@ -9,7 +9,7 @@ const PLATFORMS = ['WhatsApp', 'Instagram', 'Facebook', 'YouTube', 'Twitter', 'L
 
 // Validation patterns
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const URL_REGEX = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+const URL_REGEX = /^(https?:\/\/|whatsapp:\/\/)(.*)/;  // More flexible URL validation for all platforms
 const PHONE_REGEX = /^[\d\s\+\-\(\)]+$/;
 const MOBILE_REGEX = /^[0-9]{10}$/;
 
@@ -45,7 +45,6 @@ export default function AdminSettings() {
         primaryLogo: "",
         secondaryLogo: "",
         backgroundImage: "",
-        websiteUrl: "",
         contactEmail: "",
         primaryMobileNumber: "",
         secondaryMobileNumber: "",
@@ -62,7 +61,6 @@ export default function AdminSettings() {
                 primaryLogo: settings.primaryLogo || "",
                 secondaryLogo: settings.secondaryLogo || "",
                 backgroundImage: settings.backgroundImage || "",
-                websiteUrl: settings.websiteUrl || "",
                 contactEmail: settings.contactEmail || "",
                 primaryMobileNumber: settings.primaryMobileNumber || "",
                 secondaryMobileNumber: settings.secondaryMobileNumber || "",
@@ -127,10 +125,6 @@ export default function AdminSettings() {
 
         if (formData.contactEmail && !validateEmail(formData.contactEmail)) {
             newErrors.contactEmail = "Please enter a valid email address";
-        }
-
-        if (formData.websiteUrl && !validateUrl(formData.websiteUrl)) {
-            newErrors.websiteUrl = "Please enter a valid URL (e.g., https://example.com)";
         }
 
         if (formData.primaryMobileNumber && !validateMobileNumber(formData.primaryMobileNumber)) {
@@ -264,20 +258,6 @@ export default function AdminSettings() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
-                                    <div className="relative">
-                                        <Globe className="absolute left-3 top-2.5 text-gray-400 h-4 w-4" />
-                                        <input
-                                            type="url"
-                                            value={formData.websiteUrl}
-                                            onChange={(e) => handleInputChange('websiteUrl', e.target.value)}
-                                            className={`w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500/20 outline-none transition-all ${errors.websiteUrl ? 'border-red-500' : 'border-gray-200'}`}
-                                            placeholder="https://..."
-                                        />
-                                    </div>
-                                    {errors.websiteUrl && <p className="text-red-500 text-xs mt-1">{errors.websiteUrl}</p>}
-                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
                                     <div className="relative">
@@ -459,7 +439,11 @@ export default function AdminSettings() {
                                         type="text"
                                         value={link.url}
                                         onChange={(e) => handleSocialChange(index, "url", e.target.value)}
-                                        placeholder={`https://${link.platform.toLowerCase()}.com/...`}
+                                        placeholder={
+                                            link.platform === 'WhatsApp' 
+                                                ? 'https://wa.me/1234567890' 
+                                                : `https://${link.platform.toLowerCase()}.com/...`
+                                        }
                                         className={`w-full text-xs px-3 py-2 bg-white border rounded-md outline-none focus:border-gold-500 transition-all ${errors[`social_${index}`] ? 'border-red-500' : 'border-gray-200'}`}
                                     />
                                     {errors[`social_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`social_${index}`]}</p>}
