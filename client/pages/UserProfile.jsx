@@ -1,31 +1,32 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { User, Settings, Globe, Phone, MapPin, Mail, Calendar } from "lucide-react";
 
 const defaultProfile = {
-  name: "Aarohi Kulkarni",
-  role: "Lead Photographer",
-  location: "Pune, India",
-  bio: "Story-driven photographer crafting soulful wedding experiences across India.",
-  email: "aarohi@lumina.studio",
-  phone: "+91 98765 12345",
+  name: "",
+  role: "",
+  location: "",
+  bio: "",
+  email: "",
+  phone: "",
   socials: {
-    instagram: "@aarohishoots",
-    behance: "behance.net/aarohi",
-    website: "lumina.studio",
+    instagram: "",
+    behance: "",
+    website: "",
   },
   stats: {
-    shoots: 142,
-    avgRating: 4.9,
-    turnaroundDays: 7,
+    shoots: 0,
+    avgRating: 0,
+    turnaroundDays: 0,
   },
-  focus: ["Wedding", "Editorial", "Documentary"],
+  focus: [],
   gear: {
-    cameras: ["Sony A1", "Sony A7SIII"],
-    lenses: ["24-70 GM", "50mm 1.2 GM", "70-200 GM"],
-    lighting: ["Profoto B10", "Nanlite Pavotube"],
+    cameras: [],
+    lenses: [],
+    lighting: [],
   },
-  payoutMethod: "HDFC Bank •••• 8123",
-  backupPayout: "UPI • aarohi@ibl",
+  payoutMethod: "",
+  backupPayout: "",
 };
 
 const activityLog = [
@@ -47,6 +48,8 @@ export default function UserProfile() {
   const [payoutPassword, setPayoutPassword] = useState("");
   const [payoutDetails, setPayoutDetails] = useState(null);
   const [globalSettings, setGlobalSettings] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+  const [userStats, setUserStats] = useState(null);
 
   const [preferences, setPreferences] = useState({
     notifications: {
@@ -74,23 +77,73 @@ export default function UserProfile() {
     async function load() {
       try {
         setLoading(true);
-        // Prefer user context; fall back to /api/users/me
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        
+        // Fetch current user profile
+        let userData = null;
         const res = await fetch("/api/users/me", { headers });
         if (!mounted) return;
         if (res.ok) {
-          const data = await res.json();
-          setProfile((prev) => ({ ...prev, ...data }));
-          setPreferences((prev) => ({ ...prev, ...(data.preferences || {}) }));
-          setIsOwner(!user || user.id === data.id || true); // conservative default for demo
-          setIsAdmin(user?.role === "admin");
+          userData = await res.json();
         }
 
+        // Fetch global settings
+        let globalSettingsData = null;
         const gs = await fetch("/api/global-settings", { headers });
         if (gs.ok) {
-          const gdata = await gs.json();
-          setGlobalSettings(gdata);
+          globalSettingsData = await gs.json();
         }
+
+        // Fetch all users for stats
+        let allUsersData = [];
+        const usersRes = await fetch("/api/users", { headers });
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          if (Array.isArray(usersData)) {
+            allUsersData = usersData;
+            setAllUsers(usersData);
+            // Calculate user stats
+            setUserStats({
+              total: usersData.length,
+              active: usersData.filter(u => u.status === 'Active').length,
+              inactive: usersData.filter(u => u.status !== 'Active').length,
+              admins: usersData.filter(u => u.role === 'admin').length,
+            });
+          }
+        }
+
+        // Build merged profile from user data + global settings
+        const mergedProfile = {
+          ...defaultProfile,
+          ...(userData && {
+            name: userData.name || "",
+            role: userData.role || "",
+            location: userData.location || "",
+            bio: userData.bio || "",
+            email: userData.email || "",
+            phone: userData.phone || "",
+            socials: userData.socials || defaultProfile.socials,
+            stats: userData.stats || defaultProfile.stats,
+            focus: userData.focus || defaultProfile.focus,
+            gear: userData.gear || defaultProfile.gear,
+            payoutMethod: userData.payoutMethod || "",
+            backupPayout: userData.backupPayout || "",
+            preferences: userData.preferences,
+            status: userData.status,
+            _id: userData._id || userData.id,
+          }),
+        };
+
+        setProfile(mergedProfile);
+        setGlobalSettings(globalSettingsData);
+        
+        if (userData?.preferences) {
+          setPreferences((prev) => ({ ...prev, ...userData.preferences }));
+        }
+        
+        setIsOwner(!user || user.id === userData?.id || true);
+        setIsAdmin(user?.role === "admin");
+        
       } catch (err) {
         console.error("Failed to load profile", err);
       } finally {
@@ -171,230 +224,358 @@ export default function UserProfile() {
   }
 
   return (
-    <section className="page-shell mt-4">
-      <header className="rounded-4xl border border-[#e6eaf2] bg-gradient-to-br from-white via-[#fdfefe] to-[#f5f7fb] p-6 text-charcoal-900 shadow-[0_25px_80px_rgba(15,23,42,0.08)]">
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="h-20 w-20 rounded-2xl bg-amber-50 p-1">
-            <div className="flex h-full items-center justify-center rounded-2xl bg-white text-2xl sm:text-3xl font-semibold text-amber-700">
-              {profile.name
-                .split(" ")
-                .map((part) => part[0])
-                .join("")}
-            </div>
+    <section className="min-h-screen bg-white">
+      {/* User & Settings Header Section */}
+      <div className="bg-gradient-to-r from-charcoal-900 to-charcoal-800 text-white px-6 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Profile Title */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">My Profile</h1>
+            <p className="text-slate-300">Manage your account and preferences</p>
           </div>
-          <div className="flex-1 min-w-[200px]">
-            <h1 className="text-2xl sm:text-3xl font-semibold text-charcoal-900">{profile.name}</h1>
-            <p className="text-sm text-slate-600">
-              {profile.role} • {profile.location}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
-              {profile.focus.map((item) => (
-                <span key={item} className="rounded-full border border-slate-200 bg-white px-3 py-1">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-3 text-sm text-slate-600">
-            <InfoChip label="Email" value={profile.email} />
-            <InfoChip label="WhatsApp" value={profile.phone} />
-            <InfoChip label="Site" value={profile.socials.website} />
-          </div>
-        </div>
-        <dl className="mt-6 grid gap-4 text-center sm:grid-cols-3">
-          <Metric label="Shoots delivered" value={profile.stats.shoots} />
-          <Metric label="Average rating" value={`${profile.stats.avgRating}★`} />
-          <Metric label="Turnaround" value={`${profile.stats.turnaroundDays} days`} />
-        </dl>
-      </header>
 
-      <div className="grid gap-6 lg:grid-cols-[1.8fr,1fr]">
-        <div className="mt-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-charcoal-900">About & Bio</h2>
-                <p className="text-xs text-slate-500">Public profile copy used in proposals.</p>
+          {/* Info Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* User Information Card - Dynamic from User Management */}
+            <div className="bg-white/10 backdrop-blur-md rounded-lg p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <User size={20} className="text-gold-400" />
+                <h3 className="text-sm font-bold uppercase tracking-wider">User Information</h3>
               </div>
-              <button className="text-sm font-semibold text-gold-600">Share profile</button>
-            </div>
-            <textarea
-              value={profile.bio}
-              onChange={handleBioChange}
-              className="mt-4 w-full rounded-xl border border-slate-200 px-3 py-3 text-sm text-charcoal-900 shadow-inner focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
-              rows={4}
-            />
-
-            <div className="mt-3 flex gap-3">
-              <button onClick={saveBio} className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition">
-                Save Bio
-              </button>
-              <button onClick={() => { setProfile(defaultProfile); alert('Reverted to defaults'); }} className="rounded-lg px-4 py-2 text-sm font-medium border">
-                Revert
-              </button>
-            </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div>
-                <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Primary Platforms</h3>
-                <div className="mt-3 space-y-2 text-sm text-charcoal-900">
-                  <p>Instagram — {profile.socials.instagram}</p>
-                  <p>Behance — {profile.socials.behance}</p>
-                  <p>Website — {profile.socials.website}</p>
+              
+              {/* Profile Section */}
+              <div className="mb-4 pb-4 border-b border-white/10">
+                <p className="text-2xl font-bold mb-1">{profile.name || 'Not Set'}</p>
+                <div className="space-y-2 text-sm text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <Mail size={14} />
+                    <span>{profile.email || 'No email'}</span>
+                  </div>
+                  {profile.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone size={14} />
+                      <span>{profile.phone}</span>
+                    </div>
+                  )}
+                  {profile.location && (
+                    <div className="flex items-center gap-2">
+                      <MapPin size={14} />
+                      <span>{profile.location}</span>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div>
-                <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Speciality Breakdown</h3>
-                <ul className="mt-3 space-y-2 text-sm text-charcoal-900">
-                  {shootsPerFocus.map((item) => (
-                    <li key={item.label} className="flex items-center justify-between">
-                      <span>{item.label}</span>
-                      <span>{item.value} shoots</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-charcoal-900">Camera & Lighting Loadout</h2>
-              <button className="text-sm font-semibold text-slate-600">Export checklist</button>
-            </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-3 text-sm text-charcoal-900">
-              <div>
-                <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Bodies</h3>
-                <ul className="mt-2 space-y-1">
-                  {profile.gear.cameras.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Glass</h3>
-                <ul className="mt-2 space-y-1">
-                  {profile.gear.lenses.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Lighting</h3>
-                <ul className="mt-2 space-y-1">
-                  {profile.gear.lighting.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-charcoal-900">Payout Preferences</h2>
-              <button className="text-sm font-semibold text-slate-600">Update banking</button>
-            </div>
-            <div className="mt-4 grid gap-4 text-sm text-charcoal-900 md:grid-cols-2">
-              <div className="rounded-xl border border-slate-100 p-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Primary</p>
-                <p className="mt-2 font-semibold">{payoutDetails ? payoutDetails.primary : (profile.payoutMethod || 'HDFC •••• 8123')}</p>
-                <p className="text-xs text-slate-500">Weekly settlements • Instant alerts</p>
-                <div className="mt-3">
-                  <button onClick={() => setShowPayoutModal(true)} className="text-sm font-medium text-charcoal-900 underline">View details</button>
+              {/* User Status & Role */}
+              <div className="space-y-2 text-xs text-slate-400">
+                <div className="flex justify-between">
+                  <span>Role:</span>
+                  <span className="font-semibold text-white">{profile.role || 'User'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status:</span>
+                  <span className={`font-semibold px-2 py-0.5 rounded ${profile.status === 'Active' ? 'bg-emerald-500/30 text-emerald-300' : 'bg-slate-500/30 text-slate-300'}`}>
+                    {profile.status || 'Active'}</span>
                 </div>
               </div>
-              <div className="rounded-xl border border-slate-100 p-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Backup</p>
-                <p className="mt-2 font-semibold">{payoutDetails ? payoutDetails.backup : (profile.backupPayout || 'UPI • aarohi@ibl')}</p>
-                <p className="text-xs text-slate-500">Used when bank is offline</p>
+
+              {/* User Management Stats - from allUsers */}
+              {userStats && (
+                <div className="mt-4 pt-4 border-t border-white/10 text-xs text-slate-400 space-y-1">
+                  <p className="text-slate-300 font-semibold mb-2">Team Overview</p>
+                  <div className="flex justify-between">
+                    <span>Total Users:</span>
+                    <span className="font-semibold text-white">{userStats.total}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Active:</span>
+                    <span className="font-semibold text-emerald-300">{userStats.active}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Admins:</span>
+                    <span className="font-semibold text-gold-300">{userStats.admins}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Professional Info Card */}
+            <div className="bg-white/10 backdrop-blur-md rounded-lg p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <Globe size={20} className="text-gold-400" />
+                <h3 className="text-sm font-bold uppercase tracking-wider">Professional</h3>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-slate-300 text-xs">Role</p>
+                  <p className="font-semibold">{profile.role || 'Not Set'}</p>
+                </div>
+                <div>
+                  <p className="text-slate-300 text-xs">Specialization</p>
+                  <p className="font-semibold text-sm">{profile.focus?.join(', ') || 'Not Set'}</p>
+                </div>
+                <div>
+                  <p className="text-slate-300 text-xs">Rating</p>
+                  <p className="font-semibold">{profile.stats?.avgRating || 'N/A'}★</p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-lg font-semibold text-charcoal-900">Activity Timeline</h2>
-            <ul className="mt-4 space-y-3 text-sm text-slate-600">
-              {activityLog.map((item) => (
-                <li key={item.id} className="rounded-xl bg-slate-50 p-3">
-                  <p className="font-semibold text-charcoal-900">{item.title}</p>
-                  <p className="text-xs text-slate-500">{item.timestamp}</p>
-                </li>
-              ))}
-            </ul>
-
+            {/* Global Settings Card - Dynamic Organization Data */}
             {globalSettings && (
-              <div className="mt-4 rounded-2xl border border-slate-100 bg-white p-4">
-                <h3 className="text-sm font-semibold">Organization / Global Settings <span className="ml-2 text-xs text-slate-400">(read-only)</span></h3>
-                <div className="mt-3 text-xs text-slate-600">
-                  <p>Timezone: <strong className="ml-2 text-charcoal-900">{globalSettings.timezone}</strong></p>
-                  <p>Default currency: <strong className="ml-2 text-charcoal-900">{globalSettings.currency}</strong></p>
-                  <p>Contract template: <strong className="ml-2 text-charcoal-900">{globalSettings.contractTemplate}</strong></p>
-                  <p className="mt-2 text-xs text-slate-500">These values are managed by your organization and cannot be changed here.</p>
+              <div className="bg-white/10 backdrop-blur-md rounded-lg p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <Settings size={20} className="text-gold-400" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider">Organization</h3>
                 </div>
+                
+                {/* Organization Settings */}
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="text-slate-300 text-xs">Timezone</p>
+                    <p className="font-semibold">{globalSettings.timezone || 'Not Set'}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-300 text-xs">Currency</p>
+                    <p className="font-semibold">{globalSettings.currency || 'Not Set'}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-300 text-xs">Contract Template</p>
+                    <p className="font-semibold text-xs truncate">{globalSettings.contractTemplate || 'Standard'}</p>
+                  </div>
+                </div>
+
+                {/* Organization Name/Details */}
+                {(globalSettings.companyName || globalSettings.organizationName) && (
+                  <div className="mt-3 pt-3 border-t border-white/10">
+                    <p className="text-slate-300 text-xs">Organization</p>
+                    <p className="font-semibold text-sm">{globalSettings.companyName || globalSettings.organizationName}</p>
+                  </div>
+                )}
+
+                {/* Additional Settings */}
+                {(globalSettings.defaultLanguage || globalSettings.defaultEmail) && (
+                  <div className="mt-3 pt-3 border-t border-white/10 space-y-2 text-xs text-slate-400">
+                    {globalSettings.defaultLanguage && (
+                      <div className="flex justify-between">
+                        <span>Language:</span>
+                        <span className="text-white">{globalSettings.defaultLanguage}</span>
+                      </div>
+                    )}
+                    {globalSettings.defaultEmail && (
+                      <div className="flex justify-between">
+                        <span>Email:</span>
+                        <span className="text-white truncate">{globalSettings.defaultEmail}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
+        </div>
+      </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-lg font-semibold text-charcoal-900">Notifications</h2>
-            <div className="mt-4 space-y-3 text-sm text-charcoal-900">
-              <ToggleRow
-                label="New brief alerts"
-                helper="Instant ping when a project matches your style"
-                active={preferences.notifications.briefs}
-                onToggle={() => togglePref("notifications", "briefs")}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid gap-6 lg:grid-cols-[1.8fr,1fr]">
+          {/* Left Column */}
+          <div className="space-y-4">
+            {/* About & Bio Card */}
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-charcoal-900">About & Bio</h2>
+                  <p className="text-xs text-slate-500">Public profile copy used in proposals</p>
+                </div>
+                <button className="text-sm font-medium text-gold-600 hover:text-gold-700">Share</button>
+              </div>
+              <textarea
+                value={profile.bio}
+                onChange={handleBioChange}
+                className="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-charcoal-900 focus:border-gold-500 focus:ring-1 focus:ring-gold-500"
+                rows={4}
+                placeholder="Write your professional bio..."
               />
-              <ToggleRow
-                label="Payout confirmations"
-                helper="Status texts for every settlement"
-                active={preferences.notifications.payouts}
-                onToggle={() => togglePref("notifications", "payouts")}
-              />
-              <ToggleRow
-                label="Shoot reminders"
-                helper="Get pre-call prep reminders"
-                active={preferences.notifications.reminders}
-                onToggle={() => togglePref("notifications", "reminders")}
-              />
+              <div className="mt-4 flex gap-2">
+                <button onClick={saveBio} className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition">
+                  Save
+                </button>
+                <button onClick={() => { setProfile((prev) => ({ ...prev, bio: "" })); alert('Bio cleared'); }} className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+                  Clear
+                </button>
+              </div>
 
-              <div className="mt-3 flex gap-3">
-                <button onClick={savePreferences} className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600 transition">Save Preferences</button>
-                <button onClick={() => setPreferences({ notifications: { briefs: true, payouts: true, reminders: false }, security: { mfa: true, biometric: false, deviceAlerts: true } })} className="rounded-lg px-4 py-2 text-sm font-medium border">Reset</button>
+              {/* Social Links & Specialty */}
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3">Social Profiles</h3>
+                  <div className="space-y-2 text-sm text-charcoal-700">
+                    <p><span className="text-slate-500">Instagram:</span> <span className="font-medium">{profile.socials?.instagram || '—'}</span></p>
+                    <p><span className="text-slate-500">Behance:</span> <span className="font-medium">{profile.socials?.behance || '—'}</span></p>
+                    <p><span className="text-slate-500">Website:</span> <span className="font-medium">{profile.socials?.website || '—'}</span></p>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3">Specialty Breakdown</h3>
+                  <div className="space-y-2 text-sm text-charcoal-700">
+                    {shootsPerFocus.length > 0 ? (
+                      shootsPerFocus.map((item) => (
+                        <div key={item.label} className="flex items-center justify-between">
+                          <span>{item.label}</span>
+                          <span className="text-slate-500">{item.value} shoots</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-slate-500">No specialties set</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Equipment Card */}
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-charcoal-900">Camera & Lighting Kit</h2>
+                <button className="text-sm font-medium text-slate-600 hover:text-slate-700">Export</button>
+              </div>
+              <div className="grid gap-6 md:grid-cols-3">
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3">Bodies</h3>
+                  <ul className="space-y-1 text-sm text-charcoal-700">
+                    {profile.gear?.cameras && profile.gear.cameras.length > 0 ? (
+                      profile.gear.cameras.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))
+                    ) : (
+                      <li className="text-slate-500">No cameras added</li>
+                    )}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3">Lenses</h3>
+                  <ul className="space-y-1 text-sm text-charcoal-700">
+                    {profile.gear?.lenses && profile.gear.lenses.length > 0 ? (
+                      profile.gear.lenses.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))
+                    ) : (
+                      <li className="text-slate-500">No lenses added</li>
+                    )}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3">Lighting</h3>
+                  <ul className="space-y-1 text-sm text-charcoal-700">
+                    {profile.gear?.lighting && profile.gear.lighting.length > 0 ? (
+                      profile.gear.lighting.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))
+                    ) : (
+                      <li className="text-slate-500">No lighting equipment added</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Payout Preferences Card */}
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-charcoal-900">Payout Preferences</h2>
+                <button className="text-sm font-medium text-slate-600 hover:text-slate-700">Update</button>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="border-l-4 border-gold-500 pl-4 py-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-600">Primary Account</p>
+                  <p className="mt-2 text-sm font-semibold text-charcoal-900">{payoutDetails ? payoutDetails.primary : (profile.payoutMethod || 'Not configured')}</p>
+                  <p className="text-xs text-slate-500 mt-1">Weekly settlements</p>
+                  {profile.payoutMethod && <button onClick={() => setShowPayoutModal(true)} className="text-sm font-medium text-gold-600 hover:text-gold-700 mt-2">View details</button>}
+                </div>
+                <div className="border-l-4 border-slate-300 pl-4 py-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-600">Backup Account</p>
+                  <p className="mt-2 text-sm font-semibold text-charcoal-900">{payoutDetails ? payoutDetails.backup : (profile.backupPayout || 'Not configured')}</p>
+                  <p className="text-xs text-slate-500 mt-1">Used when primary unavailable</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-lg font-semibold text-charcoal-900">Security</h2>
+          {/* Right Column */}
+          <div className="space-y-4">
+            {/* Activity Timeline */}
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
+              <h2 className="text-lg font-semibold text-charcoal-900 mb-4">Recent Activity</h2>
+              <ul className="space-y-2">
+                {activityLog.map((item) => (
+                  <li key={item.id} className="border-l-2 border-slate-200 pl-4 py-2">
+                    <p className="text-sm font-medium text-charcoal-900">{item.title}</p>
+                    <p className="text-xs text-slate-500 mt-1">{item.timestamp}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            <button
-              onClick={() => setPasswordModalOpen(true)}
-              className="mt-4 w-full rounded-lg bg-gold-500 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
-            >
-              Change Password
-            </button>
+            {/* Notifications */}
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
+              <h2 className="text-lg font-semibold text-charcoal-900 mb-4">Notifications</h2>
+              <div className="space-y-3">
+                <ToggleRow
+                  label="New brief alerts"
+                  helper="Ping when projects match your style"
+                  active={preferences.notifications.briefs}
+                  onToggle={() => togglePref("notifications", "briefs")}
+                />
+                <ToggleRow
+                  label="Payout confirmations"
+                  helper="Alerts for every settlement"
+                  active={preferences.notifications.payouts}
+                  onToggle={() => togglePref("notifications", "payouts")}
+                />
+                <ToggleRow
+                  label="Shoot reminders"
+                  helper="Pre-shoot prep reminders"
+                  active={preferences.notifications.reminders}
+                  onToggle={() => togglePref("notifications", "reminders")}
+                />
+              </div>
+              <div className="mt-4 flex gap-2">
+                <button onClick={savePreferences} className="rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-white hover:bg-gold-600">Save</button>
+                <button onClick={() => setPreferences({ notifications: { briefs: true, payouts: true, reminders: false }, security: { mfa: true, biometric: false, deviceAlerts: true } })} className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium hover:bg-slate-50">Reset</button>
+              </div>
+            </div>
 
-            <div className="mt-4 space-y-3 text-sm text-charcoal-900 border-t border-slate-100 pt-4">
-              <ToggleRow
-                label="Multi-factor sign-in"
-                helper="Verify logins with OTP + device push"
-                active={preferences.security.mfa}
-                onToggle={() => togglePref("security", "mfa")}
-              />
-              <ToggleRow
-                label="Face ID on mobile"
-                helper="Use biometric unlock inside the app"
-                active={preferences.security.biometric}
-                onToggle={() => togglePref("security", "biometric")}
-              />
-              <ToggleRow
-                label="New device alerts"
-                helper="Get notified whenever a fresh device signs in"
-                active={preferences.security.deviceAlerts}
-                onToggle={() => togglePref("security", "deviceAlerts")}
-              />
+            {/* Security */}
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
+              <h2 className="text-lg font-semibold text-charcoal-900 mb-4">Security</h2>
+              <button
+                onClick={() => setPasswordModalOpen(true)}
+                className="w-full rounded-lg bg-gold-500 py-2.5 text-sm font-semibold text-white hover:bg-gold-600 transition"
+              >
+                Change Password
+              </button>
+
+              <div className="mt-4 space-y-3 border-t border-slate-200 pt-4">
+                <ToggleRow
+                  label="Multi-factor sign-in"
+                  helper="OTP + device push verification"
+                  active={preferences.security.mfa}
+                  onToggle={() => togglePref("security", "mfa")}
+                />
+                <ToggleRow
+                  label="Face ID on mobile"
+                  helper="Biometric unlock in the app"
+                  active={preferences.security.biometric}
+                  onToggle={() => togglePref("security", "biometric")}
+                />
+                <ToggleRow
+                  label="New device alerts"
+                  helper="Notified of new sign-ins"
+                  active={preferences.security.deviceAlerts}
+                  onToggle={() => togglePref("security", "deviceAlerts")}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -405,39 +586,20 @@ export default function UserProfile() {
   );
 }
 
-function Metric({ label, value }) {
-  return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-      <dt className="text-xs uppercase tracking-[0.35em] text-slate-500">{label}</dt>
-      <dd className="mt-1 text-2xl font-semibold text-charcoal-900">{value}</dd>
-    </div>
-  );
-}
-
-function InfoChip({ label, value }) {
-  return (
-    <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-500">
-      <span className="text-slate-500">{label}: </span>
-      <span className="tracking-normal text-charcoal-900">{value}</span>
-    </div>
-  );
-}
-
 function ToggleRow({ label, helper, active, onToggle }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-slate-100 p-3">
+    <div className="flex items-start justify-between gap-4 p-3 border-b border-slate-100 last:border-b-0">
       <div>
-        <p className="font-semibold text-charcoal-900">{label}</p>
-        <p className="text-xs text-slate-500">{helper}</p>
+        <p className="font-semibold text-charcoal-900 text-sm">{label}</p>
+        <p className="text-xs text-slate-500 mt-1">{helper}</p>
       </div>
       <button
         type="button"
         onClick={onToggle}
-        className={`relative flex h-6 w-12 items-center rounded-full transition ${active ? "bg-gold-500" : "bg-slate-200"
-          }`}
+        className={`relative flex h-6 w-12 items-center rounded-full transition flex-shrink-0 ${active ? "bg-gold-500" : "bg-slate-300"}`}
       >
         <span
-          className={`h-5 w-5 transform rounded-full bg-white shadow transition ${active ? "translate-x-6" : "translate-x-1"}`}
+          className={`h-5 w-5 transform rounded-full bg-white shadow transition ${active ? "translate-x-6" : "translate-x-0.5"}`}
         />
       </button>
     </div>
